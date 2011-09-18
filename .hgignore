@@ -1,0 +1,11 @@
+\.DS_Store
+\.classpath
+\.project
+\.settings
+\.iml
+\.ipr
+\.iws
+build.bat
+favicon.psd
+ga.js
+

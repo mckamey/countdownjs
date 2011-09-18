@@ -1,0 +1,35 @@
+﻿<?xml version="1.0"?>
+<project basedir="." default="all">
+	<taskdef name="closure" classname="com.google.javascript.jscomp.ant.CompileTask" classpath="lib/closure/compiler.jar" />
+
+	<target name="init">
+		<echo message="Building..." />
+		<property name="lib.dir" value="${basedir}/lib" />
+		<property name="src.dir" value="${basedir}" />
+		<property name="test.dir" value="${basedir}/test" />
+		<property name="build.dir" value="${basedir}" />
+	</target>
+
+	<target name="jslint" depends="init" description="Check JS with JSLint">
+		<echo message="Running JSLint static analysis..." />
+		<java jar="${lib.dir}/rhino/js.jar" fork="true">
+			<arg value="${test.dir}/lint.js" />
+		</java>
+		<echo message="JSLint static analysis done." />
+	</target>
+
+	<target name="compile.js" depends="jslint" description="Compile JS">
+		<echo message="Compiling script..." />
+		<closure compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/countdown.min.js">
+			<sources dir="${build.dir}">
+				<file name="countdown.js"/>
+			</sources>
+		</closure>
+		<echo message="Script compilation done." />
+	</target>
+
+	<target name="all" depends="compile.js">
+		<echo message="Build completed." />
+	</target>
+
+</project>
