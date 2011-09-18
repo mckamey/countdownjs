@@ -1,0 +1,208 @@
+@font-face
+{
+	font-family: 'LeagueGothicRegular';
+	src: local('☺'), url(fonts/League_Gothic-webfont.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face
+{
+	font-family: 'LeagueGothicRegularIE';
+	src: url(fonts/League_Gothic-webfont.eot);
+	font-weight: normal;
+	font-style: normal;
+}
+
+body
+{
+	background-color: #F8F8F8;
+	font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
+	font-size: 9pt;
+	margin: 0 auto;
+	padding: 0;
+	width: 60%;
+	min-width: 600px;
+}
+
+.logo, .logo a:link, .logo a:hover, .logo a:active, .logo a:visited
+{
+	color: #999;
+	font-family: LeagueGothicRegular, 'League Gothic', Helvetica, Tahoma, Arial, sans-serif;
+	font-size: 125px;
+	margin: 0 auto 0.25em;
+	padding: 0;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0px -1px 1px silver;
+	white-space: nowrap;
+}
+.ua-ie .logo, .ua-ie .logo a:link, .ua-ie .logo a:hover, .ua-ie .logo a:active, .ua-ie .logo a:visited
+{
+	font-family: LeagueGothicRegularIE, 'League Gothic', Helvetica, Impact, Arial, sans-serif;
+}
+
+.logo .sel
+{
+	color: #555;
+}
+.logo .rule
+{
+	color: #666;
+}
+.logo .expr
+{
+	color: #444;
+}
+
+h2
+{
+	border-bottom: 1px solid #CCE5FF;
+	font-size: 12pt;
+}
+
+dl, ul
+{
+	margin: 0;
+	padding: 0.75em 0.25em;
+}
+
+dl dt
+{
+	font-weight: bold;
+	margin: 0 0 0 0.5em;
+	padding: 0.25em 0 0.25em 0.5em;
+}
+
+dl dd
+{
+	list-style-type: none;
+	margin: 0 0 0 1.5em;
+	padding: 0.25em 0 0.25em 1.5em;
+}
+
+ul li
+{
+	list-style-type: none;
+	margin: 0 0 0 0.5em;
+	padding: 0.25em 0 0.25em 0.5em;
+}
+
+a:link, a:hover, a:active, a:visited
+{
+	color: #006699;
+}
+
+footer
+{
+	border-top: 1px solid #F1F1F1;
+	clear: both;
+	margin: 4em auto;
+	padding-top: 1em;
+	text-align: right;
+}
+
+/* http://ubuwaits.github.com/css3-buttons/ */
+
+a.minimal:link, a.minimal:visited
+{
+	background: #e3e3e3;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	box-shadow: inset 0px 0px 1px 1px #f6f6f6;
+	-moz-box-shadow: inset 0px 0px 1px 1px #f6f6f6;
+	-webkit-box-shadow: inset 0px 0px 1px 1px #f6f6f6;
+	color: #333;
+	display: inline-block;
+	font-family: "helvetica neue", helvetica, arial, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1;
+	padding: 8px 0 9px;
+	text-align: center;
+	text-decoration: none;
+	text-shadow: 0 1px 0px #fff;
+	width: 150px;
+}
+
+a.minimal:hover
+{
+	background: #d9d9d9;
+	box-shadow: inset 0px 0px 1px 1px #eaeaea;
+	-moz-box-shadow: inset 0px 0px 1px 1px #eaeaea;
+	-webkit-box-shadow: inset 0px 0px 1px 1px #eaeaea;
+	color: #222;
+}
+
+a.minimal:active
+{
+	background: #d0d0d0;
+	box-shadow: inset 0px 0px 1px 1px #e3e3e3;
+	-moz-box-shadow: inset 0px 0px 1px 1px #e3e3e3;
+	-webkit-box-shadow: inset 0px 0px 1px 1px #e3e3e3;
+	color: #000;
+}
+
+.summary
+{
+	font-size: 12pt;
+	text-align: center;
+}
+
+.box
+{
+	background-color: #FFF;
+	border: 1px solid silver;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	box-shadow: 0px 0px 4px #DDDDDD;
+	-moz-box-shadow: 0px 0px 4px #DDDDDD;
+	-webkit-box-shadow: 0px 0px 4px #DDDDDD;
+	float: left;
+	height: 200px;
+	line-height: 1.75em;
+	margin: 1% 0 1% 7%;
+	padding: 0.125em 0.5em;
+
+	width: 20em;
+}
+
+.box h2
+{
+	border-bottom: none;
+	color: #666;
+	font-size: 30px;
+	font-weight: bold;
+	text-align: center;
+	text-shadow: 0 -1px 1px silver;
+	text-transform: lowercase;
+}
+
+.box ul, .box li
+{
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	white-space: nowrap;
+}
+
+.box a.minimal
+{
+	margin: 0.25em;
+	text-transform: lowercase;
+}
+
+.box a.glow
+{
+	box-shadow: 0px 0px 4px #FFCC00;
+	-moz-box-shadow: 0px 0px 4px #FFCC00;
+	-webkit-box-shadow: 0px 0px 4px #FFCC00;
+}
+
+.action-info
+{
+	font-style: italic;
+	white-space: nowrap;
+}
