@@ -231,16 +231,16 @@ var countdown = (
 	var formatList, ripple, pruneUnits;
 
 	/**
-	 * TimeSpan representation of a duration of time
+	 * Timespan representation of a duration of time
 	 * 
 	 * @private
-	 * @this {TimeSpan}
+	 * @this {Timespan}
 	 * @param {Date} start the starting date
 	 * @param {Date} end the ending date
 	 * @param {number} units the units to populate
 	 * @constructor
 	 */
-	function TimeSpan (start, end, units) {
+	function Timespan (start, end, units) {
 		this.start = start;
 		this.end = end;
 		this.units = units;
@@ -275,17 +275,17 @@ var countdown = (
 	}
 
 	/**
-	 * Formats the TimeSpan as a sentence
+	 * Formats the Timespan as a sentence
 	 * 
 	 * @private
 	 * @return {string}
 	 */
-	TimeSpan.prototype.toString = function() {
+	Timespan.prototype.toString = function() {
 		var label = formatList(this);
 
 		var count = label.length;
-		if (count < 1) {
-			return 'now';
+		if (!count) {
+			return '';
 		}
 		if (count > 1) {
 			label[count-1] = 'and '+label[count-1];
@@ -294,20 +294,19 @@ var countdown = (
 	};
 
 	/**
-	 * Formats the TimeSpan as HTML
+	 * Formats the Timespan as HTML
 	 * 
 	 * @private
 	 * @param {string} tag
 	 * @return {string}
 	 */
-	TimeSpan.prototype.toHTML = function(tag) {
+	Timespan.prototype.toHTML = function(tag) {
 		tag = tag || 'span';
 		var label = formatList(this);
 
 		var count = label.length;
 		if (!count) {
-			label.push('now');
-			count = 1;
+			return '';
 		}
 		for (var i=0; i<count; i++) {
 			// wrap each unit in tag
@@ -323,7 +322,7 @@ var countdown = (
 	 * Formats the entries as English labels
 	 * 
 	 * @private
-	 * @param {TimeSpan} ts
+	 * @param {Timespan} ts
 	 * @return {Array}
 	 */
 	formatList = function(ts) {
@@ -367,7 +366,7 @@ var countdown = (
 	 * Borrow any underflow units
 	 * 
 	 * @private
-	 * @param {TimeSpan} ts
+	 * @param {Timespan} ts
 	 */
 	ripple = function(ts) {
 		var x;
@@ -505,7 +504,7 @@ var countdown = (
 	 * Remove any units not requested
 	 * 
 	 * @private
-	 * @param {TimeSpan} ts
+	 * @param {Timespan} ts
 	 * @param {number} units the units to populate
 	 */
 	pruneUnits = function(ts, units) {
@@ -699,16 +698,16 @@ var countdown = (
 
 		/**
 		 * @public
-		 * @param {Date|number|function(TimeSpan)} start the starting date
-		 * @param {Date|number|function(TimeSpan)} end the ending date
+		 * @param {Date|number|function(Timespan)} start the starting date
+		 * @param {Date|number|function(Timespan)} end the ending date
 		 * @param {number} units the units to populate
-		 * @return {TimeSpan|number}
+		 * @return {Timespan|number}
 		 */
 		timespan : function(start, end, units) {
 			var callback;
 
 			// ensure units, default to all
-			units = (units > 0) ? units : ALL_UNITS;
+			units = units || ALL_UNITS;
 
 			// ensure start date
 			if ('function' === typeof start) {
@@ -735,14 +734,14 @@ var countdown = (
 			}
 
 			if (!callback) {
-				return new TimeSpan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+				return new Timespan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
 			}
 
 			// base delay off units
 			var delay = getDelay(units);
 			var fn = function() {
 				callback(
-					new TimeSpan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+					new Timespan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
 				);
 			};
 

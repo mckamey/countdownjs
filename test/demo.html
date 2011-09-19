@@ -24,7 +24,7 @@
 		(function() {
 			var start = new Date(1194874200000);//2007-11-12T05:30:00-08:00
 			var end = new Date(1213484400000);//2008-06-14T16:00:00-07:00
-			var units = countdown.MONTHS|countdown.DAYS; // months and days
+			var units = countdown.MONTHS | countdown.DAYS; // only months and days
 	
 			var update = function() {
 				var ts = countdown.timespan(start, end, units);
@@ -45,16 +45,32 @@
 	<script type="text/javascript">
 		(function() {
 			var start = 1316350351000;//2011-09-18T05:52:31-07:00
-			var units = countdown.ALL & ~countdown.WEEKS; // all but weeks
+			var units = ~countdown.WEEKS; // all but weeks
 			var callback =
 				function(ts) {
 					document.getElementById('counter2').innerHTML = ts;
 					document.getElementById('timespan2').innerHTML = JSON.stringify(ts, null, "  ");
 				};
 
-			countdown.timespan(
-				start,
-				callback);
+			countdown.timespan(start, callback, units);
+		})();
+	</script>
+
+	<strong id="counter3"></strong>
+	<pre id="timespan3"></pre>
+
+	<script type="text/javascript">
+		(function() {
+			var start = 946713600000;//2000-01-01T00:00:00-08:00
+			var units = ~(countdown.WEEKS | countdown.MILLISECONDS); // all but weeks and milliseconds
+			var units = ~countdown.WEEKS & ~countdown.MILLISECONDS; // all but weeks and milliseconds
+			var callback =
+				function(ts) {
+					document.getElementById('counter3').innerHTML = ts;
+					document.getElementById('timespan3').innerHTML = JSON.stringify(ts, null, "  ");
+				};
+
+			countdown.timespan(start, callback, units);
 		})();
 	</script>
 
