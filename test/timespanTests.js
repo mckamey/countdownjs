@@ -164,14 +164,14 @@ test("constant 1 month span, daily over 5 years", function() {
 	}
 });
 
-test("contiguous daily countdown over 31 weeks", function() {
+test("contiguous daily countdown over 83 weeks", function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
 	var units = countdown.WEEKS | countdown.DAYS;
 	var start = new Date(2007, 10, 10, 5, 30, 0);
-	var end = new Date(2008, 5, 14, 16, 0, 0);
+	var end = new Date(2009, 5, 14, 16, 0, 0);
 
-	var expected = { weeks: 31, days: 0 };
+	var expected = { weeks: 83, days: 1 };
 
 	while (start.getTime() < end.getTime()) {
 
@@ -201,14 +201,14 @@ test("contiguous daily countdown over 31 weeks", function() {
 	}
 });
 
-test("contiguous daily countdown over 7 months", function() {
+test("contiguous daily countdown over 1 year 7 months", function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
 	var units = countdown.MONTHS | countdown.DAYS;
-	var start = new Date(2007, 10, 10, 5, 30, 0);
+	var start = new Date(2006, 10, 10, 5, 30, 0);
 	var end = new Date(2008, 5, 14, 16, 0, 0);
 
-	var expected = { months: 7, days: 4 };
+	var expected = { months: 19, days: 4 };
 
 	while (start.getTime() < end.getTime()) {
 
@@ -230,10 +230,11 @@ test("contiguous daily countdown over 7 months", function() {
 				days: actual.days-1
 			};
 		} else {
+			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
 			expected = {
 				months: actual.months-1,
 				// the number of days in start month minus one
-				days: Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000))-1
+				days: daysInStart-1
 			};
 		}
 	}
@@ -242,23 +243,28 @@ test("contiguous daily countdown over 7 months", function() {
 test("contiguous weekly countdown over 7 months", function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.WEEKS;
-	var start = new Date(2007, 10, 10, 5, 30, 0);
-	var end = new Date(2008, 5, 14, 16, 0, 0);
+	var units = countdown.MONTHS | countdown.WEEKS | countdown.DAYS;
+	var start = new Date(1999, 10, 10, 5, 30, 0);
+	var end = new Date(2001, 5, 14, 16, 0, 0);
 
 	// calc by days since easier
-	var prev = { months: 7, days: 4 };
+	var prev = { months: 19, days: 4 };
 
 	while (start.getTime() < end.getTime()) {
 
 		var actual = countdown.timespan(start, end, units);
 		actual = {
 			months: actual.months,
-			weeks: actual.weeks
+			weeks: actual.weeks,
+			days: actual.days
 		};
 
 		// convert to weeks just before compare
-		var expected = { months: prev.months, weeks: Math.floor(prev.days/7) };
+		var expected = {
+			months: prev.months,
+			weeks: Math.floor(prev.days/7),
+			days: prev.days % 7
+		};
 
 		same(actual, expected, "");
 
@@ -272,22 +278,23 @@ test("contiguous weekly countdown over 7 months", function() {
 				days: prev.days-1
 			};
 		} else {
+			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
 			prev = {
 				months: prev.months-1,
 				// the number of days in start month minus one
-				days: Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000))-1
+				days: daysInStart-1
 			};
 		}
 	}
 });
 
-test("contiguous daily count up over 7 months", function() {
+test("contiguous daily count up over 10 years", function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
 	var units = countdown.MONTHS | countdown.DAYS;
-	var goalTime = new Date(2008, 5, 14, 16, 0, 0).getTime();
-	var start = new Date(2007, 10, 10, 5, 30, 0);
+	var start = new Date(1995, 0, 1, 12, 0, 0);
 	var end = new Date(start.getTime());
+	var goalTime = new Date(2005, 0, 1, 12, 0, 0).getTime();
 
 	var expected = { months: 0, days: 0 };
 
@@ -299,14 +306,16 @@ test("contiguous daily count up over 7 months", function() {
 			days: actual.days
 		};
 
-		same(actual, expected, JSON.stringify(start)+" to "+JSON.stringify(end));
+		same(actual, expected, "");
+
+		var daysInEnd = Math.round((new Date(end.getFullYear(), end.getMonth()+1, 15).getTime() - new Date(end.getFullYear(), end.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
 
 		// add a day
 		end = new Date( end.getTime()+daySpan );
 
 		// set up next iteration
-		// compare to the number of days in start month
-		if (actual.days !== Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000))-1) {
+		// compare to the number of days in before month end
+		if (actual.days < daysInEnd-1) {
 			expected = {
 				months: actual.months,
 				days: actual.days+1
