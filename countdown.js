@@ -228,15 +228,15 @@ var countdown = (
 	 * 
 	 * @private
 	 * @this {TimeSpan}
-	 * @param {Date|number} start the starting date
-	 * @param {Date|number} end the ending date
+	 * @param {Date} start the starting date
+	 * @param {Date} end the ending date
 	 * @param {number} units the units to populate
 	 * @constructor
 	 */
 	function TimeSpan (start, end, units) {
-		start = (start instanceof Date) ? start : new Date(start);
-		end = (end instanceof Date) ? end : new Date(end);
-		units = (units > 0) ? units : (MILLENNIA|CENTURIES|YEARS|MONTHS|DAYS|HOURS|MINUTES|SECONDS);
+		this.start = start;
+		this.end = end;
+		this.units = units;
 
 		this.value = end.getTime() - start.getTime();
 		if (this.value < 0) {
@@ -529,6 +529,43 @@ var countdown = (
 		}
 	};
 
+	/**
+	 * Determine an appropriate refresh rate based upon units
+	 * 
+	 * @private
+	 * @param {number} units the units to populate
+	 * @return {number} milliseconds to delay
+	 */
+	function getDelay(units) {
+		if (units & MILLISECONDS) {
+			// refresh very quickly
+			return MILLISECONDS_PER_SECOND/60; //60Hz
+		}
+
+		if (units & SECONDS) {
+			// refresh every second
+			return MILLISECONDS_PER_SECOND; //1Hz
+		}
+
+		if (units & MINUTES) {
+			// refresh every minute
+			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
+		}
+
+		if (units & HOURS) {
+			// refresh hourly
+			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+		}
+		
+		if (units & DAYS) {
+			// refresh daily
+			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
+		}
+
+		// refresh weekly
+		return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_WEEK;
+	}
+
 	var countdown = {
 		/**
 		 * @public
@@ -602,13 +639,53 @@ var countdown = (
 
 		/**
 		 * @public
-		 * @param {Date|number} start the starting date
-		 * @param {Date|number} end the ending date
+		 * @param {Date|number|function(TimeSpan)} start the starting date
+		 * @param {Date|number|function(TimeSpan)} end the ending date
 		 * @param {number} units the units to populate
-		 * @return {TimeSpan}
+		 * @return {TimeSpan|number}
 		 */
 		delta : function(start, end, units) {
-			return new TimeSpan(start, end, units);
+			var callback = null;
+
+			// ensure units, default to all
+			units = (units > 0) ? units : -1;
+
+			// ensure start date
+			if ("function" === typeof start) {
+				callback = start;
+				start = null;
+
+			} else if (isFinite(start)) {
+				start = new Date(start);
+
+//			} else if (!(start instanceof Date)) {
+//				throw new Error("start date must be date or callback");
+			}
+
+			// ensure end date
+			if ("function" === typeof end) {
+				callback = end;
+				end = null;
+
+			} else if (isFinite(end)) {
+				end = new Date(end);
+
+//			} else if (!(end instanceof Date)) {
+//				throw new Error("end date must be date or callback");
+			}
+
+			if (!callback) {
+				return new TimeSpan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+			}
+
+			// base delay off units
+			var delay = getDelay(units);
+
+			return setInterval(function() {
+				callback(
+					new TimeSpan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+				);
+			}, delay);
 		}
 	};
 

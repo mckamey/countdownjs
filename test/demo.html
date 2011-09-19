@@ -6,7 +6,7 @@
 
 	<link href="styles.css" rel="stylesheet" type="text/css" />
 
-	<script src="../countdown.min.js" type="text/javascript"></script>
+	<script src="../countdown.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -20,20 +20,42 @@
 	<pre id="delta"></pre>
 
 	<script type="text/javascript">
-		var start = new Date("2007-11-12T05:30:00-08:00");
-		var end = new Date("2008-06-14T16:00:00-07:00");
-		var units = countdown.DAYS|countdown.WEEKS|countdown.MONTHS;
+		(function() {
+			var start = new Date("2007-11-12T05:30:00-08:00");
+			var end = new Date("2008-06-14T16:00:00-07:00");
+			var units = countdown.DAYS|countdown.MONTHS;
+	
+			function update() {
+				var delta = countdown.delta(start, end, units);
+				start.setDate(start.getDate()+1);
+	
+				document.getElementById('counter').innerHTML = delta;
+				document.getElementById('delta').innerHTML = JSON.stringify(delta, null, "  ");
+	
+				setTimeout(update, 750);
+			}
+			setTimeout(update, 0);
+		})();
+	</script>
 
-		function update() {
-			var delta = countdown.delta(start, end, units);
-			end.setDate(end.getDate()-1);
+	<strong id="counter2"></strong>
+	<pre id="delta2"></pre>
 
-			document.getElementById('counter').innerHTML = delta;
-			document.getElementById('delta').innerHTML = JSON.stringify(delta, null, "  ");
+	<script type="text/javascript">
+		(function() {
+			var start = new Date("2011-09-18T05:52:31-07:00");
+			var units = countdown.MONTHS|countdown.WEEKS|countdown.DAYS|countdown.HOURS|countdown.MINUTES|countdown.SECONDS|countdown.MILLISECONDS;
+			var callback =
+				function(delta) {
+					document.getElementById('counter2').innerHTML = delta;
+					document.getElementById('delta2').innerHTML = JSON.stringify(delta, null, "  ");
+				};
 
-			setTimeout(update, 750);
-		}
-		setTimeout(update, 0);
+			countdown.delta(
+				start,
+				callback,
+				units);
+		})();
 	</script>
 
 	<footer>

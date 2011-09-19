@@ -1,18 +1,3 @@
-@font-face
-{
-	font-family: 'LeagueGothicRegular';
-	src: local('☺'), url(fonts/League_Gothic-webfont.ttf) format('truetype');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face
-{
-	font-family: 'LeagueGothicRegularIE';
-	src: url(fonts/League_Gothic-webfont.eot);
-	font-weight: normal;
-	font-style: normal;
-}
-
 body
 {
 	background-color: #F8F8F8;
@@ -27,7 +12,7 @@ body
 .logo, .logo a:link, .logo a:hover, .logo a:active, .logo a:visited
 {
 	color: #999;
-	font-family: LeagueGothicRegular, 'League Gothic', Helvetica, Tahoma, Arial, sans-serif;
+	font-family: Helvetica, Tahoma, Arial, sans-serif;
 	font-size: 125px;
 	margin: 0 auto 0.25em;
 	padding: 0;
