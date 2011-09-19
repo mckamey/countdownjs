@@ -680,12 +680,14 @@ var countdown = (
 
 			// base delay off units
 			var delay = getDelay(units);
-
-			return setInterval(function() {
+			var fn = function() {
 				callback(
 					new TimeSpan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
 				);
-			}, delay);
+			};
+
+			fn();
+			return setInterval(fn, delay);
 		}
 	};
 
