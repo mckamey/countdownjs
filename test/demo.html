@@ -6,7 +6,7 @@
 
 	<link href="styles.css" rel="stylesheet" type="text/css" />
 
-	<script src="../countdown.min.js" type="text/javascript"></script>
+	<script src="../countdown.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -21,8 +21,8 @@
 
 	<script type="text/javascript">
 		(function() {
-			var start = new Date("2007-11-12T05:30:00-08:00");
-			var end = new Date("2008-06-14T16:00:00-07:00");
+			var start = new Date(1194874200000);//2007-11-12T05:30:00-08:00
+			var end = new Date(1213484400000);//2008-06-14T16:00:00-07:00
 			var units = countdown.DAYS|countdown.MONTHS;
 	
 			function update() {
@@ -43,7 +43,7 @@
 
 	<script type="text/javascript">
 		(function() {
-			var start = new Date("2011-09-18T05:52:31-07:00");
+			var start = new Date(1316350351000);//2011-09-18T05:52:31-07:00
 			var units = countdown.MONTHS|countdown.WEEKS|countdown.DAYS|countdown.HOURS|countdown.MINUTES|countdown.SECONDS|countdown.MILLISECONDS;
 			var callback =
 				function(delta) {
