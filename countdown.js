@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.0.0
+ * @fileoverview countdown.js v2.0.1
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -123,14 +123,14 @@ var countdown = (
 	 * @const
 	 * @type {number}
 	 */
-	var DAYS_PER_WEEK = 7;
+	var MILLISECONDS_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
 	/**
 	 * @private
 	 * @const
-	 * @type {Array}
+	 * @type {number}
 	 */
-	var DAYS_PER_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	var DAYS_PER_WEEK = 7;
 
 	/**
 	 * @private
@@ -162,50 +162,17 @@ var countdown = (
 
 	/**
 	 * @private
-	 * @param {number} year
-	 */
-	function isLeapYear(year) {
-		if (year % 4 !== 0) {
-			return false;
-		}
-	
-		if ((year % 100) === 0) {
-			return ((year % 400) === 0);
-		}
-	
-		return true;
-	}
-
-	/**
-	 * @private
-	 * @param {number} year
-	 * @param {number} month
-	 */
-	function daysPerMonth(year, month) {
-		var days = DAYS_PER_MONTH[month];
-		if (month === 1 && isLeapYear(year)) {
-			days++; 
-		}
-		return days;
-	}
-
-	/**
-	 * @private
 	 * @param {Date} ref reference date
-	 * @param {number} dir
+	 * @param {number} shift months to shift reference month
 	 */
-	function daysInRefMonth(ref, dir) {
+	function daysInRefMonth(ref, shift) {
+		var prevTime = ref.getTime();
+
+		// increment or decrement month by diff
+		ref.setUTCMonth( ref.getUTCMonth() + shift );
+
 		// this is the trickiest since months vary in length
-		var year = ref.getUTCFullYear(),
-			month = ref.getUTCMonth(),
-			days = daysPerMonth(year, month);
-
-		if (dir) {
-			// increment or decrement month by one
-			ref.setUTCMonth(dir < 0 ? month-1 : month+1);
-		}
-
-		return days;
+		return Math.round(Math.abs(prevTime - ref.getTime()) / MILLISECONDS_PER_DAY);
 	}
 
 	/**
@@ -228,51 +195,16 @@ var countdown = (
 		return (value === 1) ? singular : value+' '+plural;
 	}
 
-	var formatList, ripple, pruneUnits;
+	var formatList;
 
 	/**
 	 * Timespan representation of a duration of time
 	 * 
 	 * @private
 	 * @this {Timespan}
-	 * @param {Date} start the starting date
-	 * @param {Date} end the ending date
-	 * @param {number} units the units to populate
 	 * @constructor
 	 */
-	function Timespan (start, end, units) {
-		this.start = start;
-		this.end = end;
-		this.units = units;
-
-		this.value = end.getTime() - start.getTime();
-		if (this.value < 0) {
-			// swap if reversed
-			var temp = end;
-			end = start;
-			start = temp;
-		}
-
-		// reference month for determining days in month
-		this.refMonth = new Date(start.getUTCFullYear(), start.getUTCMonth(), 15);
-
-		// reset to initial deltas
-		this.millennia = 0;
-		this.centuries = 0;
-		this.years = end.getUTCFullYear() - start.getUTCFullYear();
-		this.months = end.getUTCMonth() - start.getUTCMonth();
-		this.weeks = 0;
-		this.days = end.getUTCDate() - start.getUTCDate();
-		this.hours = end.getUTCHours() - start.getUTCHours();
-		this.minutes = end.getUTCMinutes() - start.getUTCMinutes();
-		this.seconds = end.getUTCSeconds() - start.getUTCSeconds();
-		this.milliseconds = end.getUTCMilliseconds() - start.getUTCMilliseconds();
-
-		ripple(this);
-		pruneUnits(this, units);
-
-		delete this.refMonth;		
-	}
+	function Timespan() {}
 
 	/**
 	 * Formats the Timespan as a sentence
@@ -363,12 +295,12 @@ var countdown = (
 	};
 
 	/**
-	 * Borrow any underflow units
+	 * Borrow any underflow units, carry any overflow units
 	 * 
 	 * @private
 	 * @param {Timespan} ts
 	 */
-	ripple = function(ts) {
+	function ripple(ts) {
 		var x;
 
 		if (ts.milliseconds < 0) {
@@ -433,7 +365,7 @@ var countdown = (
 
 		while (ts.weeks < 0) {
 			// ripple months down to weeks and days
-			x = daysInRefMonth(ts.refMonth, -1);
+			x = daysInRefMonth(ts.refMonth, +1);
 			ts.months--;
 			ts.weeks += Math.floor(x / DAYS_PER_WEEK);
 			ts.days += x % DAYS_PER_WEEK;
@@ -449,7 +381,7 @@ var countdown = (
 			// ripple weeks up to months and ripple remainder down to days
 			ts.months++;
 			ts.weeks -= MAX_WEEKS_PER_MONTH;
-			ts.days += (MAX_WEEKS_PER_MONTH * DAYS_PER_WEEK) - daysInRefMonth(ts.refMonth, +1);
+			ts.days += (MAX_WEEKS_PER_MONTH * DAYS_PER_WEEK) - daysInRefMonth(ts.refMonth, -1);
 
 			if (ts.days >= DAYS_PER_WEEK) {
 				// ripple days back up to weeks
@@ -493,12 +425,7 @@ var countdown = (
 			ts.millennia += Math.floor(ts.centuries / CENTURIES_PER_MILLENNIUM);
 			ts.centuries %= CENTURIES_PER_MILLENNIUM;
 		}
-
-		if (ts.millennia < 0) {
-			// should never happen
-			throw 'ripple underflow';
-		}
-	};
+	}
 
 	/**
 	 * Remove any units not requested
@@ -507,7 +434,7 @@ var countdown = (
 	 * @param {Timespan} ts
 	 * @param {number} units the units to populate
 	 */
-	pruneUnits = function(ts, units) {
+	function pruneUnits(ts, units) {
 		// Calc from largest unit to smallest to prevent underflow
 
 		if (!(units & MILLENNIA)) {
@@ -531,7 +458,7 @@ var countdown = (
 		if (!(units & MONTHS)) {
 			while (ts.months) {
 				// ripple months down to days
-				var daysInMonth = daysInRefMonth(ts.refMonth, -1);
+				var daysInMonth = daysInRefMonth(ts.refMonth, +1);
 				ts.months--;
 				ts.weeks += Math.floor(daysInMonth / DAYS_PER_WEEK);
 				ts.days += daysInMonth % DAYS_PER_WEEK;
@@ -579,7 +506,55 @@ var countdown = (
 			// nothing to ripple down to, so just remove
 			delete ts.milliseconds;
 		}
-	};
+	}
+
+	/**
+	 * Populates the Timespan object
+	 * 
+	 * @private
+	 * @param {Timespan} ts
+	 * @param {Date} start the starting date
+	 * @param {Date} end the ending date
+	 * @param {number} units the units to populate
+	 */
+	function populate(ts, start, end, units) {
+		ts.start = start;
+		ts.end = end;
+		ts.units = units;
+
+		ts.value = end.getTime() - start.getTime();
+		if (ts.value < 0) {
+			// swap if reversed
+			var temp = end;
+			end = start;
+			start = temp;
+		}
+
+		// reference month for determining days in month
+		ts.refMonth = new Date(start.getFullYear(), start.getMonth(), 15);
+		try {
+
+			// reset to initial deltas
+			ts.millennia = 0;
+			ts.centuries = 0;
+			ts.years = end.getUTCFullYear() - start.getUTCFullYear();
+			ts.months = end.getUTCMonth() - start.getUTCMonth();
+			ts.weeks = 0;
+			ts.days = end.getUTCDate() - start.getUTCDate();
+			ts.hours = end.getUTCHours() - start.getUTCHours();
+			ts.minutes = end.getUTCMinutes() - start.getUTCMinutes();
+			ts.seconds = end.getUTCSeconds() - start.getUTCSeconds();
+			ts.milliseconds = end.getUTCMilliseconds() - start.getUTCMilliseconds();
+
+			ripple(ts);
+			pruneUnits(ts, units);
+
+		} finally {
+			delete ts.refMonth;
+		}
+
+		return ts;
+	}
 
 	/**
 	 * Determine an appropriate refresh rate based upon units
@@ -697,6 +672,8 @@ var countdown = (
 		ALL: ALL_UNITS,
 
 		/**
+		 * Main API entry point
+		 * 
 		 * @public
 		 * @param {Date|number|function(Timespan)} start the starting date
 		 * @param {Date|number|function(Timespan)} end the ending date
@@ -734,19 +711,29 @@ var countdown = (
 			}
 
 			if (!callback) {
-				return new Timespan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+				return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
 			}
 
 			// base delay off units
 			var delay = getDelay(units);
 			var fn = function() {
 				callback(
-					new Timespan(/** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
 				);
 			};
 
 			fn();
 			return setInterval(fn, delay);
+		},
+
+		/**
+		 * For unit testing only.
+		 * 
+		 * @private
+		 * @return {Timespan}
+		 */
+		empty: function(map) {
+			return new Timespan();
 		}
 	};
 
