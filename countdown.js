@@ -11,7 +11,7 @@
 var countdown = (
 	function() {
 
-	"use strict";
+	'use strict';
 
 	/**
 	 * @private
@@ -82,6 +82,13 @@ var countdown = (
 	 * @type {number}
 	 */
 	var MILLENNIA		= 0x200;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var ALL_UNITS		= 0xFFF;
 
 	/**
 	 * @private
@@ -218,10 +225,10 @@ var countdown = (
 	 * @return {string}
 	 */
 	function plurality(value, singular, plural) {
-		return (value === 1) ? singular : value+" "+plural;
+		return (value === 1) ? singular : value+' '+plural;
 	}
 
-	var ripple, pruneUnits;
+	var formatList, ripple, pruneUnits;
 
 	/**
 	 * TimeSpan representation of a duration of time
@@ -267,48 +274,93 @@ var countdown = (
 		delete this.refMonth;		
 	}
 
+	/**
+	 * Formats the TimeSpan as a sentence
+	 * 
+	 * @private
+	 * @return {string}
+	 */
 	TimeSpan.prototype.toString = function() {
-		var label = [];
-
-		if (this.millennia) {
-			label.push(plurality(this.millennia, "1 millennium", "millennia"));
-		}
-		if (this.centuries) {
-			label.push(plurality(this.centuries, "1 century", "centuries"));
-		}
-		if (this.years) {
-			label.push(plurality(this.years, "1 year", "years"));
-		}
-		if (this.months) {
-			label.push(plurality(this.months, "1 month", "months"));
-		}
-		if (this.weeks) {
-			label.push(plurality(this.weeks, "1 week", "weeks"));
-		}
-		if (this.days) {
-			label.push(plurality(this.days, "1 day", "days"));
-		}
-		if (this.hours) {
-			label.push(plurality(this.hours, "1 hour", "hours"));
-		}
-		if (this.minutes) {
-			label.push(plurality(this.minutes, "1 minute", "minutes"));
-		}
-		if (this.seconds) {
-			label.push(plurality(this.seconds, "1 second", "seconds"));
-		}
-		if (this.milliseconds) {
-			label.push(plurality(this.milliseconds, "1 millisecond", "milliseconds"));
-		}
+		var label = formatList(this);
 
 		var count = label.length;
 		if (count < 1) {
-			return "now";
+			return 'now';
 		}
 		if (count > 1) {
-			label[count-1] = "and "+label[count-1];
+			label[count-1] = 'and '+label[count-1];
 		}
-		return label.join(", ");
+		return label.join(', ');
+	};
+
+	/**
+	 * Formats the TimeSpan as HTML
+	 * 
+	 * @private
+	 * @param {string} tag
+	 * @return {string}
+	 */
+	TimeSpan.prototype.toHTML = function(tag) {
+		tag = tag || 'span';
+		var label = formatList(this);
+
+		var count = label.length;
+		if (!count) {
+			label.push('now');
+			count = 1;
+		}
+		for (var i=0; i<count; i++) {
+			// wrap each unit in tag
+			label[i] = '<'+tag+'>'+label[i]+'</'+tag+'>';
+		}
+		if (--count) {
+			label[count] = 'and '+label[count];
+		}
+		return label.join(', ');
+	};
+
+	/**
+	 * Formats the entries as English labels
+	 * 
+	 * @private
+	 * @param {TimeSpan} ts
+	 * @return {Array}
+	 */
+	formatList = function(ts) {
+		var list = [];
+
+		if (ts.millennia) {
+			list.push(plurality(ts.millennia, '1 millennium', 'millennia'));
+		}
+		if (ts.centuries) {
+			list.push(plurality(ts.centuries, '1 century', 'centuries'));
+		}
+		if (ts.years) {
+			list.push(plurality(ts.years, '1 year', 'years'));
+		}
+		if (ts.months) {
+			list.push(plurality(ts.months, '1 month', 'months'));
+		}
+		if (ts.weeks) {
+			list.push(plurality(ts.weeks, '1 week', 'weeks'));
+		}
+		if (ts.days) {
+			list.push(plurality(ts.days, '1 day', 'days'));
+		}
+		if (ts.hours) {
+			list.push(plurality(ts.hours, '1 hour', 'hours'));
+		}
+		if (ts.minutes) {
+			list.push(plurality(ts.minutes, '1 minute', 'minutes'));
+		}
+		if (ts.seconds) {
+			list.push(plurality(ts.seconds, '1 second', 'seconds'));
+		}
+		if (ts.milliseconds) {
+			list.push(plurality(ts.milliseconds, '1 millisecond', 'milliseconds'));
+		}
+
+		return list;
 	};
 
 	/**
@@ -444,7 +496,8 @@ var countdown = (
 		}
 
 		if (ts.millennia < 0) {
-			throw new Error("Ripple underflow");
+			// should never happen
+			throw 'ripple underflow';
 		}
 	};
 
@@ -539,7 +592,7 @@ var countdown = (
 	function getDelay(units) {
 		if (units & MILLISECONDS) {
 			// refresh very quickly
-			return MILLISECONDS_PER_SECOND/60; //60Hz
+			return MILLISECONDS_PER_SECOND / 30; //30Hz
 		}
 
 		if (units & SECONDS) {
@@ -639,39 +692,46 @@ var countdown = (
 
 		/**
 		 * @public
+		 * @const
+		 * @type {number}
+		 */
+		ALL: ALL_UNITS,
+
+		/**
+		 * @public
 		 * @param {Date|number|function(TimeSpan)} start the starting date
 		 * @param {Date|number|function(TimeSpan)} end the ending date
 		 * @param {number} units the units to populate
 		 * @return {TimeSpan|number}
 		 */
-		delta : function(start, end, units) {
-			var callback = null;
+		timespan : function(start, end, units) {
+			var callback;
 
 			// ensure units, default to all
-			units = (units > 0) ? units : -1;
+			units = (units > 0) ? units : ALL_UNITS;
 
 			// ensure start date
-			if ("function" === typeof start) {
+			if ('function' === typeof start) {
 				callback = start;
 				start = null;
 
 			} else if (isFinite(start)) {
 				start = new Date(start);
 
-//			} else if (!(start instanceof Date)) {
-//				throw new Error("start date must be date or callback");
+			} else if (!(start instanceof Date)) {
+				throw 'expected date or callback for start';
 			}
 
 			// ensure end date
-			if ("function" === typeof end) {
+			if ('function' === typeof end) {
 				callback = end;
 				end = null;
 
 			} else if (isFinite(end)) {
 				end = new Date(end);
 
-//			} else if (!(end instanceof Date)) {
-//				throw new Error("end date must be date or callback");
+			} else if (!(end instanceof Date)) {
+				throw 'expected date or callback for end';
 			}
 
 			if (!callback) {
