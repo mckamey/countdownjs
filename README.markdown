@@ -1,33 +1,46 @@
-# [countdown.js][1]
+# [Countdown.js][1]
 Distributed under the terms of [The MIT license][2].
 
 A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.
 
 ----
 
-## Implementation background
+## Algorithm background
 
 While seemingly a trivial problem, the human descriptions for a span of time tend to be fuzzier than a computer naturally computes.
 More specifically, months are an inherently messed up unit of time.
 For instance, when a human says "in 1 month" how long do they mean? Banks often interpret this as *thirty days* but that is only correct one third of the time.
 People casually talk about a month being *four weeks long* but there is only one month in a year which is four weeks long and it is only that long three quarters of the time.
+Even intuitively defining these terms can be problematic. For instance, what is the date one month after January 31st, 2001?
+JavaScript will happily call this March 3rd, 2001. Humans will typically debate either February 28th, 2001 or March 1st, 2001. There isn't a "right" answer per se.
 
-`countdown.js` emphasizes producing intuitively correct description of timespans which are consistent as time goes on.
-To do this, `countdown.js` uses the concept of "today's date next month" to mean "a month from now".
-As the days go by, `countdown.js` produces consecutively increasing or decreasing counts without inconsistent jumps.
+`Countdown.js` emphasizes producing intuitively correct description of timespans which are consistent as time goes on.
+To do this, `Countdown.js` uses the concept of "today's date next month" to mean "a month from now".
+As the days go by, `Countdown.js` produces consecutively increasing or decreasing counts without inconsistent jumps.
 The range of accuracy is only limited by the underlying system clock.
+
+`Countdown.js` approaches finding the difference between two times like an elementary school subtraction problem.
+Each unit acts like a base-10 place where any overflow is carried to the next highest unit, and any underflow is borrowed from the next highest unit.
+In base-10 subtraction, every column is worth 10 times the previous column. It is a little more complex since the conversions between the units of time are not the same and months are an inconsistent number of days.
+In the final step of the algorithm, `Countdown.js` prunes the set of time units down to only those requested, forcing larger units down to smaller.
 
 ----
 
 ## The API
 
-A simple but flexible API is the goal of `countdown.js`. There is one global object with only one method and a set of static constants:
+A simple but flexible API is the goal of `Countdown.js`. There is one global object with only one method and a set of static constants:
 
     countdown.timespan(start|callback, end|callback, units);
 
 	countdown.ALL = countdown.MILLENNIA | countdown.CENTURIES | countdown.YEARS | countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS | countdown.MILLISECONDS;
 
-The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.ALL`.
+The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.ALL`. This allows a very minimal call to accept the defaults and get the time since/until a single date. For example:
+
+	countdown.timespan( new Date(2000, 0, 1) )
+
+This will toString something like:
+
+	11 years, 8 months, 2 weeks, 4 days, 10 hours, 12 minutes, 43 seconds, and 486 milliseconds
 
 ### Timespan result
 
