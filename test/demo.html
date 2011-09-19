@@ -8,7 +8,7 @@
 
 </head>
 <body>
-	<script src="json2.js" type="text/javascript"></script>
+	<script src="../lib/json/json2.js" type="text/javascript"></script>
 	<script src="../countdown.js" type="text/javascript"></script>
 
 	<h1 class="logo"><a href="../">countdown.js</a></h1>
@@ -28,12 +28,12 @@
 	
 			var update = function() {
 				var ts = countdown.timespan(start, end, units);
-				start.setDate(start.getDate()+1);
+				start.setUTCDate( start.getUTCDate()+1 );
 	
-				document.getElementById('counter').innerHTML = ts;
+				document.getElementById('counter').innerHTML = ts || "none";
 				document.getElementById('timespan').innerHTML = JSON.stringify(ts, null, "  ");
 
-				setTimeout(update, 1000);
+				setTimeout(update, 500);
 			};
 			setTimeout(update, 0);
 		})();
@@ -48,7 +48,7 @@
 			var units = ~countdown.WEEKS; // all but weeks
 			var callback =
 				function(ts) {
-					document.getElementById('counter2').innerHTML = ts;
+					document.getElementById('counter2').innerHTML = ts || "none";
 					document.getElementById('timespan2').innerHTML = JSON.stringify(ts, null, "  ");
 				};
 
@@ -66,11 +66,33 @@
 			var units = ~countdown.WEEKS & ~countdown.MILLISECONDS; // all but weeks and milliseconds
 			var callback =
 				function(ts) {
-					document.getElementById('counter3').innerHTML = ts;
+					document.getElementById('counter3').innerHTML = ts || "none";
 					document.getElementById('timespan3').innerHTML = JSON.stringify(ts, null, "  ");
 				};
 
 			countdown.timespan(start, callback, units);
+		})();
+	</script>
+
+	<strong id="counter4"></strong>
+	<pre id="timespan4"></pre>
+
+	<script type="text/javascript">
+		(function() {
+			var start = new Date(1194874200000);//2007-11-12T05:30:00-08:00
+			var end = new Date(1213484400000);//2008-06-14T16:00:00-07:00
+			var units = countdown.WEEKS; // only weeks
+	
+			var update = function() {
+				var ts = countdown.timespan(start, end, units);
+				start.setUTCDate( start.getUTCDate()+7 );
+	
+				document.getElementById('counter4').innerHTML = ts || "none";
+				document.getElementById('timespan4').innerHTML = JSON.stringify(ts, null, "  ");
+
+				setTimeout(update, 500);
+			};
+			setTimeout(update, 0);
 		})();
 	</script>
 
