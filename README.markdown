@@ -32,15 +32,17 @@ A simple but flexible API is the goal of `Countdown.js`. There is one global obj
 
     countdown.timespan(start|callback, end|callback, units);
 
-	countdown.ALL = countdown.MILLENNIA | countdown.CENTURIES | countdown.YEARS | countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS | countdown.MILLISECONDS;
+	countdown.ALL = countdown.MILLENNIA | countdown.CENTURIES | countdown.DECADES | countdown.YEARS | countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS | countdown.MILLISECONDS;
 
-The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.ALL`. This allows a very minimal call to accept the defaults and get the time since/until a single date. For example:
+	countdown.DEFAULTS = countdown.YEARS | countdown.MONTHS | countdown.DAYS | countdown.HOURS | countdown.MINUTES | countdown.SECONDS;
+
+The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.DEFAULTS`. This allows a very minimal call to accept the defaults and get the time since/until a single date. For example:
 
 	countdown.timespan( new Date(2000, 0, 1) )
 
-This will toString something like:
+This will toString() something like:
 
-	11 years, 8 months, 2 weeks, 4 days, 10 hours, 12 minutes, 43 seconds, and 486 milliseconds
+	11 years, 8 months, 4 days, 10 hours, 12 minutes, and 43 seconds
 
 ### Timespan result
 
@@ -57,6 +59,7 @@ The following time unit fields are only present if their corresponding units wer
 
 - `Number millennia`
 - `Number centuries`
+- `Number decades`
 - `Number years`
 - `Number months`
 - `Number days`
@@ -104,15 +107,15 @@ If a callback function is supplied, then an interval timer will be started with 
 
 ### The `units` argument
 
-The static units constants can be combined using standard bitwise operators. For example, to specify just years and months use bitwise-OR:
+The static units constants can be combined using standard bitwise operators. For example, to explicitly include "months and years" use bitwise-OR:
 
 	countdown.MONTHS | countdown.DAYS
 
-To specify everything but "not weeks and not milliseconds":
+To explicitly exclude units like "not weeks and not milliseconds" combine bitwise-NOT and bitwise-AND:
 
 	~countdown.WEEKS & ~countdown.MILLISECONDS
 
-Equivalently, specify everything but "not weeks or milliseconds":
+Equivalently, to specify everything but "not weeks or milliseconds" wrap bitwise-NOT around bitwise-OR:
 
 	~(countdown.WEEKS | countdown.MILLISECONDS)
 

@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.0.3
+ * @fileoverview countdown.js v2.1.0
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -74,21 +74,28 @@ var countdown = (
 	 * @const
 	 * @type {number}
 	 */
-	var CENTURIES		= 0x100;
+	var DECADES			= 0x100;
 
 	/**
 	 * @private
 	 * @const
 	 * @type {number}
 	 */
-	var MILLENNIA		= 0x200;
+	var CENTURIES		= 0x200;
 
 	/**
 	 * @private
 	 * @const
 	 * @type {number}
 	 */
-	var ALL_UNITS		= 0xFFF;
+	var MILLENNIA		= 0x400;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var DEFAULTS		= YEARS|MONTHS|DAYS|HOURS|MINUTES|SECONDS;
 
 	/**
 	 * @private
@@ -151,7 +158,14 @@ var countdown = (
 	 * @const
 	 * @type {number}
 	 */
-	var YEARS_PER_CENTURY = 100;
+	var YEARS_PER_DECADE = 10;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var DECADES_PER_CENTURY = 10;
 
 	/**
 	 * @private
@@ -257,6 +271,9 @@ var countdown = (
 		}
 		if (ts.centuries) {
 			list.push(plurality(ts.centuries, 'century', 'centuries'));
+		}
+		if (ts.decades) {
+			list.push(plurality(ts.decades, 'decade', 'decades'));
 		}
 		if (ts.years) {
 			list.push(plurality(ts.years, 'year', 'years'));
@@ -371,17 +388,23 @@ var countdown = (
 		}
 
 		// years is always non-negative here
-		// centuries and millennia are always zero here
+		// decades, centuries and millennia are always zero here
 
-		if (ts.years >= YEARS_PER_CENTURY) {
-			// ripple years up to centuries
-			ts.centuries += Math.floor(ts.years / YEARS_PER_CENTURY);
-			ts.years %= YEARS_PER_CENTURY;
+		if (ts.years >= YEARS_PER_DECADE) {
+			// ripple years up to decades
+			ts.decades += Math.floor(ts.years / YEARS_PER_DECADE);
+			ts.years %= YEARS_PER_DECADE;
 
-			if (ts.centuries >= CENTURIES_PER_MILLENNIUM) {
-				// ripple centuries up to millennia
-				ts.millennia += Math.floor(ts.centuries / CENTURIES_PER_MILLENNIUM);
-				ts.centuries %= CENTURIES_PER_MILLENNIUM;
+			if (ts.decades >= DECADES_PER_CENTURY) {
+				// ripple decades up to centuries
+				ts.centuries += Math.floor(ts.decades / DECADES_PER_CENTURY);
+				ts.decades %= DECADES_PER_CENTURY;
+
+				if (ts.centuries >= CENTURIES_PER_MILLENNIUM) {
+					// ripple centuries up to millennia
+					ts.millennia += Math.floor(ts.centuries / CENTURIES_PER_MILLENNIUM);
+					ts.centuries %= CENTURIES_PER_MILLENNIUM;
+				}
 			}
 		}
 	}
@@ -403,9 +426,15 @@ var countdown = (
 		}
 
 		if (!(units & CENTURIES)) {
-			// ripple centuries down to years
-			ts.years += ts.centuries * YEARS_PER_CENTURY;
+			// ripple centuries down to decades
+			ts.decades += ts.centuries * DECADES_PER_CENTURY;
 			delete ts.centuries;
+		}
+
+		if (!(units & DECADES)) {
+			// ripple decades down to years
+			ts.years += ts.decades * YEARS_PER_DECADE;
+			delete ts.decades;
 		}
 
 		if (!(units & YEARS)) {
@@ -491,6 +520,7 @@ var countdown = (
 			// reset to initial deltas
 			ts.millennia = 0;
 			ts.centuries = 0;
+			ts.decades = 0;
 			ts.years = end.getUTCFullYear() - start.getUTCFullYear();
 			ts.months = end.getUTCMonth() - start.getUTCMonth();
 			ts.weeks = 0;
@@ -543,7 +573,7 @@ var countdown = (
 			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
 		}
 
-		// refresh weekly
+		// refresh the rest weekly
 		return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_WEEK;
 	}
 
@@ -609,6 +639,13 @@ var countdown = (
 		 * @const
 		 * @type {number}
 		 */
+		DECADES: DECADES,
+
+		/**
+		 * @public
+		 * @const
+		 * @type {number}
+		 */
 		CENTURIES: CENTURIES,
 
 		/**
@@ -623,7 +660,14 @@ var countdown = (
 		 * @const
 		 * @type {number}
 		 */
-		ALL: ALL_UNITS,
+		DEFAULTS: DEFAULTS,
+
+		/**
+		 * @public
+		 * @const
+		 * @type {number}
+		 */
+		ALL: MILLENNIA|CENTURIES|DECADES|YEARS|MONTHS|WEEKS|DAYS|HOURS|MINUTES|SECONDS|MILLISECONDS,
 
 		/**
 		 * API entry point
@@ -637,8 +681,8 @@ var countdown = (
 		timespan : function(start, end, units) {
 			var callback;
 
-			// ensure units, default to all
-			units = units || ALL_UNITS;
+			// ensure some units or use defaults
+			units = units || DEFAULTS;
 
 			// ensure start date
 			if ('function' === typeof start) {
