@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.0.2
+ * @fileoverview countdown.js v2.0.3
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -645,11 +645,8 @@ var countdown = (
 				callback = start;
 				start = null;
 
-			} else if (isFinite(start)) {
+			} else if (start !== null && isFinite(start)) {
 				start = new Date(start);
-
-			} else if (!(start instanceof Date)) {
-				start = null;
 			}
 
 			// ensure end date
@@ -657,22 +654,22 @@ var countdown = (
 				callback = end;
 				end = null;
 
-			} else if (isFinite(end)) {
+			} else if (end !== null && isFinite(end)) {
 				end = new Date(end);
-
-			} else if (!(end instanceof Date)) {
-				end = null;
 			}
 
+			start = (start instanceof Date) ? start : new Date();
+			end = (end instanceof Date) ? end : new Date();
+
 			if (!callback) {
-				return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+				return populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), units);
 			}
 
 			// base delay off units
 			var delay = getDelay(units);
 			var fn = function() {
 				callback(
-					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+					populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), units)
 				);
 			};
 

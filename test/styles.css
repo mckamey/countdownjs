@@ -1,16 +1,97 @@
-body
-{
+article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block;}audio,canvas,video{display:inline-block;*display:inline;*zoom:1;}audio:not([controls]){display:none;}[hidden]{display:none;}html{font-size:100%;overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}body{margin:0;}body,button,input,select,textarea{font-family:sans-serif;}a{color:#00e;}a:visited{color:#551a8b;}a:focus{outline:thin dotted;}a:hover,a:active{outline:0;}abbr[title]{border-bottom:1px dotted;}b,strong{font-weight:bold;}blockquote{margin:1em 40px;}dfn{font-style:italic;}mark{background:#ff0;color:#000;}pre,code,kbd,samp{font-family:monospace,serif;_font-family:'courier new',monospace;font-size:1em;}pre{white-space:pre;white-space:pre-wrap;word-wrap:break-word;}q{quotes:none;}q:before,q:after{content:'';content:none;}small{font-size:75%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sup{top:-0.5em;}sub{bottom:-0.25em;}ul,ol{margin:1em 0;padding:0 0 0 40px;}dd{margin:0 0 0 40px;}nav ul,nav ol{list-style:none;list-style-image:none;}img{border:0;-ms-interpolation-mode:bicubic;}svg:not(:root){overflow:hidden;}figure{margin:0;}form{margin:0;}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em;}legend{border:0;*margin-left:-7px;}button,input,select,textarea{font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle;}button,input{line-height:normal;*overflow:visible;}table button,table input{*overflow:auto;}button,input[type="button"],input[type="reset"],input[type="submit"]{cursor:pointer;-webkit-appearance:button;}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;}input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}textarea{overflow:auto;vertical-align:top;}table{border-collapse:collapse;border-spacing:0;}
+
+body, input {
+	font-size: 100%;
+}
+body {
 	background-color: #F8F8F8;
 	font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
-	font-size: 9pt;
-	margin: 0 auto;
-	padding: 0;
+	margin: auto;
 	width: 60%;
 	min-width: 600px;
 }
 
-.logo, .logo a:link, .logo a:hover, .logo a:active, .logo a:visited
-{
+h2 {
+	border-bottom: 1px solid #CCE5FF;
+	font-size: 12pt;
+}
+h3 {
+	font-size: 12pt;
+}
+
+dl, ul {
+	margin: 0;
+	padding: 0.75em 0.25em;
+}
+
+dl dt {
+	font-weight: bold;
+	margin: 0 0 0 0.5em;
+	padding: 0.25em 0 0.25em 0.5em;
+}
+
+dl dd {
+	list-style-type: none;
+	margin: 0 0 0 1.5em;
+	padding: 0.25em 0 0.25em 1.5em;
+}
+
+ul li {
+	list-style-type: none;
+	margin: 0 0 0 0.5em;
+	padding: 0.25em 0 0.25em 0.5em;
+}
+
+footer {
+	border-top: 1px solid #F1F1F1;
+	clear: both;
+	margin: 4em auto;
+	padding-top: 1em;
+	text-align: right;
+}
+
+#countdown-start,
+#countdown-units {
+	background-color: #EEE;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	font-size: 150%;
+	padding: 0.25em 0.5em;
+	width: 100%;
+}
+#countdown-start span,
+#countdown-units span {
+	line-height: 1.5em;
+	white-space: nowrap;
+}
+#countdown-start,
+#countdown-units {
+	text-align: center;
+}
+#countdown-start label {
+	font-weight: bold;
+	padding: 0 0.25em;
+}
+#countdown-start input {
+	border: 1px solid silver;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	text-align: center;
+}
+#countdown-units span {
+	display: block;
+}
+#countdown-units label {
+	font-weight: bold;
+	padding: 0.25em;
+}
+#countdown-units input {
+	margin-right: 0.5em;
+}
+
+.logo, .logo a:link, .logo a:hover, .logo a:active, .logo a:visited {
 	color: #999;
 	font-family: Helvetica, Tahoma, Arial, sans-serif;
 	font-size: 125px;
@@ -21,75 +102,24 @@ body
 	text-shadow: 0px -1px 1px silver;
 	white-space: nowrap;
 }
-.ua-ie .logo, .ua-ie .logo a:link, .ua-ie .logo a:hover, .ua-ie .logo a:active, .ua-ie .logo a:visited
-{
-	font-family: LeagueGothicRegularIE, 'League Gothic', Helvetica, Impact, Arial, sans-serif;
-}
 
-.logo .sel
-{
+.logo .sel {
 	color: #555;
 }
-.logo .rule
-{
+.logo .rule {
 	color: #666;
 }
-.logo .expr
-{
+.logo .expr {
 	color: #444;
 }
 
-h2
-{
-	border-bottom: 1px solid #CCE5FF;
-	font-size: 12pt;
-}
-
-dl, ul
-{
-	margin: 0;
-	padding: 0.75em 0.25em;
-}
-
-dl dt
-{
-	font-weight: bold;
-	margin: 0 0 0 0.5em;
-	padding: 0.25em 0 0.25em 0.5em;
-}
-
-dl dd
-{
-	list-style-type: none;
-	margin: 0 0 0 1.5em;
-	padding: 0.25em 0 0.25em 1.5em;
-}
-
-ul li
-{
-	list-style-type: none;
-	margin: 0 0 0 0.5em;
-	padding: 0.25em 0 0.25em 0.5em;
-}
-
-a:link, a:hover, a:active, a:visited
-{
+a:link, a:hover, a:active, a:visited {
 	color: #006699;
-}
-
-footer
-{
-	border-top: 1px solid #F1F1F1;
-	clear: both;
-	margin: 4em auto;
-	padding-top: 1em;
-	text-align: right;
 }
 
 /* http://ubuwaits.github.com/css3-buttons/ */
 
-a.minimal:link, a.minimal:visited
-{
+a.minimal:link, a.minimal:visited {
 	background: #e3e3e3;
 	border: 1px solid #ccc;
 	border-radius: 3px;
@@ -111,8 +141,7 @@ a.minimal:link, a.minimal:visited
 	width: 150px;
 }
 
-a.minimal:hover
-{
+a.minimal:hover {
 	background: #d9d9d9;
 	box-shadow: inset 0px 0px 1px 1px #eaeaea;
 	-moz-box-shadow: inset 0px 0px 1px 1px #eaeaea;
@@ -120,8 +149,7 @@ a.minimal:hover
 	color: #222;
 }
 
-a.minimal:active
-{
+a.minimal:active {
 	background: #d0d0d0;
 	box-shadow: inset 0px 0px 1px 1px #e3e3e3;
 	-moz-box-shadow: inset 0px 0px 1px 1px #e3e3e3;
@@ -129,14 +157,12 @@ a.minimal:active
 	color: #000;
 }
 
-.summary
-{
+.summary {
 	font-size: 12pt;
 	text-align: center;
 }
 
-.box
-{
+.box {
 	background-color: #FFF;
 	border: 1px solid silver;
 	border-radius: 4px;
@@ -154,8 +180,7 @@ a.minimal:active
 	width: 20em;
 }
 
-.box h2
-{
+.box h2 {
 	border-bottom: none;
 	color: #666;
 	font-size: 30px;
@@ -165,29 +190,25 @@ a.minimal:active
 	text-transform: lowercase;
 }
 
-.box ul, .box li
-{
+.box ul, .box li {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 	white-space: nowrap;
 }
 
-.box a.minimal
-{
+.box a.minimal {
 	margin: 0.25em;
 	text-transform: lowercase;
 }
 
-.box a.glow
-{
+.box a.glow {
 	box-shadow: 0px 0px 4px #FFCC00;
 	-moz-box-shadow: 0px 0px 4px #FFCC00;
 	-webkit-box-shadow: 0px 0px 4px #FFCC00;
 }
 
-.action-info
-{
+.action-info {
 	font-style: italic;
 	white-space: nowrap;
 }
