@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.1.0
+ * @fileoverview countdown.js v2.1.1
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -702,18 +702,18 @@ var countdown = (
 				end = new Date(end);
 			}
 
-			start = (start instanceof Date) ? start : new Date();
-			end = (end instanceof Date) ? end : new Date();
+			start = (start instanceof Date) ? start : null;
+			end = (end instanceof Date) ? end : null;
 
 			if (!callback) {
-				return populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), units);
+				return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
 			}
 
 			// base delay off units
 			var delay = getDelay(units);
 			var fn = function() {
 				callback(
-					populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), units)
+					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
 				);
 			};
 
