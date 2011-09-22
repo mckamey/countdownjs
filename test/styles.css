@@ -1,5 +1,14 @@
 article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block;}audio,canvas,video{display:inline-block;*display:inline;*zoom:1;}audio:not([controls]){display:none;}[hidden]{display:none;}html{font-size:100%;overflow-y:scroll;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}body{margin:0;}body,button,input,select,textarea{font-family:sans-serif;}a{color:#00e;}a:visited{color:#551a8b;}a:focus{outline:thin dotted;}a:hover,a:active{outline:0;}abbr[title]{border-bottom:1px dotted;}b,strong{font-weight:bold;}blockquote{margin:1em 40px;}dfn{font-style:italic;}mark{background:#ff0;color:#000;}pre,code,kbd,samp{font-family:monospace,serif;_font-family:'courier new',monospace;font-size:1em;}pre{white-space:pre;white-space:pre-wrap;word-wrap:break-word;}q{quotes:none;}q:before,q:after{content:'';content:none;}small{font-size:75%;}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline;}sup{top:-0.5em;}sub{bottom:-0.25em;}ul,ol{margin:1em 0;padding:0 0 0 40px;}dd{margin:0 0 0 40px;}nav ul,nav ol{list-style:none;list-style-image:none;}img{border:0;-ms-interpolation-mode:bicubic;}svg:not(:root){overflow:hidden;}figure{margin:0;}form{margin:0;}fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:0.35em 0.625em 0.75em;}legend{border:0;*margin-left:-7px;}button,input,select,textarea{font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle;}button,input{line-height:normal;*overflow:visible;}table button,table input{*overflow:auto;}button,input[type="button"],input[type="reset"],input[type="submit"]{cursor:pointer;-webkit-appearance:button;}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0;}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box;}input[type="search"]::-webkit-search-decoration{-webkit-appearance:none;}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}textarea{overflow:auto;vertical-align:top;}table{border-collapse:collapse;border-spacing:0;}
 
+@font-face
+{
+	font-family: 'LeagueGothicRegular';
+	src: url(fonts/League_Gothic-webfont.eot);
+	src: local('☺'), url(fonts/League_Gothic-webfont.ttf) format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
 body, input {
 	font-size: 100%;
 }
@@ -7,7 +16,7 @@ body {
 	background-color: #F8F8F8;
 	font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
 	margin: auto;
-	width: 60%;
+	width: 80%;
 	min-width: 600px;
 }
 
@@ -50,6 +59,19 @@ footer {
 	text-align: right;
 }
 
+#counter {
+	border: 0;
+	font-size: 250%;
+	font-weight: normal;
+	height: 3em;
+	line-height: 1.1em;
+	overflow: visible;
+	text-align: center;
+}
+#counter strong {
+	white-space: nowrap;
+}
+
 #countdown-start,
 #countdown-units {
 	background-color: #EEE;
@@ -88,12 +110,17 @@ footer {
 	padding: 0.25em;
 }
 #countdown-units input {
+	border: 1px solid silver;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
 	margin-right: 0.5em;
+	text-align: center;
 }
 
 .logo, .logo a:link, .logo a:hover, .logo a:active, .logo a:visited {
 	color: #999;
-	font-family: Helvetica, Tahoma, Arial, sans-serif;
+	font-family: LeagueGothicRegular, 'League Gothic', "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Tahoma, Arial, sans-serif;
 	font-size: 125px;
 	margin: 0 auto 0.25em;
 	padding: 0;
@@ -174,10 +201,10 @@ a.minimal:active {
 	float: left;
 	height: 200px;
 	line-height: 1.75em;
-	margin: 1% 0 1% 7%;
+	margin: 0.5em 0 0.5em 0.5em;
 	padding: 0.125em 0.5em;
 
-	width: 20em;
+	width: 45%;
 }
 
 .box h2 {

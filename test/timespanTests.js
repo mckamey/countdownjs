@@ -25,6 +25,7 @@ test("Zero", function() {
 		value: 0,
 		millennia: 0,
 		centuries: 0,
+		decades: 0,
 		years: 0,
 		months: 0,
 		weeks: 0,
@@ -35,7 +36,7 @@ test("Zero", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end);
+	var actual = countdown.timespan(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -52,6 +53,7 @@ test("1 ms", function() {
 		value: 1,
 		millennia: 0,
 		centuries: 0,
+		decades: 0,
 		years: 0,
 		months: 0,
 		weeks: 0,
@@ -62,7 +64,7 @@ test("1 ms", function() {
 		milliseconds: 1
 	});
 
-	var actual = countdown.timespan(start, end);
+	var actual = countdown.timespan(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -79,6 +81,7 @@ test("1 sec", function() {
 		value: 1000,
 		millennia: 0,
 		centuries: 0,
+		decades: 0,
 		years: 0,
 		months: 0,
 		weeks: 0,
@@ -89,7 +92,7 @@ test("1 sec", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end);
+	var actual = countdown.timespan(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -106,6 +109,7 @@ test("5 min, reversed", function() {
 		value: -(5 * 60 * 1000),
 		millennia: 0,
 		centuries: 0,
+		decades: 0,
 		years: 0,
 		months: 0,
 		weeks: 0,
@@ -116,7 +120,7 @@ test("5 min, reversed", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end);
+	var actual = countdown.timespan(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -133,6 +137,7 @@ test("constant 1 month span, daily over 5 years", function() {
 		units: countdown.ALL,
 		millennia: 0,
 		centuries: 0,
+		decades: 0,
 		years: 0,
 		months: 1,
 		weeks: 0,
@@ -154,7 +159,7 @@ test("constant 1 month span, daily over 5 years", function() {
 			expected.end = end;
 			expected.value = end.getTime() - start.getTime();
 	
-			var actual = countdown.timespan(start, end);
+			var actual = countdown.timespan(start, end, countdown.ALL);
 	
 			same(actual, expected, "");
 		}

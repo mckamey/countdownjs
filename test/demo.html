@@ -11,14 +11,14 @@
 	<h1 class="logo"><a href="../">Countdown.js</a></h1>
 
 	<div>
-		<h2>Countdown.js Demo</h2>
+		<h2 id="counter">Countdown.js Demo</h2>
 
 		<form>
-			<h3>Input date</h3>
+			<h3>Countdown date</h3>
 			<fieldset id="countdown-start"><span>
 				<input id="year"
 					type="number"
-					min="0"
+					min="-9999"
 					max="9999"
 					step="1"
 					value="1999"
@@ -79,22 +79,24 @@
 
 			<h3>Display units</h3>
 			<fieldset id="countdown-units"><span>
-				<label for="units-millennia"><input id="units-millennia" type="checkbox" checked />millennia</label>
-				<label for="units-centuries"><input id="units-centuries" type="checkbox" checked />centuries</label>
-				<label for="units-years"><input id="units-years" type="checkbox" checked />years</label>
-				<label for="units-months"><input id="units-months" type="checkbox" checked />months</label>
-				<label for="units-days"><input id="units-days" type="checkbox" checked />days</label>
+				<label for="units-millennia"><input id="units-millennia" type="checkbox" />millennia</label>
+				<label for="units-centuries"><input id="units-centuries" type="checkbox" />centuries</label>
+				<label for="units-decades"><input id="units-decades" type="checkbox" />decades</label>
 			</span><span>
-				<label for="units-hours"><input id="units-hours" type="checkbox" checked />hours</label>
-				<label for="units-minutes"><input id="units-minutes" type="checkbox" checked />minutes</label>
-				<label for="units-seconds"><input id="units-seconds" type="checkbox" checked />seconds</label>
-				<label for="units-milliseconds"><input id="units-milliseconds" type="checkbox" checked />milliseconds</label>
+				<label for="units-years"><input id="units-years" type="checkbox" />years</label>
+				<label for="units-months"><input id="units-months" type="checkbox" />months</label>
+				<label for="units-weeks"><input id="units-weeks" type="checkbox" />weeks</label>
+				<label for="units-days"><input id="units-days" type="checkbox" />days</label>
+			</span><span>
+				<label for="units-hours"><input id="units-hours" type="checkbox" />hours</label>
+				<label for="units-minutes"><input id="units-minutes" type="checkbox" />minutes</label>
+				<label for="units-seconds"><input id="units-seconds" type="checkbox" />seconds</label>
+				<label for="units-milliseconds"><input id="units-milliseconds" type="checkbox" />milliseconds</label>
+			</span><span>
+				<label for="empty-label">empty:</label><input id="empty-label" type="text" value="now!" />
 			<span></fieldset>
 		</form>
 	</div>
-
-	<h3>Display output</h3>
-	<strong id="counter"></strong>
 
 	<h3>Timespan object</h3>
 	<pre id="timespan"></pre>

@@ -9,13 +9,15 @@
 			var unit = byId("units-"+key.toLowerCase());
 			if (unit) {
 				unit.value = countdown[key];
+				unit.checked = countdown[key] & countdown.DEFAULTS;
 			}
 		}
 	}
 
 	function update() {
 		var units = ~countdown.ALL,
-			chx = byId('countdown-units').getElementsByTagName('input');
+			chx = byId('countdown-units').getElementsByTagName('input'),
+			empty = byId('empty-label').value || "";
 
 		for (var i=0, count=chx.length; i<count; i++) {
 			if (chx[i].checked) {
@@ -34,7 +36,7 @@
 		var start = new Date(yyyy, MM, dd, HH, mm, ss, fff),
 			ts = countdown.timespan(start, null, units);
 
-		byId('counter').innerHTML = ts.toHTML("strong") || "now";
+		byId('counter').innerHTML = ts.toHTML("strong") || empty;
 		byId('timespan').innerHTML = JSON.stringify(ts, null, "  ");
 	}
 //	update();
