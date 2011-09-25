@@ -8,4 +8,5 @@
 build.bat
 favicon.psd
 ga.js
-
+robots.txt
+launch.sh

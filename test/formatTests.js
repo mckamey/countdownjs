@@ -90,7 +90,7 @@ test("32 days", function() {
 	same(actual, expected, "");
 });
 
-test("millennium", function() {
+test("millennium, week", function() {
 
 	var input = countdown.timespan(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
 
@@ -120,7 +120,77 @@ test("one of each", function() {
 	same(actual, expected, "");
 });
 
-module("Timespan.toHTML()");
+module("Timespan.toString(number)");
+
+test("millennium, week; 1 max", function() {
+
+	var input = countdown.timespan(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
+
+	var expected = "1 millennium";
+
+	var actual = input.toString(1);
+
+	same(actual, expected, "");
+});
+
+test("one of each; 3 max", function() {
+
+	var input = countdown.timespan(0,
+		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(365 * 24 * 60 * 60 * 1000) + // year
+		(31 * 24 * 60 * 60 * 1000) + // month
+		(60 * 60 * 1000) + // hour
+		(60 * 1000) + // min
+		1000 + // sec
+		1, // ms
+		countdown.ALL);
+
+	var expected = "1 millennium, 1 century, and 1 year";
+
+	var actual = input.toString(3);
+
+	same(actual, expected, "");
+});
+
+test("one of each; zero max", function() {
+
+	var input = countdown.timespan(0,
+		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(365 * 24 * 60 * 60 * 1000) + // year
+		(31 * 24 * 60 * 60 * 1000) + // month
+		(60 * 60 * 1000) + // hour
+		(60 * 1000) + // min
+		1000 + // sec
+		1, // ms
+		countdown.ALL);
+
+	var expected = "";
+
+	var actual = input.toString(0);
+
+	same(actual, expected, "");
+});
+
+test("one of each; -2 max", function() {
+
+	var input = countdown.timespan(0,
+		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(365 * 24 * 60 * 60 * 1000) + // year
+		(31 * 24 * 60 * 60 * 1000) + // month
+		(60 * 60 * 1000) + // hour
+		(60 * 1000) + // min
+		1000 + // sec
+		1, // ms
+		countdown.ALL);
+
+	var expected = "1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, and 1 minute";
+
+	var actual = input.toString(-2);
+
+	same(actual, expected, "");
+});
+
+module("Timespan.toHTML(tag)");
 
 test("Zero", function() {
 

@@ -17,7 +17,8 @@
 	function update() {
 		var units = ~countdown.ALL,
 			chx = byId('countdown-units').getElementsByTagName('input'),
-			empty = byId('empty-label').value || "";
+			empty = byId('empty-label').value || "",
+			max = Number(byId('max-units').value);
 
 		for (var i=0, count=chx.length; i<count; i++) {
 			if (chx[i].checked) {
@@ -36,7 +37,7 @@
 		var start = new Date(yyyy, MM, dd, HH, mm, ss, fff),
 			ts = countdown.timespan(start, null, units);
 
-		byId('counter').innerHTML = ts.toHTML("strong") || empty;
+		byId('counter').innerHTML = ts.toHTML("strong", max) || empty;
 		byId('timespan').innerHTML = JSON.stringify(ts, null, "  ");
 	}
 //	update();

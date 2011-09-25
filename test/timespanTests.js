@@ -1,16 +1,5 @@
 try{
 
-// spoofs as a Timespan
-function fakeTimespan(map) {
-	var ts = countdown.empty();
-	for (var key in map) {
-		if (map.hasOwnProperty(key)) {
-			ts[key] = map[key];
-		}
-	}
-	return ts;
-}
-
 module("countdown.timespan(...)");
 
 test("Zero", function() {
@@ -18,7 +7,7 @@ test("Zero", function() {
 	var start = 0;
 	var end = 0;
 
-	var expected = fakeTimespan({
+	var expected = countdown.clone({
 		start: new Date(0),
 		end: new Date(0),
 		units: countdown.ALL,
@@ -46,7 +35,7 @@ test("1 ms", function() {
 	var start = 0;
 	var end = 1;
 
-	var expected = fakeTimespan({
+	var expected = countdown.clone({
 		start: new Date(0),
 		end: new Date(1),
 		units: countdown.ALL,
@@ -74,7 +63,7 @@ test("1 sec", function() {
 	var start = 10000;
 	var end = 11000;
 
-	var expected = fakeTimespan({
+	var expected = countdown.clone({
 		start: new Date(10000),
 		end: new Date(11000),
 		units: countdown.ALL,
@@ -102,7 +91,7 @@ test("5 min, reversed", function() {
 	var start = (5 * 60 * 1000);
 	var end = 0;
 
-	var expected = fakeTimespan({
+	var expected = countdown.clone({
 		start: new Date(5 * 60 * 1000),
 		end: new Date(0),
 		units: countdown.ALL,
@@ -130,7 +119,7 @@ test("constant 1 month span, daily over 5 years", function() {
 	var daySpan = 24 * 60 * 60 * 1000;
 	var start = new Date(1999, 10, 1, 12, 0, 0);
 
-	var expected = fakeTimespan({
+	var expected = countdown.clone({
 		start: start,
 		end: start,
 		value: 0,
