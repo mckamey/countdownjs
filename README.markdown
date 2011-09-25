@@ -92,11 +92,24 @@ Finally, Timespan has a few formatting methods:
 
 	ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
 
-`toHTML(tagName)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g.,
+`toString(max)`: formats the Timespan object as an English sentence, but only returns the `max` most significant units. e.g., using the same input:
+
+	toString(2) => "5 years, and 1 month
+
+Negative values of `max` indicates the number of units to leave off. e.g., using the same input:
+
+	toString(-2) => "5 years, 1 month, and 19 days"
+
+`toHTML(tagName)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g. using the same input,
 
 	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17 minutes</em>"
 
-If `start` and `end` are exactly the same (for the requested granularity of units), then `toString()` and `toHTML()` will return an empty string.
+`toHTML(tagName, max)`: the optional `max` parameter similarly restricts the total number of units returned. e.g., using the same input:
+
+	ts.toHTML("em", 3) => "<em>5 years</em>, <em>1 month</em>, and <em>19 days</em>"
+	ts.toHTML("em", -1) => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, and <em>12 hours</em>"
+
+If `start` and `end` are exactly the same (for the requested granularity of units), or `max` is zero, then `toString()` and `toHTML()` will return an empty string.
 
 ### The `start` / `end` arguments
 

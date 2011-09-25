@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.1.1
+ * @fileoverview countdown.js v2.1.2
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -213,13 +213,18 @@ var countdown = (
 	function Timespan() {}
 
 	/**
-	 * Formats the Timespan as a sentence
+	 * Formats the Timespan as a sentance
 	 * 
 	 * @private
+	 * @param {number} max number of labels to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toString = function() {
+	Timespan.prototype.toString = function(max) {
 		var label = formatList(this);
+
+		if (label.length > max) {
+			label = label.slice(0, max);
+		}
 
 		var count = label.length;
 		if (!count) {
@@ -235,12 +240,17 @@ var countdown = (
 	 * Formats the Timespan as HTML
 	 * 
 	 * @private
-	 * @param {string} tag
+	 * @param {string} tag HTML tag name to wrap each value
+	 * @param {number} max number of labels to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toHTML = function(tag) {
+	Timespan.prototype.toHTML = function(tag, max) {
 		tag = tag || 'span';
 		var label = formatList(this);
+
+		if (label.length > max) {
+			label = label.slice(0, max);
+		}
 
 		var count = label.length;
 		if (!count) {
@@ -252,6 +262,30 @@ var countdown = (
 		}
 		if (--count) {
 			label[count] = 'and '+label[count];
+		}
+		return label.join(', ');
+	};
+
+	/**
+	 * Formats the Timespan as a short label
+	 * 
+	 * @private
+	 * @param {number} count number of labels to output
+	 * @return {string}
+	 */
+	Timespan.prototype.toShort = function(count) {
+		var label = formatList(this);
+
+		count = (count > 0) ? count : 1;
+		if (label.length > count) {
+			label = label.slice(0, count);
+		}
+		count = label.length;
+		if (!count) {
+			return '';
+		}
+		if (count > 1) {
+			label[count-1] = 'and '+label[count-1];
 		}
 		return label.join(', ');
 	};
@@ -725,10 +759,17 @@ var countdown = (
 		 * For unit testing only.
 		 * 
 		 * @private
+		 * @param {Timespan|Object} map properties to convert to a Timespan
 		 * @return {Timespan}
 		 */
-		empty: function(map) {
-			return new Timespan();
+		clone: function(map) {
+			var ts = new Timespan();
+			for (var key in map) {
+				if (map.hasOwnProperty(key)) {
+					ts[key] = map[key];
+				}
+			}
+			return ts;
 		}
 	};
 

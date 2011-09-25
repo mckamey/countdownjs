@@ -102,15 +102,32 @@ countdown.DEFAULTS =
 
 <p>Finally, Timespan has a few formatting methods:</p>
 
-<p><code>toString()</code>: formats the Timespan object as an English sentence. e.g.,</p>
+<ul>
 
-<pre><code>toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre>
+<li><code>toString()</code>: formats the Timespan object as an English sentence. e.g.,
+
+<pre><code>toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre></li>
 	
-<p><code>toHTML(tagName)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used.</p>
+<li><code>toString(max)</code>: formats the Timespan object as an English sentence, but only returns <code>max</code> most significant units. e.g., using the same input:
 
-<pre><code>ts.toHTML("em") => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre>
+<pre><code>toString(2) => "5 years, and 1 month"</code></pre></li>
 
-<p>If <code>start</code> and <code>end</code> are exactly the same (for the requested granularity of units), then <code>toString()</code> and <code>toHTML()</code> will return an empty string.</p>
+<li>Negative values of <code>max</code> indicates the number of units to leave off. e.g., using the same input:
+
+<pre><code>toString(-2) => "5 years, 1 month, and 19 days"</code></pre></li>
+
+<li><code>toHTML(tagName)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used.
+
+<pre><code>ts.toHTML("em") => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre></li>
+
+<li><code>toHTML(tagName, max)</code>: the optional <code>max</code> parameter similarly restricts the total number of units returned. e.g., using the same input:
+
+<pre><code>ts.toHTML("em", 3) => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, and &lt;em&gt;19 days&lt;/em&gt;"
+ts.toHTML("em", -1) => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, and &lt;em&gt;12 hours&lt;/em&gt;"</code></pre></li>
+
+</ul>
+
+<p>If <code>start</code> and <code>end</code> are exactly the same (for the requested granularity of units), or <code>max</code> is zero, then <code>toString()</code> and <code>toHTML()</code> will return an empty string.</p>
 
 <h3>The <code>start</code> / <code>end</code> arguments</h3>
 
