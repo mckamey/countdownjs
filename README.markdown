@@ -27,9 +27,9 @@ In the final step of the algorithm, *Countdown.js* prunes the set of time units 
 
 ## The API
 
-A simple but flexible API is the goal of *Countdown.js*. There is one global object with only one method and a set of static constants:
+A simple but flexible API is the goal of *Countdown.js*. There is one global function with a set of static constants:
 
-    countdown.timespan(start|callback, end|callback, units);
+    countdown(start|callback, end|callback, units);
 
 The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.DEFAULTS`.
 
@@ -56,7 +56,7 @@ The parameters are a starting Date, ending Date and an optional set of units. If
 
 This allows a very minimal call to accept the defaults and get the time since/until a single date. For example:
 
-	countdown.timespan( new Date(2000, 0, 1) );
+	countdown( new Date(2000, 0, 1) );
 
 This will toString() something like:
 
@@ -120,16 +120,16 @@ The parameters `start` and `end` can be one of several values:
 3. a number specifying the number of milliseconds since midnight Jan 1, 1970 UTC (i.e., the "UNIX epoch").
 4. a callback function accepting one timespan argument.
 
-If `start` and `end` are both specified, then repeated calls to `countdown.timespan()` will always return the same result.
+If `start` and `end` are both specified, then repeated calls to `countdown(...)` will always return the same result.
 If one date argument is left `null` while the other is provided, then repeated calls will count up if the provided date is in the past, and it will count down if the provided date is in the future.
 For example,
 
-	var daysSinceLastWorkplaceAccident = countdown.timespan(507314280000, null, countdown.DAYS);
+	var daysSinceLastWorkplaceAccident = countdown(507314280000, null, countdown.DAYS);
 
 If a callback function is supplied, then an interval timer will be started with a frequency based upon the smallest unit (e.g., if `countdown.SECONDS` is the smallest unit, the callback will be invoked once per second). Rather than returning a Timespan object, the timer's ID will be returned to allow canceling by passing into `window.clearInterval(id)`. For example, to show a timer since the page first loaded:
 
 	var timerId =
-	  countdown.timespan(
+	  countdown(
 	    new Date(),
 	    function(ts) {
 	      document.getElementById('pageTimer').innerHTML = ts.toHTML("strong");

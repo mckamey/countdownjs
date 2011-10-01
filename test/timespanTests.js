@@ -1,6 +1,23 @@
 try{
 
-module("countdown.timespan(...)");
+/**
+ * Mocks up a Timespan object for unit tests
+ * 
+ * @private
+ * @param {Timespan|Object} map properties to convert to a Timespan
+ * @return {Timespan}
+ */
+countdown.clone = function(map) {
+	var ts = countdown();
+	for (var key in map) {
+		if (map.hasOwnProperty(key)) {
+			ts[key] = map[key];
+		}
+	}
+	return ts;
+};
+
+module("countdown(...)");
 
 test("Zero", function() {
 
@@ -25,7 +42,7 @@ test("Zero", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end, countdown.ALL);
+	var actual = countdown(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -53,7 +70,7 @@ test("1 ms", function() {
 		milliseconds: 1
 	});
 
-	var actual = countdown.timespan(start, end, countdown.ALL);
+	var actual = countdown(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -81,7 +98,7 @@ test("1 sec", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end, countdown.ALL);
+	var actual = countdown(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -109,7 +126,7 @@ test("5 min, reversed", function() {
 		milliseconds: 0
 	});
 
-	var actual = countdown.timespan(start, end, countdown.ALL);
+	var actual = countdown(start, end, countdown.ALL);
 
 	same(actual, expected, "");
 });
@@ -148,7 +165,7 @@ test("constant 1 month span, daily over 5 years", function() {
 			expected.end = end;
 			expected.value = end.getTime() - start.getTime();
 	
-			var actual = countdown.timespan(start, end, countdown.ALL);
+			var actual = countdown(start, end, countdown.ALL);
 	
 			same(actual, expected, "");
 		}
@@ -169,7 +186,7 @@ test("contiguous daily countdown over 83 weeks", function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown.timespan(start, end, units);
+		var actual = countdown(start, end, units);
 		actual = {
 			weeks: actual.weeks,
 			days: actual.days
@@ -206,7 +223,7 @@ test("contiguous daily countdown over 1 year 7 months", function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown.timespan(start, end, units);
+		var actual = countdown(start, end, units);
 		actual = {
 			months: actual.months,
 			days: actual.days
@@ -246,7 +263,7 @@ test("contiguous weekly countdown over 7 months", function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown.timespan(start, end, units);
+		var actual = countdown(start, end, units);
 		actual = {
 			months: actual.months,
 			weeks: actual.weeks,
@@ -294,7 +311,7 @@ test("contiguous daily count up over 10 years", function() {
 
 	while (end.getTime() < goalTime) {
 
-		var actual = countdown.timespan(start, end, units);
+		var actual = countdown(start, end, units);
 		actual = {
 			months: actual.months,
 			days: actual.days

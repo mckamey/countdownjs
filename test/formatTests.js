@@ -4,7 +4,7 @@ module("Timespan.toString()");
 
 test("Zero", function() {
 
-	var input = countdown.timespan(0, 0, countdown.ALL);
+	var input = countdown(0, 0, countdown.ALL);
 
 	var expected = "";
 
@@ -15,7 +15,7 @@ test("Zero", function() {
 
 test("1 ms", function() {
 
-	var input = countdown.timespan(0, 1, countdown.ALL);
+	var input = countdown(0, 1, countdown.ALL);
 
 	var expected = "1 millisecond";
 
@@ -26,7 +26,7 @@ test("1 ms", function() {
 
 test("2 ms", function() {
 
-	var input = countdown.timespan(0, 2, countdown.ALL);
+	var input = countdown(0, 2, countdown.ALL);
 
 	var expected = "2 milliseconds";
 
@@ -37,7 +37,7 @@ test("2 ms", function() {
 
 test("1 sec, 2 ms", function() {
 
-	var input = countdown.timespan(1000, 2002, countdown.ALL);
+	var input = countdown(1000, 2002, countdown.ALL);
 
 	var expected = "1 second, and 2 milliseconds";
 
@@ -48,7 +48,7 @@ test("1 sec, 2 ms", function() {
 
 test("2 sec, 1 ms", function() {
 
-	var input = countdown.timespan(10000, 12001, countdown.ALL);
+	var input = countdown(10000, 12001, countdown.ALL);
 
 	var expected = "2 seconds, and 1 millisecond";
 
@@ -59,7 +59,7 @@ test("2 sec, 1 ms", function() {
 
 test("1 day, reversed", function() {
 
-	var input = countdown.timespan(24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var input = countdown(24 * 60 * 60 * 1000, 0, countdown.ALL);
 
 	var expected = "1 day";
 
@@ -70,7 +70,7 @@ test("1 day, reversed", function() {
 
 test("15 days", function() {
 
-	var input = countdown.timespan(15 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var input = countdown(15 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
 
 	var expected = "2 weeks, and 1 day";
 
@@ -81,7 +81,7 @@ test("15 days", function() {
 
 test("32 days", function() {
 
-	var input = countdown.timespan(32 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var input = countdown(32 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
 
 	var expected = "1 month, and 1 day";
 
@@ -92,7 +92,7 @@ test("32 days", function() {
 
 test("millennium, week", function() {
 
-	var input = countdown.timespan(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "1 millennium, and 1 week";
 
@@ -103,7 +103,7 @@ test("millennium, week", function() {
 
 test("one of each", function() {
 
-	var input = countdown.timespan(0,
+	var input = countdown(0,
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
@@ -124,7 +124,7 @@ module("Timespan.toString(number)");
 
 test("millennium, week; 1 max", function() {
 
-	var input = countdown.timespan(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "1 millennium";
 
@@ -135,7 +135,7 @@ test("millennium, week; 1 max", function() {
 
 test("one of each; 3 max", function() {
 
-	var input = countdown.timespan(0,
+	var input = countdown(0,
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
@@ -154,7 +154,7 @@ test("one of each; 3 max", function() {
 
 test("one of each; zero max", function() {
 
-	var input = countdown.timespan(0,
+	var input = countdown(0,
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
@@ -173,7 +173,7 @@ test("one of each; zero max", function() {
 
 test("one of each; -2 max", function() {
 
-	var input = countdown.timespan(0,
+	var input = countdown(0,
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
@@ -194,7 +194,7 @@ module("Timespan.toHTML(tag)");
 
 test("Zero", function() {
 
-	var input = countdown.timespan(0, 0, countdown.ALL);
+	var input = countdown(0, 0, countdown.ALL);
 
 	var expected = "";
 
@@ -205,7 +205,7 @@ test("Zero", function() {
 
 test("1 ms", function() {
 
-	var input = countdown.timespan(0, 1, countdown.ALL);
+	var input = countdown(0, 1, countdown.ALL);
 
 	var expected = "<span>1 millisecond</span>";
 
@@ -216,7 +216,7 @@ test("1 ms", function() {
 
 test("2 days, reversed", function() {
 
-	var input = countdown.timespan(2 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var input = countdown(2 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
 
 	var expected = "<span>2 days</span>";
 
@@ -227,7 +227,7 @@ test("2 days, reversed", function() {
 
 test("8 days", function() {
 
-	var input = countdown.timespan(0, 8 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 8 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "<span>1 week</span>, and <span>1 day</span>";
 
@@ -238,7 +238,7 @@ test("8 days", function() {
 
 test("70 days", function() {
 
-	var input = countdown.timespan(0, 70 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 70 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "<span>2 months</span>, <span>1 week</span>, and <span>4 days</span>";
 
@@ -249,7 +249,7 @@ test("70 days", function() {
 
 test("366 days, non-leap year", function() {
 
-	var input = countdown.timespan(0, 366 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 366 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "<span>1 year</span>, and <span>1 day</span>";
 
@@ -262,7 +262,7 @@ test("366 days, leap year", function() {
 
 	var start = new Date(2000, 0, 1);
 
-	var input = countdown.timespan(start, start.getTime() + 366 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(start, start.getTime() + 366 * 24 * 60 * 60 * 1000, countdown.ALL);
 
 	var expected = "<span>1 year</span>";
 
@@ -273,7 +273,7 @@ test("366 days, leap year", function() {
 
 test("one of each", function() {
 
-	var input = countdown.timespan(0,
+	var input = countdown(0,
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month

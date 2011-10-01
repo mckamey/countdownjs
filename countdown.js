@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.1.3
+ * @fileoverview countdown.js v2.2.0
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -12,8 +12,12 @@
 var module;
 
 /**
+ * API entry
  * @public
- * @type {Object}
+ * @param {function(Object)|Date|number} start the starting date
+ * @param {function(Object)|Date|number} end the ending date
+ * @param {number} units the units to populate
+ * @return {Object|number}
  */
 var countdown = (
 
@@ -622,167 +626,153 @@ function(module) {
 		return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_WEEK;
 	}
 
-	var countdown = {
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		MILLISECONDS: MILLISECONDS,
+	/**
+	 * API entry point
+	 * 
+	 * @public
+	 * @param {function(Timespan)|Date|number} start the starting date
+	 * @param {function(Timespan)|Date|number} end the ending date
+	 * @param {number} units the units to populate
+	 * @return {Timespan|number}
+	 */
+	function countdown(start, end, units) {
+		var callback;
 
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		SECONDS: SECONDS,
+		// ensure some units or use defaults
+		units = units || DEFAULTS;
 
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		MINUTES: MINUTES,
+		// ensure start date
+		if ('function' === typeof start) {
+			callback = start;
+			start = null;
 
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		HOURS: HOURS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		DAYS: DAYS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		WEEKS: WEEKS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		MONTHS: MONTHS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		YEARS: YEARS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		DECADES: DECADES,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		CENTURIES: CENTURIES,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		MILLENNIA: MILLENNIA,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		DEFAULTS: DEFAULTS,
-
-		/**
-		 * @public
-		 * @const
-		 * @type {number}
-		 */
-		ALL: MILLENNIA|CENTURIES|DECADES|YEARS|MONTHS|WEEKS|DAYS|HOURS|MINUTES|SECONDS|MILLISECONDS,
-
-		/**
-		 * API entry point
-		 * 
-		 * @public
-		 * @param {function(Timespan)|Date|number} start the starting date
-		 * @param {function(Timespan)|Date|number} end the ending date
-		 * @param {number} units the units to populate
-		 * @return {Timespan|number}
-		 */
-		timespan : function(start, end, units) {
-			var callback;
-
-			// ensure some units or use defaults
-			units = units || DEFAULTS;
-
-			// ensure start date
-			if ('function' === typeof start) {
-				callback = start;
-				start = null;
-
-			} else if (start !== null && isFinite(start)) {
-				start = new Date(start);
-			}
-
-			// ensure end date
-			if ('function' === typeof end) {
-				callback = end;
-				end = null;
-
-			} else if (end !== null && isFinite(end)) {
-				end = new Date(end);
-			}
-
-			start = (start instanceof Date) ? start : null;
-			end = (end instanceof Date) ? end : null;
-
-			if (!callback) {
-				return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
-			}
-
-			// base delay off units
-			var delay = getDelay(units);
-			var fn = function() {
-				callback(
-					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
-				);
-			};
-
-			fn();
-			return setInterval(fn, delay);
-		},
-
-		/**
-		 * For unit testing only.
-		 * 
-		 * @private
-		 * @param {Timespan|Object} map properties to convert to a Timespan
-		 * @return {Timespan}
-		 */
-		clone: function(map) {
-			var ts = new Timespan();
-			for (var key in map) {
-				if (map.hasOwnProperty(key)) {
-					ts[key] = map[key];
-				}
-			}
-			return ts;
+		} else if (start !== null && isFinite(start)) {
+			start = new Date(start);
 		}
-	};
+
+		// ensure end date
+		if ('function' === typeof end) {
+			callback = end;
+			end = null;
+
+		} else if (end !== null && isFinite(end)) {
+			end = new Date(end);
+		}
+
+		start = (start instanceof Date) ? start : null;
+		end = (end instanceof Date) ? end : null;
+
+		if (!start && !end) {
+			// used for unit testing
+			return new Timespan();
+		}
+
+		if (!callback) {
+			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+		}
+
+		// base delay off units
+		var delay = getDelay(units);
+		var fn = function() {
+			callback(
+				populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+			);
+		};
+
+		fn();
+		return setInterval(fn, delay);
+	}
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.MILLISECONDS = MILLISECONDS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.SECONDS = SECONDS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.MINUTES = MINUTES;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.HOURS = HOURS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.DAYS = DAYS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.WEEKS = WEEKS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.MONTHS = MONTHS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.YEARS = YEARS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.DECADES = DECADES;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.CENTURIES = CENTURIES;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.MILLENNIA = MILLENNIA;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.DEFAULTS = DEFAULTS;
+
+	/**
+	 * @public
+	 * @const
+	 * @type {number}
+	 */
+	countdown.ALL = MILLENNIA|CENTURIES|DECADES|YEARS|MONTHS|WEEKS|DAYS|HOURS|MINUTES|SECONDS|MILLISECONDS;
 
 	if (module && module.exports) {
 		module.exports = countdown;
