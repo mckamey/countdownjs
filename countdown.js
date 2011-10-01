@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.1.2
+ * @fileoverview countdown.js v2.1.3
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -7,9 +7,20 @@
 
 /**
  * @public
+ * @type {Object|null}
+ */
+var module;
+
+/**
+ * @public
+ * @type {Object}
  */
 var countdown = (
-	function() {
+
+/**
+ * @param {Object} module CommonJS Module
+ */
+function(module) {
 
 	'use strict';
 
@@ -773,6 +784,10 @@ var countdown = (
 		}
 	};
 
+	if (module && module.exports) {
+		module.exports = countdown;
+	}
+
 	return countdown;	
 
-})();
+})(module);
