@@ -35,7 +35,7 @@
 			fff = Number(byId('milliseconds').value);
 
 		var start = new Date(yyyy, MM, dd, HH, mm, ss, fff),
-			ts = countdown.timespan(start, null, units);
+			ts = countdown(start, null, units);
 
 		byId('counter').innerHTML = ts.toHTML("strong", max) || empty;
 		byId('timespan').innerHTML = JSON.stringify(ts, null, "  ");
