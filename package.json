@@ -8,6 +8,6 @@
 		"type": "hg",
 		"url": "https://bitbucket.org/mckamey/countdown.js"
 	},
-	"keywords": ["countdown", "countdownjs", "countdown.js", "timespan", "date", "time", "clock"],
+	"tags": ["countdown", "timespan", "date", "time", "clock"],
 	"main": "./countdown.js"
 }
