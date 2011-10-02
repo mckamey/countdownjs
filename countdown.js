@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.2.0
+ * @fileoverview countdown.js v2.2.1
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -202,7 +202,8 @@ function(module) {
 		ref.setUTCMonth( ref.getUTCMonth() + shift );
 
 		// this is the trickiest since months vary in length
-		return Math.round((ref.getTime() - prevTime) / MILLISECONDS_PER_DAY);
+		// Math.round(x) => ~~(0.5+x)
+		return ~~(0.5 + (ref.getTime() - prevTime) / MILLISECONDS_PER_DAY);
 	}
 
 	/**
@@ -359,59 +360,64 @@ function(module) {
 	 * @param {Timespan} ts
 	 */
 	function ripple(ts) {
+		// https://github.com/jed/140bytes/wiki/Byte-saving-techniques
+		// Math.ceil(x) => ~~(1 + x)
+		// Math.floor(x) => ~~(x)
+		// Math.round(x) => ~~(0.5 + x)
+
 		var x;
 
 		if (ts.milliseconds < 0) {
 			// ripple seconds down to milliseconds
-			x = Math.ceil(-ts.milliseconds / MILLISECONDS_PER_SECOND);
+			x = ~~(1 -ts.milliseconds / MILLISECONDS_PER_SECOND);
 			ts.seconds -= x;
 			ts.milliseconds += x * MILLISECONDS_PER_SECOND;
 
 		} else if (ts.milliseconds >= MILLISECONDS_PER_SECOND) {
 			// ripple milliseconds up to seconds
-			ts.seconds += Math.floor(ts.milliseconds / MILLISECONDS_PER_SECOND);
+			ts.seconds += ~~(ts.milliseconds / MILLISECONDS_PER_SECOND);
 			ts.milliseconds %= MILLISECONDS_PER_SECOND;
 		}
 
 		if (ts.seconds < 0) {
 			// ripple minutes down to seconds
-			x = Math.ceil(-ts.seconds / SECONDS_PER_MINUTE);
+			x = ~~(1 -ts.seconds / SECONDS_PER_MINUTE);
 			ts.minutes -= x;
 			ts.seconds += x * SECONDS_PER_MINUTE;
 
 		} else if (ts.seconds >= SECONDS_PER_MINUTE) {
 			// ripple seconds up to minutes
-			ts.minutes += Math.floor(ts.seconds / SECONDS_PER_MINUTE);
+			ts.minutes += ~~(ts.seconds / SECONDS_PER_MINUTE);
 			ts.seconds %= SECONDS_PER_MINUTE;
 		}
 
 		if (ts.minutes < 0) {
 			// ripple hours down to minutes
-			x = Math.ceil(-ts.minutes / MINUTES_PER_HOUR);
+			x = ~~(1 - ts.minutes / MINUTES_PER_HOUR);
 			ts.hours -= x;
 			ts.minutes += x * MINUTES_PER_HOUR;
 
 		} else if (ts.minutes >= MINUTES_PER_HOUR) {
 			// ripple minutes up to hours
-			ts.hours += Math.floor(ts.minutes / MINUTES_PER_HOUR);
+			ts.hours += ~~(ts.minutes / MINUTES_PER_HOUR);
 			ts.minutes %= MINUTES_PER_HOUR;
 		}
 
 		if (ts.hours < 0) {
 			// ripple days down to hours
-			x = Math.ceil(-ts.hours / HOURS_PER_DAY);
+			x = ~~(1 -ts.hours / HOURS_PER_DAY);
 			ts.days -= x;
 			ts.hours += x * HOURS_PER_DAY;
 
 		} else if (ts.hours >= HOURS_PER_DAY) {
 			// ripple hours up to days
-			ts.days += Math.floor(ts.hours / HOURS_PER_DAY);
+			ts.days += ~~(ts.hours / HOURS_PER_DAY);
 			ts.hours %= HOURS_PER_DAY;
 		}
 
 		if (ts.days < 0) {
 			// ripple months down to days
-			x = Math.ceil(-ts.days / MIN_DAYS_PER_MONTH);
+			x = ~~(1 -ts.days / MIN_DAYS_PER_MONTH);
 			ts.months -= x;
 			ts.days += borrowMonths(ts.refMonth, x);
 		}
@@ -420,19 +426,19 @@ function(module) {
 
 		if (ts.days >= DAYS_PER_WEEK) {
 			// ripple days up to weeks
-			ts.weeks += Math.floor(ts.days / DAYS_PER_WEEK);
+			ts.weeks += ~~(ts.days / DAYS_PER_WEEK);
 			ts.days %= DAYS_PER_WEEK;
 		}
 
 		if (ts.months < 0) {
 			// ripple years down to months
-			x = Math.ceil(-ts.months / MONTHS_PER_YEAR);
+			x = ~~(1 -ts.months / MONTHS_PER_YEAR);
 			ts.years -= x;
 			ts.months += x * MONTHS_PER_YEAR;
 
 		} else if (ts.months >= MONTHS_PER_YEAR) {
 			// ripple months up to years
-			ts.years += Math.floor(ts.months / MONTHS_PER_YEAR);
+			ts.years += ~~(ts.months / MONTHS_PER_YEAR);
 			ts.months %= MONTHS_PER_YEAR;
 		}
 
@@ -441,17 +447,17 @@ function(module) {
 
 		if (ts.years >= YEARS_PER_DECADE) {
 			// ripple years up to decades
-			ts.decades += Math.floor(ts.years / YEARS_PER_DECADE);
+			ts.decades += ~~(ts.years / YEARS_PER_DECADE);
 			ts.years %= YEARS_PER_DECADE;
 
 			if (ts.decades >= DECADES_PER_CENTURY) {
 				// ripple decades up to centuries
-				ts.centuries += Math.floor(ts.decades / DECADES_PER_CENTURY);
+				ts.centuries += ~~(ts.decades / DECADES_PER_CENTURY);
 				ts.decades %= DECADES_PER_CENTURY;
 
 				if (ts.centuries >= CENTURIES_PER_MILLENNIUM) {
 					// ripple centuries up to millennia
-					ts.millennia += Math.floor(ts.centuries / CENTURIES_PER_MILLENNIUM);
+					ts.millennia += ~~(ts.centuries / CENTURIES_PER_MILLENNIUM);
 					ts.centuries %= CENTURIES_PER_MILLENNIUM;
 				}
 			}
@@ -499,7 +505,7 @@ function(module) {
 
 			if (ts.days >= DAYS_PER_WEEK) {
 				// ripple day overflow back up to weeks
-				ts.weeks += Math.floor(ts.days / DAYS_PER_WEEK);
+				ts.weeks += ~~(ts.days / DAYS_PER_WEEK);
 				ts.days %= DAYS_PER_WEEK;
 			}
 		}
