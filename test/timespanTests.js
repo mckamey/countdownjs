@@ -340,4 +340,32 @@ test("contiguous daily count up over 10 years", function() {
 	}
 });
 
+test("Underflow bug", function() {
+
+	var start = new Date(2011, 11, 1);
+	var end = new Date(2011, 11, 31, 23, 59, 59, 999);
+
+	var expected = countdown.clone({
+		start: new Date(2011, 11, 1),
+		end: new Date(2011, 11, 31, 23, 59, 59, 999),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 4,
+		days: 2,
+		hours: 23,
+		minutes: 59,
+		seconds: 59,
+		milliseconds: 999
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, "");
+});
+
 }catch(ex){alert(ex);}
