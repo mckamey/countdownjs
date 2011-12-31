@@ -1,5 +1,5 @@
 /**
- * @fileoverview countdown.js v2.2.2
+ * @fileoverview countdown.js v2.3.0
  * 
  * Copyright (c)2006-2011 Stephen M. McKamey
  * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
@@ -231,10 +231,11 @@ function(module) {
 	 * @param {number} value
 	 * @param {string} singular
 	 * @param {string} plural
+	 * @param {number} digits the fractional digits to display
 	 * @return {string}
 	 */
-	function plurality(value, singular, plural) {
-		return value+' '+((value === 1) ? singular : plural);
+	function plurality(value, singular, plural, digits) {
+		return value.toFixed(digits)+' '+((value === 1) ? singular : plural);
 	}
 
 	var formatList;
@@ -334,44 +335,67 @@ function(module) {
 	 * @return {Array}
 	 */
 	formatList = function(ts) {
-		var list = [];
+		var list = [],
+			digits = ts.digits;
 
 		if (ts.millennia) {
-			list.push(plurality(ts.millennia, 'millennium', 'millennia'));
+			list.push(plurality(ts.millennia, 'millennium', 'millennia', digits));
 		}
 		if (ts.centuries) {
-			list.push(plurality(ts.centuries, 'century', 'centuries'));
+			list.push(plurality(ts.centuries, 'century', 'centuries', digits));
 		}
 		if (ts.decades) {
-			list.push(plurality(ts.decades, 'decade', 'decades'));
+			list.push(plurality(ts.decades, 'decade', 'decades', digits));
 		}
 		if (ts.years) {
-			list.push(plurality(ts.years, 'year', 'years'));
+			list.push(plurality(ts.years, 'year', 'years', digits));
 		}
 		if (ts.months) {
-			list.push(plurality(ts.months, 'month', 'months'));
+			list.push(plurality(ts.months, 'month', 'months', digits));
 		}
 		if (ts.weeks) {
-			list.push(plurality(ts.weeks, 'week', 'weeks'));
+			list.push(plurality(ts.weeks, 'week', 'weeks', digits));
 		}
 		if (ts.days) {
-			list.push(plurality(ts.days, 'day', 'days'));
+			list.push(plurality(ts.days, 'day', 'days', digits));
 		}
 		if (ts.hours) {
-			list.push(plurality(ts.hours, 'hour', 'hours'));
+			list.push(plurality(ts.hours, 'hour', 'hours', digits));
 		}
 		if (ts.minutes) {
-			list.push(plurality(ts.minutes, 'minute', 'minutes'));
+			list.push(plurality(ts.minutes, 'minute', 'minutes', digits));
 		}
 		if (ts.seconds) {
-			list.push(plurality(ts.seconds, 'second', 'seconds'));
+			list.push(plurality(ts.seconds, 'second', 'seconds', digits));
 		}
 		if (ts.milliseconds) {
-			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds'));
+			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds', digits));
 		}
 
 		return list;
 	};
+
+	/**
+	 * Determine the smallest unit
+	 * 
+	 * @private
+	 * @param {number} units the units to populate
+	 * @return {number} the smallest unit
+	 */
+	function getGranularity(units) {
+		return	(units & MILLISECONDS)	? MILLISECONDS :
+				(units & SECONDS)		? SECONDS :
+				(units & MINUTES)		? MINUTES :
+				(units & HOURS)			? HOURS :
+				(units & DAYS)			? DAYS :
+				(units & WEEKS)			? WEEKS :
+				(units & MONTHS)		? MONTHS :
+				(units & YEARS)			? YEARS :
+				(units & DECADES)		? DECADES :
+				(units & CENTURIES)		? CENTURIES :
+				(units & MILLENNIA)		? MILLENNIA :
+				0;
+	}
 
 	/**
 	 * Borrow any underflow units, carry any overflow units
@@ -569,11 +593,13 @@ function(module) {
 	 * @param {Date} start the starting date
 	 * @param {Date} end the ending date
 	 * @param {number} units the units to populate
+	 * @param {number} digits the fractional digits to display for smallest unit
 	 */
-	function populate(ts, start, end, units) {
+	function populate(ts, start, end, units, digits) {
 		ts.start = start;
 		ts.end = end;
 		ts.units = units;
+		ts.digits = digits;
 
 		ts.value = end.getTime() - start.getTime();
 		if (ts.value < 0) {
@@ -618,33 +644,26 @@ function(module) {
 	 * @return {number} milliseconds to delay
 	 */
 	function getDelay(units) {
-		if (units & MILLISECONDS) {
-			// refresh very quickly
-			return MILLISECONDS_PER_SECOND / 30; //30Hz
+		switch (getGranularity(units)) {
+			case MILLISECONDS:
+				// refresh very quickly
+				return MILLISECONDS_PER_SECOND / 30; //30Hz
+			case SECONDS:
+				// refresh every second
+				return MILLISECONDS_PER_SECOND; //1Hz
+			case MINUTES:
+				// refresh every minute
+				return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
+			case HOURS:
+				// refresh hourly
+				return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+			case DAYS:
+				// refresh daily
+				return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
+			default:
+				// refresh the rest weekly
+				return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_WEEK;
 		}
-
-		if (units & SECONDS) {
-			// refresh every second
-			return MILLISECONDS_PER_SECOND; //1Hz
-		}
-
-		if (units & MINUTES) {
-			// refresh every minute
-			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
-		}
-
-		if (units & HOURS) {
-			// refresh hourly
-			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
-		}
-		
-		if (units & DAYS) {
-			// refresh daily
-			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
-		}
-
-		// refresh the rest weekly
-		return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_WEEK;
 	}
 
 	/**
@@ -654,13 +673,15 @@ function(module) {
 	 * @param {function(Timespan)|Date|number} start the starting date
 	 * @param {function(Timespan)|Date|number} end the ending date
 	 * @param {number} units the units to populate
+	 * @param {number} digits the fractional digits to display for smallest unit
 	 * @return {Timespan|number}
 	 */
-	function countdown(start, end, units) {
+	function countdown(start, end, units, digits) {
 		var callback;
 
-		// ensure some units or use defaults
-		units = units || DEFAULTS;
+		// ensure units or defaults
+		units = +units || DEFAULTS;
+		digits = +digits || 0;
 
 		// ensure start date
 		if ('function' === typeof start) {
@@ -686,16 +707,16 @@ function(module) {
 		}
 
 		if (!callback) {
-			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, digits);
 		}
 
 		// base delay off units
-		var delay = getDelay(units);
-		var fn = function() {
-			callback(
-				populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
-			);
-		};
+		var delay = getDelay(units),
+			fn = function() {
+				callback(
+					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, digits)
+				);
+			};
 
 		fn();
 		return setInterval(fn, delay);
