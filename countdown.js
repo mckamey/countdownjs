@@ -1,8 +1,7 @@
 /**
- * @fileoverview countdown.js v2.2.2
- * 
- * Copyright (c)2006-2011 Stephen M. McKamey
- * Licensed under the MIT License (http://bitbucket.org/mckamey/countdown.js/LICENSE.txt)
+ * @license countdown.js v2.2.2 http://countdownjs.org
+ * Copyright (c)2006-2012 Stephen M. McKamey.
+ * Licensed under The MIT License.
  */
 
 /**
