@@ -396,7 +396,7 @@ test('Before leap day', function() {
 	same(actual, expected, ''+start+' => '+end);
 });
 
-test('After leap day', function() {
+test('After leap day (local)', function() {
 
 	var start = new Date(2012, 01, 29, 17, 46, 22, 111);// Leap day 2012
 	var end = new Date(2012, 02, 01, 13, 14, 30, 109);
@@ -404,6 +404,34 @@ test('After leap day', function() {
 	var expected = countdown.clone({
 		start: new Date(2012, 01, 29, 17, 46, 22, 111),
 		end: new Date(2012, 02, 01, 13, 14, 30, 109),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 19,
+		minutes: 28,
+		seconds: 7,
+		milliseconds: 998
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('After leap day (UTC)', function() {
+
+	var start = new Date(1330537582111);// Leap day 2012
+	var end = new Date(1330607670109);
+
+	var expected = countdown.clone({
+		start: new Date(1330537582111),
+		end: new Date(1330607670109),
 		units: countdown.ALL,
 		value: end.getTime() - start.getTime(),
 		millennia: 0,
