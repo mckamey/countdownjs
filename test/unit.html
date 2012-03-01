@@ -5,6 +5,11 @@
 	<title>Countdown.js Unit Tests</title>
 	<link href="../lib/qunit/qunit.css" rel="stylesheet" type="text/css" />
 
+	<script type="text/javascript">
+		window.onerror = function(msg, url, line) {
+			alert([msg, url, line].join(', '));
+		};
+	</script>
 	<script src="../lib/json/json2.js" type="text/javascript"></script>
 	<script src="../lib/qunit/qunit.js" type="text/javascript"></script>
 	<script src="../countdown.min.js" type="text/javascript"></script>

@@ -365,7 +365,63 @@ test('Underflow bug', function() {
 
 	var actual = countdown(start, end, countdown.ALL);
 
-	same(actual, expected, '');
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Before leap day', function() {
+
+	var start = new Date(2012, 01, 28, 13, 14, 30, 109);
+	var end = new Date(2012, 01, 29, 17, 46, 22, 111);// Leap day 2012
+
+	var expected = countdown.clone({
+		start: new Date(2012, 01, 28, 13, 14, 30, 109),
+		end: new Date(2012, 01, 29, 17, 46, 22, 111),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 1,
+		hours: 4,
+		minutes: 31,
+		seconds: 52,
+		milliseconds: 2
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('After leap day', function() {
+
+	var start = new Date(2012, 01, 29, 17, 46, 22, 111);// Leap day 2012
+	var end = new Date(2012, 02, 01, 13, 14, 30, 109);
+
+	var expected = countdown.clone({
+		start: new Date(2012, 01, 29, 17, 46, 22, 111),
+		end: new Date(2012, 02, 01, 13, 14, 30, 109),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 19,
+		minutes: 28,
+		seconds: 7,
+		milliseconds: 998
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
 });
 
 }catch(ex){alert(ex);}
