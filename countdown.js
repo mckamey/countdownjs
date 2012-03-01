@@ -1,5 +1,5 @@
 /**
- * @license countdown.js v2.2.2 http://countdownjs.org
+ * @license countdown.js v2.2.3 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -152,13 +152,6 @@ function(module) {
 	 * @type {number}
 	 */
 	var DAYS_PER_WEEK = 7;
-
-	/**
-	 * @private
-	 * @const
-	 * @type {number}
-	 */
-	var MIN_DAYS_PER_MONTH = 28;
 
 	/**
 	 * @private
@@ -429,11 +422,12 @@ function(module) {
 			ts.hours %= HOURS_PER_DAY;
 		}
 
-		if (ts.days < 0) {
+		while (ts.days < 0) {
+			// NOTE: never actually seen this loop more than once
+
 			// ripple months down to days
-			x = ceil(-ts.days / MIN_DAYS_PER_MONTH);
-			ts.months -= x;
-			ts.days += borrowMonths(ts.refMonth, x);
+			ts.months--;
+			ts.days += borrowMonths(ts.refMonth, 1);
 		}
 
 		// weeks is always zero here
@@ -585,7 +579,6 @@ function(module) {
 		// reference month for determining days in month
 		ts.refMonth = new Date(start.getFullYear(), start.getMonth(), 15);
 		try {
-
 			// reset to initial deltas
 			ts.millennia = 0;
 			ts.centuries = 0;
