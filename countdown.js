@@ -3,6 +3,7 @@
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
+/*jshint bitwise:false, smarttabs:true */
 
 /**
  * @public
