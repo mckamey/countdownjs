@@ -5,8 +5,9 @@
 \.iml
 \.ipr
 \.iws
-build.bat
-favicon.psd
+.*\.bat
+.*\.psd
+.*\.ai
+.*\.sh
 ga.js
 robots.txt
-launch.sh
