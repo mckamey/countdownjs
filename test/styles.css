@@ -99,7 +99,7 @@ footer {
 	-webkit-border-radius: 4px;
 	font-size: 150%;
 	padding: 0.25em 0.5em;
-	width: 100%;
+/*	width: 100%;*/
 }
 #countdown-start span,
 #countdown-units span {
