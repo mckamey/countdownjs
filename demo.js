@@ -43,7 +43,7 @@
 
 		if (start.getTime() === 1357027199999) {
 			msg = (ts.value > 0) ?
-				'The world ends '+msg+' ago!?!' :
+				'The world ended '+msg+' ago!?!' :
 				'The world ends in '+msg+'!';
 		}
 
