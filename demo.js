@@ -3,6 +3,11 @@
 		return document.getElementById(id);
 	}
 
+	function formatTens(n) {
+		// format integers to have at least two digits
+		return (n < 10) ? '0'+n : ''+n;
+	}
+
 	// initialize units
 	for (var key in countdown) {
 		if (countdown.hasOwnProperty(key)) {
@@ -13,6 +18,9 @@
 			}
 		}
 	}
+
+	// adjust demo time for local timezone
+	byId('hours').value -= new Date().getTimezoneOffset()/60;
 
 	function update() {
 		var units = ~countdown.ALL,
@@ -42,7 +50,7 @@
 			timespan = byId('timespan'),
 			msg = ts.toHTML('strong') || empty;
 
-		if (start.getTime() === 1357027199999) {
+		if (start.getTime() === 1356088271111) {
 			msg = (ts.value > 0) ?
 				'The world ended '+msg+' ago!?!' :
 				'The world ends in '+msg+'!';
@@ -50,6 +58,17 @@
 
 		counter.innerHTML = msg;
 		timespan.innerHTML = JSON.stringify(ts, null, '  ');
+
+		// update timezone label
+		var tz = start.getTimezoneOffset();
+		if (tz) {
+			var tzh = Math.floor(Math.abs(tz) / 60),
+				tzm = (Math.abs(tz) % 60);
+			byId('timezone').innerHTML = 'UTC'+((tz > 0) ? '-' : '+')+formatTens(tzh)+':'+formatTens(tzm);
+
+		} else {
+			byId('timezone').innerHTML = 'UTC';
+		}
 
 		requestAnimationFrame(update, timespan.parentNode);
 	}

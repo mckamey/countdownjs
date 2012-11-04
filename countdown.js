@@ -886,7 +886,6 @@ function(module) {
 		// clamp digits to an integer between [0, 20]
 		digits = (digits > 0) ? (digits < 20) ? Math.round(digits) : 20 : 0;
 
-
 		// ensure start date
 		if ('function' === typeof start) {
 			callback = start;
