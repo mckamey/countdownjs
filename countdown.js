@@ -1,5 +1,5 @@
 /**
- * @license countdown.js v2.2.3 http://countdownjs.org
+ * @license countdown.js v2.3.0 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -221,15 +221,36 @@ function(module) {
 
 	/**
 	 * @private
+	 * @param {number} value number to format
+	 * @param {number} digits number of digits right of decimal point
+	 * @return {number}
+	 */
+	var maxDigits = function(value, digits) {
+		// make sure doesn't have more than specified number of digits
+		return (+(+value).toFixed(+digits || 0));
+	};
+
+	/**
+	 * @private
 	 * @param {number} value
 	 * @param {string} singular
 	 * @param {string} plural
+	 * @param {number} digits
 	 * @return {string}
 	 */
-	function plurality(value, singular, plural) {
+	function plurality(value, singular, plural, digits) {
+		value = maxDigits(value, digits);
 		return value+' '+((value === 1) ? singular : plural);
 	}
 
+	/**
+	 * Formats the entries as English labels
+	 * 
+	 * @private
+	 * @param {Timespan} ts
+	 * @param {number} digits
+	 * @return {Array}
+	 */
 	var formatList;
 
 	/**
@@ -246,10 +267,11 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {number} max number of labels to output
+	 * @param {number} digits max number of decimal digits to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toString = function(max) {
-		var label = formatList(this);
+	Timespan.prototype.toString = function(max, digits) {
+		var label = formatList(this, digits);
 
 		if (label.length > max) {
 			label = label.slice(0, max);
@@ -271,11 +293,12 @@ function(module) {
 	 * @private
 	 * @param {string} tag HTML tag name to wrap each value
 	 * @param {number} max number of labels to output
+	 * @param {number} digits max number of decimal digits to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toHTML = function(tag, max) {
+	Timespan.prototype.toHTML = function(tag, max, digits) {
 		tag = tag || 'span';
-		var label = formatList(this);
+		var label = formatList(this, digits);
 
 		if (label.length > max) {
 			label = label.slice(0, max);
@@ -296,71 +319,48 @@ function(module) {
 	};
 
 	/**
-	 * Formats the Timespan as a short label
-	 * 
-	 * @private
-	 * @param {number} count number of labels to output
-	 * @return {string}
-	 */
-	Timespan.prototype.toShort = function(count) {
-		var label = formatList(this);
-
-		count = (count > 0) ? count : 1;
-		if (label.length > count) {
-			label = label.slice(0, count);
-		}
-		count = label.length;
-		if (!count) {
-			return '';
-		}
-		if (count > 1) {
-			label[count-1] = 'and '+label[count-1];
-		}
-		return label.join(', ');
-	};
-
-	/**
 	 * Formats the entries as English labels
 	 * 
 	 * @private
 	 * @param {Timespan} ts
+	 * @param {number} digits
 	 * @return {Array}
 	 */
-	formatList = function(ts) {
+	formatList = function(ts, digits) {
 		var list = [];
 
 		if (ts.millennia) {
-			list.push(plurality(ts.millennia, 'millennium', 'millennia'));
+			list.push(plurality(ts.millennia, 'millennium', 'millennia', digits));
 		}
 		if (ts.centuries) {
-			list.push(plurality(ts.centuries, 'century', 'centuries'));
+			list.push(plurality(ts.centuries, 'century', 'centuries', digits));
 		}
 		if (ts.decades) {
-			list.push(plurality(ts.decades, 'decade', 'decades'));
+			list.push(plurality(ts.decades, 'decade', 'decades', digits));
 		}
 		if (ts.years) {
-			list.push(plurality(ts.years, 'year', 'years'));
+			list.push(plurality(ts.years, 'year', 'years', digits));
 		}
 		if (ts.months) {
-			list.push(plurality(ts.months, 'month', 'months'));
+			list.push(plurality(ts.months, 'month', 'months', digits));
 		}
 		if (ts.weeks) {
-			list.push(plurality(ts.weeks, 'week', 'weeks'));
+			list.push(plurality(ts.weeks, 'week', 'weeks', digits));
 		}
 		if (ts.days) {
-			list.push(plurality(ts.days, 'day', 'days'));
+			list.push(plurality(ts.days, 'day', 'days', digits));
 		}
 		if (ts.hours) {
-			list.push(plurality(ts.hours, 'hour', 'hours'));
+			list.push(plurality(ts.hours, 'hour', 'hours', digits));
 		}
 		if (ts.minutes) {
-			list.push(plurality(ts.minutes, 'minute', 'minutes'));
+			list.push(plurality(ts.minutes, 'minute', 'minutes', digits));
 		}
 		if (ts.seconds) {
-			list.push(plurality(ts.seconds, 'second', 'seconds'));
+			list.push(plurality(ts.seconds, 'second', 'seconds', digits));
 		}
 		if (ts.milliseconds) {
-			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds'));
+			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds', digits));
 		}
 
 		return list;
@@ -644,8 +644,8 @@ function(module) {
 	 * API entry point
 	 * 
 	 * @public
-	 * @param {function(Timespan)|Date|number} start the starting date
-	 * @param {function(Timespan)|Date|number} end the ending date
+	 * @param {Date|number|null|function(Timespan)} start the starting date
+	 * @param {Date|number|null|function(Timespan)} end the ending date
 	 * @param {number} units the units to populate
 	 * @return {Timespan|number}
 	 */
