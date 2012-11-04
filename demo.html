@@ -38,17 +38,16 @@
 					min="1"
 					max="31"
 					step="1"
-					value="31"
+					value="21"
 					size="2"
 					placeholder="day"
 				/></span>
-				<label for="hours">&nbsp;</label>
-				<span><input id="hours"
+				<span><label for="hours">&nbsp;</label><input id="hours"
 					type="number"
 					min="0"
 					max="23"
 					step="1"
-					value="23"
+					value="11"
 					size="2"
 					placeholder="hrs"
 				/><label for="minutes">:</label><input id="minutes"
@@ -56,7 +55,7 @@
 					min="0"
 					max="59"
 					step="1"
-					value="59"
+					value="11"
 					size="2"
 					placeholder="min"
 				/><label for="seconds">:</label><input id="seconds"
@@ -64,7 +63,7 @@
 					min="0"
 					max="59"
 					step="1"
-					value="59"
+					value="11"
 					size="2"
 					placeholder="sec"
 				/><label for="milliseconds">.</label><input id="milliseconds"
@@ -72,10 +71,11 @@
 					min="0"
 					max="999"
 					step="1"
-					value="999"
+					value="111"
 					size="3"
 					placeholder="ms"
 				/></span>
+				<span id="timezone">&nbsp;UTC</span>
 			</fieldset>
 
 			<h3>Display units</h3>
