@@ -3,7 +3,7 @@
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
-/*jshint bitwise:false, smarttabs:true */
+/*jshint bitwise:false */
 
 /**
  * @public
@@ -25,6 +25,7 @@ var countdown = (
  * @param {Object} module CommonJS Module
  */
 function(module) {
+	/*jshint smarttabs:true */
 
 	'use strict';
 
@@ -198,13 +199,6 @@ function(module) {
 
 	/**
 	 * @private
-	 * @param {number} x number
-	 * @return {number}
-	 */
-	var round = Math.round;
-
-	/**
-	 * @private
 	 * @param {Date} ref reference date
 	 * @param {number} shift number of months to shift
 	 * @return {number} number of days shifted
@@ -216,7 +210,37 @@ function(module) {
 		ref.setUTCMonth( ref.getUTCMonth() + shift );
 
 		// this is the trickiest since months vary in length
-		return round( (ref.getTime() - prevTime) / MILLISECONDS_PER_DAY );
+		return Math.round( (ref.getTime() - prevTime) / MILLISECONDS_PER_DAY );
+	}
+
+	/**
+	 * @private
+	 * @param {Date} ref reference date
+	 * @return {number} number of days
+	 */
+	function daysPerMonth(ref) {
+		var a = ref.getTime();
+
+		// increment month by 1
+		var b = new Date(a).setUTCMonth( ref.getUTCMonth() + 1 ).getTime();
+
+		// this is the trickiest since months vary in length
+		return Math.round( (b - a) / MILLISECONDS_PER_DAY );
+	}
+
+	/**
+	 * @private
+	 * @param {Date} ref reference date
+	 * @return {number} number of days
+	 */
+	function daysPerYear(ref) {
+		var a = ref.getTime();
+
+		// increment year by 1
+		var b = new Date(a).setUTCFullYear( ref.getUTCFullYear() + 1 ).getTime();
+
+		// this is the trickiest since years (periodically) vary in length
+		return Math.round( (b - a) / MILLISECONDS_PER_DAY );
 	}
 
 	/**
@@ -225,10 +249,10 @@ function(module) {
 	 * @param {number} digits number of digits right of decimal point
 	 * @return {number}
 	 */
-	var maxDigits = function(value, digits) {
-		// make sure doesn't have more than specified number of digits
+	function maxDigits(value, digits) {
+		// ensure does not have more than specified number of digits
 		return (+(+value).toFixed(+digits || 0));
-	};
+	}
 
 	/**
 	 * @private
@@ -248,7 +272,8 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {Timespan} ts
-	 * @param {number} digits
+	 * @param {number} max number of labels to output
+	 * @param {number} digits max number of decimal digits to output
 	 * @return {Array}
 	 */
 	var formatList;
@@ -271,11 +296,7 @@ function(module) {
 	 * @return {string}
 	 */
 	Timespan.prototype.toString = function(max, digits) {
-		var label = formatList(this, digits);
-
-		if (label.length > max) {
-			label = label.slice(0, max);
-		}
+		var label = formatList(this, max, digits);
 
 		var count = label.length;
 		if (!count) {
@@ -298,11 +319,7 @@ function(module) {
 	 */
 	Timespan.prototype.toHTML = function(tag, max, digits) {
 		tag = tag || 'span';
-		var label = formatList(this, digits);
-
-		if (label.length > max) {
-			label = label.slice(0, max);
-		}
+		var label = formatList(this, max, digits);
 
 		var count = label.length;
 		if (!count) {
@@ -319,48 +336,169 @@ function(module) {
 	};
 
 	/**
+	 * Ripple up partial units
+	 * 
+	 * @private
+	 * @param {Timespan} ts
+	 */
+	function fraction(ts) {
+		var frac = ts.milliseconds / MILLISECONDS_PER_SECOND;
+		delete ts.milliseconds;
+
+		if (ts.seconds) {
+			ts.seconds += frac;
+			return;
+		}
+
+		frac /= SECONDS_PER_MINUTE;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.minutes) {
+			ts.minutes += frac;
+			return;
+		}
+
+		frac /= MINUTES_PER_HOUR;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.hours) {
+			ts.hours += frac;
+			return;
+		}
+
+		frac /= HOURS_PER_DAY;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.days) {
+			ts.days += frac;
+			return;
+		}
+
+		if (ts.weeks) {
+			// only convert if needed here
+			// as months are problematic
+			frac /= DAYS_PER_WEEK;
+			// no need to shortcut
+			ts.weeks += frac;
+			return;
+		}
+
+		if (ts.months) {
+			frac /= daysPerMonth(ts.refMonth);
+			// no need to shortcut
+			ts.months += frac;
+			return;
+		}
+
+		frac /= daysPerYear(ts.refMonth);
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.years) {
+			ts.years += frac;
+			return;
+		}
+
+		frac /= YEARS_PER_DECADE;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.decades) {
+			ts.decades += frac;
+			return;
+		}
+
+		frac /= DECADES_PER_CENTURY;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.centuries) {
+			ts.centuries += frac;
+			return;
+		}
+
+		frac /= CENTURIES_PER_MILLENNIUM;
+		if (frac + 1 <= 1) {
+			// shortcut if below epsilon
+			return;
+		}
+
+		if (ts.millennia) {
+			ts.millennia += frac;
+			return;
+		}
+	}
+
+	/**
 	 * Formats the entries as English labels
 	 * 
 	 * @private
 	 * @param {Timespan} ts
-	 * @param {number} digits
+	 * @param {number} max number of labels to output
+	 * @param {number} digits max number of decimal digits to output
 	 * @return {Array}
 	 */
-	formatList = function(ts, digits) {
+	formatList = function(ts, max, digits) {
 		var list = [];
 
 		if (ts.millennia) {
 			list.push(plurality(ts.millennia, 'millennium', 'millennia', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.centuries) {
 			list.push(plurality(ts.centuries, 'century', 'centuries', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.decades) {
 			list.push(plurality(ts.decades, 'decade', 'decades', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.years) {
 			list.push(plurality(ts.years, 'year', 'years', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.months) {
 			list.push(plurality(ts.months, 'month', 'months', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.weeks) {
 			list.push(plurality(ts.weeks, 'week', 'weeks', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.days) {
 			list.push(plurality(ts.days, 'day', 'days', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.hours) {
 			list.push(plurality(ts.hours, 'hour', 'hours', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.minutes) {
 			list.push(plurality(ts.minutes, 'minute', 'minutes', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.seconds) {
 			list.push(plurality(ts.seconds, 'second', 'seconds', digits));
+			if (list.length === max) { return list; }
 		}
 		if (ts.milliseconds) {
 			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds', digits));
+			if (list.length === max) { return list; }
 		}
 
 		return list;
@@ -549,9 +687,10 @@ function(module) {
 			delete ts.seconds;
 		}
 
+		// nothing to ripple milliseconds down to
+		// so ripple back up to smallest existing unit as a fractional value
 		if (!(units & MILLISECONDS)) {
-			// nothing to ripple milliseconds down to, so just remove
-			delete ts.milliseconds;
+			fraction(ts);
 		}
 	}
 
@@ -789,6 +928,6 @@ function(module) {
 		module.exports = countdown;
 	}
 
-	return countdown;	
+	return countdown;
 
 })(module);
