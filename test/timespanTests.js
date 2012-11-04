@@ -178,18 +178,19 @@ test('constant 1 month span, daily over 5 years', function() {
 test('contiguous daily countdown over 83 weeks', function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.WEEKS | countdown.DAYS;
+	var units = countdown.WEEKS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(2007, 10, 10, 5, 30, 0);
 	var end = new Date(2009, 5, 14, 16, 0, 0);
 
-	var expected = { weeks: 83, days: 1 };
+	var expected = { weeks: 83, days: 1, hours: 9.5 };
 
 	while (start.getTime() < end.getTime()) {
 
 		var actual = countdown(start, end, units);
 		actual = {
 			weeks: actual.weeks,
-			days: actual.days
+			days: actual.days,
+			hours: actual.hours
 		};
 
 		same(actual, expected, '');
@@ -201,12 +202,14 @@ test('contiguous daily countdown over 83 weeks', function() {
 		if (actual.days) {
 			expected = {
 				weeks: actual.weeks,
-				days: actual.days-1
+				days: actual.days-1,
+				hours: actual.hours
 			};
 		} else {
 			expected = {
 				weeks: actual.weeks-1,
-				days: 6
+				days: 6,
+				hours: actual.hours
 			};
 		}
 	}
@@ -215,18 +218,19 @@ test('contiguous daily countdown over 83 weeks', function() {
 test('contiguous daily countdown over 1 year 7 months', function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.DAYS;
+	var units = countdown.MONTHS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(2006, 10, 10, 5, 30, 0);
 	var end = new Date(2008, 5, 14, 16, 0, 0);
 
-	var expected = { months: 19, days: 4 };
+	var expected = { months: 19, days: 4, hours: 9.5 };
 
 	while (start.getTime() < end.getTime()) {
 
 		var actual = countdown(start, end, units);
 		actual = {
 			months: actual.months,
-			days: actual.days
+			days: actual.days,
+			hours: actual.hours
 		};
 
 		same(actual, expected, '');
@@ -238,14 +242,16 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 		if (actual.days) {
 			expected = {
 				months: actual.months,
-				days: actual.days-1
+				days: actual.days-1,
+				hours: actual.hours
 			};
 		} else {
 			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
 			expected = {
 				months: actual.months-1,
 				// the number of days in start month minus one
-				days: daysInStart-1
+				days: daysInStart-1,
+				hours: actual.hours
 			};
 		}
 	}
@@ -254,12 +260,12 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 test('contiguous weekly countdown over 7 months', function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.WEEKS | countdown.DAYS;
+	var units = countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(1999, 10, 10, 5, 30, 0);
 	var end = new Date(2001, 5, 14, 16, 0, 0);
 
 	// calc by days since easier
-	var prev = { months: 19, days: 4 };
+	var prev = { months: 19, days: 4, hours: 9.5 };
 
 	while (start.getTime() < end.getTime()) {
 
@@ -267,14 +273,16 @@ test('contiguous weekly countdown over 7 months', function() {
 		actual = {
 			months: actual.months,
 			weeks: actual.weeks,
-			days: actual.days
+			days: actual.days,
+			hours: actual.hours
 		};
 
 		// convert to weeks just before compare
 		var expected = {
 			months: prev.months,
 			weeks: Math.floor(prev.days/7),
-			days: prev.days % 7
+			days: prev.days % 7,
+			hours: prev.hours
 		};
 
 		same(actual, expected, '');
@@ -286,14 +294,16 @@ test('contiguous weekly countdown over 7 months', function() {
 		if (prev.days) {
 			prev = {
 				months: prev.months,
-				days: prev.days-1
+				days: prev.days-1,
+				hours: prev.hours
 			};
 		} else {
 			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
 			prev = {
 				months: prev.months-1,
 				// the number of days in start month minus one
-				days: daysInStart-1
+				days: daysInStart-1,
+				hours: prev.hours
 			};
 		}
 	}
@@ -370,12 +380,12 @@ test('Underflow bug', function() {
 
 test('Before leap day', function() {
 
-	var start = new Date(2012, 01, 28, 13, 14, 30, 109);
-	var end = new Date(2012, 01, 29, 17, 46, 22, 111);// Leap day 2012
+	var start = new Date(2012, 1, 28, 13, 14, 30, 109);
+	var end = new Date(2012, 1, 29, 17, 46, 22, 111);// Leap day 2012
 
 	var expected = countdown.clone({
-		start: new Date(2012, 01, 28, 13, 14, 30, 109),
-		end: new Date(2012, 01, 29, 17, 46, 22, 111),
+		start: new Date(2012, 1, 28, 13, 14, 30, 109),
+		end: new Date(2012, 1, 29, 17, 46, 22, 111),
 		units: countdown.ALL,
 		value: end.getTime() - start.getTime(),
 		millennia: 0,
@@ -398,12 +408,12 @@ test('Before leap day', function() {
 
 test('After leap day (local)', function() {
 
-	var start = new Date(2012, 01, 29, 17, 46, 22, 111);// Leap day 2012
-	var end = new Date(2012, 02, 01, 13, 14, 30, 109);
+	var start = new Date(2012, 1, 29, 17, 46, 22, 111);// Leap day 2012
+	var end = new Date(2012, 2, 1, 13, 14, 30, 109);
 
 	var expected = countdown.clone({
-		start: new Date(2012, 01, 29, 17, 46, 22, 111),
-		end: new Date(2012, 02, 01, 13, 14, 30, 109),
+		start: new Date(2012, 1, 29, 17, 46, 22, 111),
+		end: new Date(2012, 2, 1, 13, 14, 30, 109),
 		units: countdown.ALL,
 		value: end.getTime() - start.getTime(),
 		millennia: 0,

@@ -164,7 +164,7 @@ test('one of each; zero max', function() {
 		1, // ms
 		countdown.ALL);
 
-	var expected = '';
+	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
 	var actual = input.toString(0);
 
@@ -183,7 +183,7 @@ test('one of each; -2 max', function() {
 		1, // ms
 		countdown.ALL);
 
-	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, and 1 minute';
+	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
 	var actual = input.toString(-2);
 
