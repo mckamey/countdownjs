@@ -130,14 +130,14 @@ The final optional argument `digits` allows fractional values on the smallest un
 
 Specifying `digits` as `2` allows up to 2 digits beyond the decimal point to be displayed **(note the rounding of the least significant unit)**:
 
-	countdown(start, end, units, max, 2).toString(2) => "5 years, and 1.65 months"
+	countdown(start, end, units, max, 2).toString() => "5 years, and 1.65 months"
 
 `digits` must be between `0` and `20`, inclusive.
 
 ----
 #### Rounding
 With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of `"1.99 years"` would be truncated to `"1 year"`, as of v2.3.0 it will display as `"2 years"`.
-Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of `digits`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString(0)`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
+Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of `digits`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString()`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
 
 ----
 

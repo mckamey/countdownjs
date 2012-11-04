@@ -142,14 +142,14 @@ The final optional argument <code>digits</code> allows fractional values on the 
 
 <p>Specifying <code>digits</code> as <code>2</code> allows up to 2 digits beyond the decimal point to be displayed <strong>(note the rounding of the least significant unit)</strong>:</p>
 
-<pre><code>countdown(start, end, units, max, 2).toString(2) => "5 years, and 1.65 months"</code></pre>
+<pre><code>countdown(start, end, units, max, 2).toString() => "5 years, and 1.65 months"</code></pre>
 
 <p><code>digits</code> must be between <code>0</code> and <code>20</code>, inclusive.</p>
 
 <div id="v2.3.0-digits" class="breaking-change">
 <h4>Rounding</h4>
 <p>With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of <code>"1.99 years"</code> would be truncated to <code>"1 year"</code>, as of v2.3.0 it will display as <code>"2 years"</code>.</p>
-<p>Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of <code>digits</code>, you might want to set <code>ts.years = Math.floor(ts.years)</code> before calling <code>ts.toString(0)</code>. The vain might want you to set <code>ts.years = Math.min(ts.years, 39)</code>!</p>
+<p>Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of <code>digits</code>, you might want to set <code>ts.years = Math.floor(ts.years)</code> before calling <code>ts.toString()</code>. The vain might want you to set <code>ts.years = Math.min(ts.years, 39)</code>!</p>
 </div>
 
 <h3>Timespan result</h3>
