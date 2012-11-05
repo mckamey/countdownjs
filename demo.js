@@ -36,11 +36,11 @@
 			fff = +(byId('milliseconds').value);
 
 		var start = new Date(yyyy, MM, dd, HH, mm, ss, fff),
-			ts = countdown(start, null, units, max);
+			ts = countdown(start, null, units, max, digits);
 
 		var counter = byId('counter'),
 			timespan = byId('timespan'),
-			msg = ts.toHTML('strong', digits) || empty;
+			msg = ts.toHTML('strong') || empty;
 
 		if (start.getTime() === 1357027199999) {
 			msg = (ts.value > 0) ?
