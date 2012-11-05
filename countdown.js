@@ -222,10 +222,11 @@ function(module) {
 		var a = ref.getTime();
 
 		// increment month by 1
-		var b = new Date(a).setUTCMonth( ref.getUTCMonth() + 1 ).getTime();
+		var b = new Date(a);
+		b.setUTCMonth( ref.getUTCMonth() + 1 );
 
 		// this is the trickiest since months vary in length
-		return Math.round( (b - a) / MILLISECONDS_PER_DAY );
+		return Math.round( (b.getTime() - a) / MILLISECONDS_PER_DAY );
 	}
 
 	/**
@@ -237,21 +238,22 @@ function(module) {
 		var a = ref.getTime();
 
 		// increment year by 1
-		var b = new Date(a).setUTCFullYear( ref.getUTCFullYear() + 1 ).getTime();
+		var b = new Date(a);
+		b.setUTCFullYear( ref.getUTCFullYear() + 1 );
 
 		// this is the trickiest since years (periodically) vary in length
-		return Math.round( (b - a) / MILLISECONDS_PER_DAY );
+		return Math.round( (b.getTime() - a) / MILLISECONDS_PER_DAY );
 	}
 
 	/**
 	 * @private
 	 * @param {number} value number to format
-	 * @param {number} digits number of digits right of decimal point
+	 * @param {number} digits number of digits right of decimal point [0-20]
 	 * @return {number}
 	 */
 	function maxDigits(value, digits) {
 		// ensure does not have more than specified number of digits
-		return (+(+value).toFixed(+digits || 0));
+		return (+(+value).toFixed(digits));
 	}
 
 	/**
@@ -259,7 +261,7 @@ function(module) {
 	 * @param {number} value
 	 * @param {string} singular
 	 * @param {string} plural
-	 * @param {number} digits
+	 * @param {number} digits number of digits right of decimal point [0-20]
 	 * @return {string}
 	 */
 	function plurality(value, singular, plural, digits) {
@@ -272,7 +274,6 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {Timespan} ts
-	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
 	 * @return {Array}
 	 */
@@ -291,12 +292,11 @@ function(module) {
 	 * Formats the Timespan as a sentance
 	 * 
 	 * @private
-	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toString = function(max, digits) {
-		var label = formatList(this, max, digits);
+	Timespan.prototype.toString = function(digits) {
+		var label = formatList(this, digits);
 
 		var count = label.length;
 		if (!count) {
@@ -313,13 +313,12 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {string} tag HTML tag name to wrap each value
-	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
 	 * @return {string}
 	 */
-	Timespan.prototype.toHTML = function(tag, max, digits) {
+	Timespan.prototype.toHTML = function(tag, digits) {
 		tag = tag || 'span';
-		var label = formatList(this, max, digits);
+		var label = formatList(this, digits);
 
 		var count = label.length;
 		if (!count) {
@@ -336,112 +335,74 @@ function(module) {
 	};
 
 	/**
-	 * Ripple up partial units
+	 * Ripple up partial units one place
+	 * 
+	 * @private
+	 * @param {Timespan} ts timespan
+	 * @param {number} frac accumulated fractional value
+	 * @param {string} fromUnit source unit name
+	 * @param {string} toUnit target unit name
+	 * @param {number} conversion multiplier between units
+	 * @return {number} new fractional value
+	 */
+	function fraction(ts, frac, fromUnit, toUnit, conversion) {
+		if (ts[fromUnit] >= 0) {
+			frac += ts[fromUnit];
+			delete ts[fromUnit];
+		}
+
+		frac /= conversion;
+		if (frac + 1 <= 1) {
+			// drop if below machine epsilon
+			return 0;
+		}
+
+		if (ts[toUnit] >= 0) {
+			ts[toUnit] += frac;
+			return 0;
+		}
+
+		return frac;
+	}
+
+	/**
+	 * Ripple up partial units to next existing
 	 * 
 	 * @private
 	 * @param {Timespan} ts
 	 */
-	function fraction(ts) {
-		var frac = ts.milliseconds / MILLISECONDS_PER_SECOND;
-		delete ts.milliseconds;
+	function fractional(ts) {
+		var frac = fraction(ts, 0, 'milliseconds', 'seconds', MILLISECONDS_PER_SECOND);
+		if (!frac) { return; }
 
-		if (ts.seconds) {
-			ts.seconds += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'seconds', 'minutes', SECONDS_PER_MINUTE);
+		if (!frac) { return; }
 
-		frac /= SECONDS_PER_MINUTE;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
+		frac = fraction(ts, frac, 'minutes', 'hours', MINUTES_PER_HOUR);
+		if (!frac) { return; }
 
-		if (ts.minutes) {
-			ts.minutes += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'hours', 'days', HOURS_PER_DAY);
+		if (!frac) { return; }
 
-		frac /= MINUTES_PER_HOUR;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
+		frac = fraction(ts, frac, 'days', 'weeks', DAYS_PER_WEEK);
+		if (!frac) { return; }
 
-		if (ts.hours) {
-			ts.hours += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'weeks', 'months', daysPerMonth(ts.refMonth)/DAYS_PER_WEEK);
+		if (!frac) { return; }
 
-		frac /= HOURS_PER_DAY;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
+		frac = fraction(ts, frac, 'months', 'years', daysPerYear(ts.refMonth)/daysPerMonth(ts.refMonth));
+		if (!frac) { return; }
 
-		if (ts.days) {
-			ts.days += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'years', 'decades', YEARS_PER_DECADE);
+		if (!frac) { return; }
 
-		if (ts.weeks) {
-			// only convert if needed here
-			// as months are problematic
-			frac /= DAYS_PER_WEEK;
-			// no need to shortcut
-			ts.weeks += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'decades', 'centuries', DECADES_PER_CENTURY);
+		if (!frac) { return; }
 
-		if (ts.months) {
-			frac /= daysPerMonth(ts.refMonth);
-			// no need to shortcut
-			ts.months += frac;
-			return;
-		}
+		frac = fraction(ts, frac, 'centuries', 'millennia', CENTURIES_PER_MILLENNIUM);
 
-		frac /= daysPerYear(ts.refMonth);
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
-
-		if (ts.years) {
-			ts.years += frac;
-			return;
-		}
-
-		frac /= YEARS_PER_DECADE;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
-
-		if (ts.decades) {
-			ts.decades += frac;
-			return;
-		}
-
-		frac /= DECADES_PER_CENTURY;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
-
-		if (ts.centuries) {
-			ts.centuries += frac;
-			return;
-		}
-
-		frac /= CENTURIES_PER_MILLENNIUM;
-		if (frac + 1 <= 1) {
-			// shortcut if below epsilon
-			return;
-		}
-
-		if (ts.millennia) {
-			ts.millennia += frac;
-			return;
-		}
+		// should never reach this with remaining fractional value
+		if (frac) { throw new Error('Fractional unit overflow'); }
 	}
 
 	/**
@@ -449,56 +410,47 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {Timespan} ts
-	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
 	 * @return {Array}
 	 */
-	formatList = function(ts, max, digits) {
+	formatList = function(ts, digits) {
+		// clamp digits to an integer between [0, 20]
+		digits = (digits > 0) ? (digits < 20) ? Math.round(digits) : 20 : 0;
+
 		var list = [];
 
-		if (ts.millennia) {
+		if (digits ? ts.millennia : (ts.millennia >= 1)) {
 			list.push(plurality(ts.millennia, 'millennium', 'millennia', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.centuries) {
+		if (digits ? ts.centuries : (ts.centuries >= 1)) {
 			list.push(plurality(ts.centuries, 'century', 'centuries', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.decades) {
+		if (digits ? ts.decades : (ts.decades >= 1)) {
 			list.push(plurality(ts.decades, 'decade', 'decades', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.years) {
+		if (digits ? ts.years : (ts.years >= 1)) {
 			list.push(plurality(ts.years, 'year', 'years', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.months) {
+		if (digits ? ts.months : (ts.months >= 1)) {
 			list.push(plurality(ts.months, 'month', 'months', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.weeks) {
+		if (digits ? ts.weeks : (ts.weeks >= 1)) {
 			list.push(plurality(ts.weeks, 'week', 'weeks', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.days) {
+		if (digits ? ts.days : (ts.days >= 1)) {
 			list.push(plurality(ts.days, 'day', 'days', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.hours) {
+		if (digits ? ts.hours : (ts.hours >= 1)) {
 			list.push(plurality(ts.hours, 'hour', 'hours', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.minutes) {
+		if (digits ? ts.minutes : (ts.minutes >= 1)) {
 			list.push(plurality(ts.minutes, 'minute', 'minutes', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.seconds) {
+		if (digits ? ts.seconds : (ts.seconds >= 1)) {
 			list.push(plurality(ts.seconds, 'second', 'seconds', digits));
-			if (list.length === max) { return list; }
 		}
-		if (ts.milliseconds) {
+		if (digits ? ts.milliseconds : (ts.milliseconds >= 1)) {
 			list.push(plurality(ts.milliseconds, 'millisecond', 'milliseconds', digits));
-			if (list.length === max) { return list; }
 		}
 
 		return list;
@@ -617,37 +569,54 @@ function(module) {
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {number} units the units to populate
+	 * @param {number} max number of labels to output
 	 */
-	function pruneUnits(ts, units) {
-		// Calc from largest unit to smallest to prevent underflow
+	function pruneUnits(ts, units, max) {
+		max = (max > 0) ? max : NaN;
+		var count = 0;
 
-		if (!(units & MILLENNIA)) {
+		// Calc from largest unit to smallest to prevent underflow
+		if (!(units & MILLENNIA) || (count >= max)) {
 			// ripple millennia down to centuries
 			ts.centuries += ts.millennia * CENTURIES_PER_MILLENNIUM;
 			delete ts.millennia;
+
+		} else if (ts.millennia) {
+			count++;
 		}
 
-		if (!(units & CENTURIES)) {
+		if (!(units & CENTURIES) || (count >= max)) {
 			// ripple centuries down to decades
 			ts.decades += ts.centuries * DECADES_PER_CENTURY;
 			delete ts.centuries;
+
+		} else if (ts.centuries) {
+			count++;
 		}
 
-		if (!(units & DECADES)) {
+		if (!(units & DECADES) || (count >= max)) {
 			// ripple decades down to years
 			ts.years += ts.decades * YEARS_PER_DECADE;
 			delete ts.decades;
+
+		} else if (ts.decades) {
+			count++;
 		}
 
-		if (!(units & YEARS)) {
+		if (!(units & YEARS) || (count >= max)) {
 			// ripple years down to months
 			ts.months += ts.years * MONTHS_PER_YEAR;
 			delete ts.years;
+
+		} else if (ts.years) {
+			count++;
 		}
 
-		if (!(units & MONTHS) && ts.months) {
+		if (!(units & MONTHS) || (count >= max)) {
 			// ripple months down to days
-			ts.days += borrowMonths(ts.refMonth, ts.months);
+			if (ts.months) {
+				ts.days += borrowMonths(ts.refMonth, ts.months);
+			}
 			delete ts.months;
 
 			if (ts.days >= DAYS_PER_WEEK) {
@@ -655,42 +624,60 @@ function(module) {
 				ts.weeks += floor(ts.days / DAYS_PER_WEEK);
 				ts.days %= DAYS_PER_WEEK;
 			}
+
+		} else if (ts.months) {
+			count++;
 		}
 
-		if (!(units & WEEKS)) {
+		if (!(units & WEEKS) || (count >= max)) {
 			// ripple weeks down to days
 			ts.days += ts.weeks * DAYS_PER_WEEK;
 			delete ts.weeks;
+
+		} else if (ts.weeks) {
+			count++;
 		}
 
-		if (!(units & DAYS)) {
+		if (!(units & DAYS) || (count >= max)) {
 			//ripple days down to hours
 			ts.hours += ts.days * HOURS_PER_DAY;
 			delete ts.days;
+
+		} else if (ts.days) {
+			count++;
 		}
 
-		if (!(units & HOURS)) {
+		if (!(units & HOURS) || (count >= max)) {
 			// ripple hours down to minutes
 			ts.minutes += ts.hours * MINUTES_PER_HOUR;
 			delete ts.hours;
+
+		} else if (ts.hours) {
+			count++;
 		}
 
-		if (!(units & MINUTES)) {
+		if (!(units & MINUTES) || (count >= max)) {
 			// ripple minutes down to seconds
 			ts.seconds += ts.minutes * SECONDS_PER_MINUTE;
 			delete ts.minutes;
+
+		} else if (ts.minutes) {
+			count++;
 		}
 
-		if (!(units & SECONDS)) {
+		if (!(units & SECONDS) || (count >= max)) {
 			// ripple seconds down to milliseconds
 			ts.milliseconds += ts.seconds * MILLISECONDS_PER_SECOND;
 			delete ts.seconds;
+
+		} else if (ts.seconds) {
+			count++;
 		}
 
 		// nothing to ripple milliseconds down to
 		// so ripple back up to smallest existing unit as a fractional value
-		if (!(units & MILLISECONDS)) {
-			fraction(ts);
+		if (!(units & MILLISECONDS) || (count >= max)) {
+			fractional(ts);
 		}
 	}
 
@@ -703,7 +690,7 @@ function(module) {
 	 * @param {Date} end the ending date
 	 * @param {number} units the units to populate
 	 */
-	function populate(ts, start, end, units) {
+	function populate(ts, start, end, units, max) {
 		ts.start = start;
 		ts.end = end;
 		ts.units = units;
@@ -733,7 +720,7 @@ function(module) {
 			ts.milliseconds = end.getUTCMilliseconds() - start.getUTCMilliseconds();
 
 			ripple(ts);
-			pruneUnits(ts, units);
+			pruneUnits(ts, units, max);
 
 		} finally {
 			delete ts.refMonth;
@@ -786,9 +773,10 @@ function(module) {
 	 * @param {Date|number|null|function(Timespan)} start the starting date
 	 * @param {Date|number|null|function(Timespan)} end the ending date
 	 * @param {number} units the units to populate
+	 * @param {number} max number of labels to output
 	 * @return {Timespan|number}
 	 */
-	function countdown(start, end, units) {
+	function countdown(start, end, units, max) {
 		var callback;
 
 		// ensure some units or use defaults
@@ -818,14 +806,14 @@ function(module) {
 		}
 
 		if (!callback) {
-			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units);
+			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max);
 		}
 
 		// base delay off units
 		var delay = getDelay(units);
 		var fn = function() {
 			callback(
-				populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units)
+				populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max)
 			);
 		};
 

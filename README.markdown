@@ -29,9 +29,9 @@ In the final step of the algorithm, *Countdown.js* prunes the set of time units 
 
 A simple but flexible API is the goal of *Countdown.js*. There is one global function with a set of static constants:
 
-    countdown(start|callback, end|callback, units);
+    var timespan = countdown(start|callback, end|callback, units, max);
 
-The parameters are a starting Date, ending Date and an optional set of units. If units is left off, it defaults to `countdown.DEFAULTS`.
+The parameters are a starting Date, ending Date, an optional set of units, and an optional maximum number of units. If units is left off, it defaults to `countdown.DEFAULTS`.
 
 	countdown.ALL =
 		countdown.MILLENNIA |
@@ -56,60 +56,11 @@ The parameters are a starting Date, ending Date and an optional set of units. If
 
 This allows a very minimal call to accept the defaults and get the time since/until a single date. For example:
 
-	countdown( new Date(2000, 0, 1) );
+	countdown( new Date(2000, 0, 1) ).toString();
 
-This will toString() something like:
+This will produce a human readable description like:
 
 	11 years, 8 months, 4 days, 10 hours, 12 minutes, and 43 seconds
-
-### Timespan result
-
-The return value is a Timespan object which always contains the following fields:
-
-- `Date start`: the starting date object used for the calculation
-- `Date end`: the ending date object used for the calculation
-- `Number units`: the units specified
-- `Number value`: total milliseconds difference (i.e., end - start) if end < start this will be negative
-
-Typically the `end` occurs after `start` but the arguments were reversed, the only difference is `Timespan.value` will be negative. The sign of `value` can be used to determine if the event occurs in the future or in the past. 
-
-The following time unit fields are only present if their corresponding units were requested:
-
-- `Number millennia`
-- `Number centuries`
-- `Number decades`
-- `Number years`
-- `Number months`
-- `Number days`
-- `Number hours`
-- `Number minutes`
-- `Number seconds`
-- `Number milliseconds`
-
-Finally, Timespan has a few formatting methods:
-
-`toString()`: formats the Timespan object as an English sentence, e.g.,
-
-	ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
-
-`toString(max)`: formats the Timespan object as an English sentence, but only returns the `max` most significant units. e.g., using the same input:
-
-	toString(2) => "5 years, and 1 month
-
-Negative values of `max` indicates the number of units to leave off. e.g., using the same input:
-
-	toString(-2) => "5 years, 1 month, and 19 days"
-
-`toHTML(tagName)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g. using the same input,
-
-	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17 minutes</em>"
-
-`toHTML(tagName, max)`: the optional `max` parameter similarly restricts the total number of units returned. e.g., using the same input:
-
-	ts.toHTML("em", 3) => "<em>5 years</em>, <em>1 month</em>, and <em>19 days</em>"
-	ts.toHTML("em", -1) => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, and <em>12 hours</em>"
-
-If `start` and `end` are exactly the same (for the requested granularity of units), or `max` is zero, then `toString()` and `toHTML()` will return an empty string.
 
 ### The `start` / `end` arguments
 
@@ -141,7 +92,7 @@ If a callback function is supplied, then an interval timer will be started with 
 
 ### The `units` argument
 
-The static units constants can be combined using standard bitwise operators. For example, to explicitly include "months and years" use bitwise-OR:
+The static units constants can be combined using [standard bitwise operators](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Operators/Bitwise_Operators). For example, to explicitly include "months or days" use bitwise-OR:
 
 	countdown.MONTHS | countdown.DAYS
 
@@ -149,9 +100,71 @@ To explicitly exclude units like "not weeks and not milliseconds" combine bitwis
 
 	~countdown.WEEKS & ~countdown.MILLISECONDS
 
-Equivalently, to specify everything but "not weeks or milliseconds" wrap bitwise-NOT around bitwise-OR:
+[Equivalently](http://en.wikipedia.org/wiki/De_Morgan's_laws), to specify everything but "not weeks or milliseconds" wrap bitwise-NOT around bitwise-OR:
 
 	~(countdown.WEEKS | countdown.MILLISECONDS)
+
+### The `max` argument
+
+#### Breaking change for v2.3.0!
+The `max` argument used to be specified in `.toString(...)` and `.toHTML(...)`. v2.3.0 moves it to `countdown(...)`, which improves efficiency as well as enabling fractional units (see below).
+
+The final optional argument specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the `max` most significant units.
+
+	countdown(start, end, units).toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
+
+Specifying `max` as `2` ensures that only the two most significant units are displayed **(note the rounding of months)**:
+
+	countdown(start, end, units, 2).toString() => "5 years, and 2 months"
+
+Negative or zero values of `max` are ignored.
+
+### Timespan result
+
+The return value is a Timespan object which always contains the following fields:
+
+- `Date start`: the starting date object used for the calculation
+- `Date end`: the ending date object used for the calculation
+- `Number units`: the units specified
+- `Number value`: total milliseconds difference (i.e., `end` - `start`). If `end` < `start` then `value` will be negative.
+
+Typically the `end` occurs after `start`, but if the arguments were reversed, the only difference is `Timespan.value` will be negative. The sign of `value` can be used to determine if the event occurs in the future or in the past. 
+
+The following time unit fields are only present if their corresponding units were requested:
+
+- `Number millennia`
+- `Number centuries`
+- `Number decades`
+- `Number years`
+- `Number months`
+- `Number days`
+- `Number hours`
+- `Number minutes`
+- `Number seconds`
+- `Number milliseconds`
+
+Finally, Timespan has two formatting methods each with some optional parameters:
+
+`String toString(digits)`: formats the Timespan object as an English sentence. The optional `digits` argument allows fractional values on the smallest unit. e.g., using the same input
+
+	ts.toString() => "5 years, and 2 months"
+	ts.toString(2) => "5 years, and 1.65 months"
+
+`String toHTML(tagName, digits)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. Again, the optional `digits` argument restricts the total number of units returned. e.g., using the same input:
+
+	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17 minutes</em>"
+	ts.toHTML("em", 3) => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17.193 minutes</em>"
+
+Digits must be between `0` and `20`, inclusive. Negative values of `digits` are ignored.
+
+If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML()` will simply return an empty string.
+
+#### Rounding
+With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of `1.99 years` would be truncated to `1 year`, as of v2.3.0 it will display as `2 years`.  
+Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling `countdown(...)`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString(0)`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
+
+#### Breaking change for v2.3.0!
+Previously, the `max` number of unit labels used to be defined when formatting. Now it is specified with the units themselves (see above).
 
 ## License
 
