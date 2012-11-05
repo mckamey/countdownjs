@@ -29,9 +29,9 @@ In the final step of the algorithm, *Countdown.js* prunes the set of time units 
 
 A simple but flexible API is the goal of *Countdown.js*. There is one global function with a set of static constants:
 
-    var timespan = countdown(start|callback, end|callback, units, max);
+    var timespan = countdown(start|callback, end|callback, units, max, digits);
 
-The parameters are a starting Date, ending Date, an optional set of units, and an optional maximum number of units. If units is left off, it defaults to `countdown.DEFAULTS`.
+The parameters are a starting Date, ending Date, an optional set of units, an optional maximum number of units, and an optional maximum number of decimal places on the smallest unit. `units` defaults to `countdown.DEFAULTS`, `max` defaults to `NaN` (all specified units), `digits` defaults to `0`.
 
 	countdown.ALL =
 		countdown.MILLENNIA |
@@ -106,18 +106,40 @@ To explicitly exclude units like "not weeks and not milliseconds" combine bitwis
 
 ### The `max` argument
 
-#### Breaking change for v2.3.0!
-The `max` argument used to be specified in `.toString(...)` and `.toHTML(...)`. v2.3.0 moves it to `countdown(...)`, which improves efficiency as well as enabling fractional units (see below).
-
-The final optional argument specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the `max` most significant units.
+The next optional argument `max` specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the `max` most significant units.
 
 	countdown(start, end, units).toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
 
-Specifying `max` as `2` ensures that only the two most significant units are displayed **(note the rounding of months)**:
+Specifying `max` as `2` ensures that only the two most significant units are displayed **(note the rounding of the least significant unit)**:
 
 	countdown(start, end, units, 2).toString() => "5 years, and 2 months"
 
 Negative or zero values of `max` are ignored.
+
+----
+#### Breaking change for v2.3.0!
+Previously, the `max` number of unit labels argument used to be specified when formatting in `timespan.toString(...)` and `timespan.toHTML(...)`. v2.3.0 moves it to `countdown(...)`, which improves efficiency as well as enabling fractional units (see below).
+
+----
+
+### The `digits` argument
+
+The final optional argument `digits` allows fractional values on the smallest unit.
+
+	countdown(start, end, units, max).toString() => "5 years, and 2 months"
+
+Specifying `digits` as `2` allows up to 2 digits beyond the decimal point to be displayed **(note the rounding of the least significant unit)**:
+
+	countdown(start, end, units, max, 2).toString(2) => "5 years, and 1.65 months"
+
+`digits` must be between `0` and `20`, inclusive.
+
+----
+#### Rounding
+With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of `"1.99 years"` would be truncated to `"1 year"`, as of v2.3.0 it will display as `"2 years"`.
+Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of `digits`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString(0)`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
+
+----
 
 ### Timespan result
 
@@ -145,26 +167,17 @@ The following time unit fields are only present if their corresponding units wer
 
 Finally, Timespan has two formatting methods each with some optional parameters:
 
-`String toString(digits)`: formats the Timespan object as an English sentence. The optional `digits` argument allows fractional values on the smallest unit. e.g., using the same input
+`String toString()`: formats the Timespan object as an English sentence. e.g., using the same input
 
-	ts.toString() => "5 years, and 2 months"
-	ts.toString(2) => "5 years, and 1.65 months"
+	ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
 
-`String toHTML(tagName, digits)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. Again, the optional `digits` argument restricts the total number of units returned. e.g., using the same input:
+`String toHTML(tagName)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g., using the same input:
+
+	ts.toHTML() => "<span>5 years</span>, <span>1 month</span>, <span>19 days</span>, <span>12 hours</span>, and <span>17 minutes</span>"
 
 	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17 minutes</em>"
-	ts.toHTML("em", 3) => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17.193 minutes</em>"
 
-Digits must be between `0` and `20`, inclusive. Negative values of `digits` are ignored.
-
-If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML()` will simply return an empty string.
-
-#### Rounding
-With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of `1.99 years` would be truncated to `1 year`, as of v2.3.0 it will display as `2 years`.  
-Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling `countdown(...)`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString(0)`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
-
-#### Breaking change for v2.3.0!
-Previously, the `max` number of unit labels used to be defined when formatting. Now it is specified with the units themselves (see above).
+If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML(...)` will simply return an empty string.
 
 ## License
 

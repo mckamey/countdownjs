@@ -186,7 +186,7 @@ test('contiguous daily countdown over 83 weeks', function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units);
+		var actual = countdown(start, end, units, 0, 20);
 		actual = {
 			weeks: actual.weeks,
 			days: actual.days,
@@ -226,7 +226,7 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units);
+		var actual = countdown(start, end, units, 0, 1);
 		actual = {
 			months: actual.months,
 			days: actual.days,
@@ -257,7 +257,7 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 	}
 });
 
-test('contiguous weekly countdown over 7 months', function() {
+test('contiguous weekly countdown over 7 months, out of bounds max & digits', function() {
 
 	var daySpan = 24 * 60 * 60 * 1000;
 	var units = countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS;
@@ -269,7 +269,7 @@ test('contiguous weekly countdown over 7 months', function() {
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units);
+		var actual = countdown(start, end, units, -1, 100);
 		actual = {
 			months: actual.months,
 			weeks: actual.weeks,
@@ -462,7 +462,53 @@ test('After leap day (UTC)', function() {
 	same(actual, expected, ''+start+' => '+end);
 });
 
-test('Almost 2 minutes', function() {
+test('Almost 2 minutes, rounded', function() {
+
+	var start = new Date(915220800000);
+	var end = new Date(915220919999);
+
+	var expected = countdown.clone({
+		start: new Date(915220800000),
+		end: new Date(915220919999),
+		units: countdown.DEFAULTS,
+		value: 119999,
+		years: 0,
+		months: 0,
+		days: 0,
+		hours: 0,
+		minutes: 2,
+		seconds: 0
+	});
+
+	var actual = countdown(start, end, countdown.DEFAULTS);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Almost 2 minutes, rounded 2 digits', function() {
+
+	var start = new Date(915220800000);
+	var end = new Date(915220919999);
+
+	var expected = countdown.clone({
+		start: new Date(915220800000),
+		end: new Date(915220919999),
+		units: countdown.DEFAULTS,
+		value: 119999,
+		years: 0,
+		months: 0,
+		days: 0,
+		hours: 0,
+		minutes: 2,
+		seconds: 0
+	});
+
+	var actual = countdown(start, end, countdown.DEFAULTS, NaN, 2);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Almost 2 minutes, full 3 digits', function() {
 
 	var start = new Date(915220800000);
 	var end = new Date(915220919999);
@@ -480,7 +526,7 @@ test('Almost 2 minutes', function() {
 		seconds: 59.999
 	});
 
-	var actual = countdown(start, end, countdown.DEFAULTS);
+	var actual = countdown(start, end, countdown.DEFAULTS, 0, 3);
 
 	same(actual, expected, ''+start+' => '+end);
 });

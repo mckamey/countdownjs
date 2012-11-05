@@ -40,9 +40,9 @@ In the final step of the algorithm, <em>Countdown.js</em> prunes the set of time
 
 <p>A simple but flexible API is the goal of <em>Countdown.js</em>. There is one global function with a set of static constants:</p>
 
-<pre><code>var timespan = countdown(start|callback, end|callback, units, max);</code></pre>
+<pre><code>var timespan = countdown(start|callback, end|callback, units, max, digits);</code></pre>
 
-<p>The parameters are a starting Date, ending Date, an optional set of units, and an optional maximum number of units. If units is left off, it defaults to <code>countdown.DEFAULTS</code>.</p>
+<p>The parameters are a starting Date, ending Date, an optional set of units, an optional maximum number of units, and an optional maximum number of decimal places on the smallest unit. <code>units</code> defaults to <code>countdown.DEFAULTS</code>, <code>max</code> defaults to <code>NaN</code> (all specified units), <code>digits</code> defaults to <code>0</code>.</p>
 
 <pre><code>countdown.ALL =
 	countdown.MILLENNIA |
@@ -119,20 +119,38 @@ window.clearInterval(timerId);</code></pre>
 
 <h3>The <code>max</code> argument</h3>
 
-<div id="v2.3.0-max" class="breaking-change">
-<h4>Breaking change in v2.3.0!</h4>
-<p>The <code>max</code> argument used to be specified in <code>timespan.toString(&hellip;)</code> and <code>timespan.toHTML(&hellip;)</code>. v2.3.0 moves it to <code>countdown(&hellip;)</code>, which improves efficiency as well as enabling fractional units (<a href="#v2.3.0-digits">see below</a>).</p>
-</div>
-
-The final optional argument specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the `max` most significant units.
+The next optional argument <code>max</code> specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the <code>max</code> most significant units.
 
 <pre><code>countdown(start, end, units).toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre>
 
-<p>Specifying <code>max</code> as <code>2</code> ensures that only the two most significant units are displayed <strong>(note the rounding of months)</strong>:</p>
+<p>Specifying <code>max</code> as <code>2</code> ensures that only the two most significant units are displayed <strong>(note the rounding of the least significant unit)</strong>:</p>
 
 <pre><code>countdown(start, end, units, 2).toString() => "5 years, and 2 months"</code></pre>
 
 <p>Negative or zero values of <code>max</code> are ignored.</code>
+
+<div id="v2.3.0-max" class="breaking-change">
+<h4>Breaking change in v2.3.0!</h4>
+<p>Previously, the <code>max</code> number of unit labels argument used to be specified when formatting in <code>timespan.toString(&hellip;)</code> and <code>timespan.toHTML(&hellip;)</code>. v2.3.0 moves it to <code>countdown(&hellip;)</code>, which improves efficiency as well as enabling fractional units (<a href="#v2.3.0-digits">see below</a>).</p>
+</div>
+
+<h3>The <code>digits</code> argument</h3>
+
+The final optional argument <code>digits</code> allows fractional values on the smallest unit.
+
+<pre><code>countdown(start, end, units, max).toString() => "5 years, and 2 months"</code></pre>
+
+<p>Specifying <code>digits</code> as <code>2</code> allows up to 2 digits beyond the decimal point to be displayed <strong>(note the rounding of the least significant unit)</strong>:</p>
+
+<pre><code>countdown(start, end, units, max, 2).toString(2) => "5 years, and 1.65 months"</code></pre>
+
+<p><code>digits</code> must be between <code>0</code> and <code>20</code>, inclusive.</p>
+
+<div id="v2.3.0-digits" class="breaking-change">
+<h4>Rounding</h4>
+<p>With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of <code>"1.99 years"</code> would be truncated to <code>"1 year"</code>, as of v2.3.0 it will display as <code>"2 years"</code>.</p>
+<p>Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of <code>digits</code>, you might want to set <code>ts.years = Math.floor(ts.years)</code> before calling <code>ts.toString(0)</code>. The vain might want you to set <code>ts.years = Math.min(ts.years, 39)</code>!</p>
+</div>
 
 <h3>Timespan result</h3>
 
@@ -166,30 +184,19 @@ The final optional argument specifies a maximum number of unit labels to display
 
 <ul>
 
-<li><code>String toString(digits)</code>: formats the Timespan object as an English sentence. The optional <code>digits</code> argument allows fractional values on the smallest unit. e.g., using the same input:
+<li><code>String toString()</code>: formats the Timespan object as an English sentence. e.g., using the same input:
 
-<pre><code>ts.toString() => "5 years, and 2 months"
-ts.toString(2) => "5 years, and 1.65 months"</code></pre></li>
+<pre><code>ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre></li>
 
-<li><code>String toHTML(tagName, digits)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used. Again, the optional <code>digits</code> argument allows fractional values on the smallest unit. e.g., using the same input:
+<li><code>String toHTML(tagName)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used. e.g., using the same input:
 
-<pre><code>ts.toHTML("em") => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17 minutes&lt;/em&gt;"
-ts.toHTML("em", 3) => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17.193 minutes&lt;/em&gt;"</code></pre></li>
+<pre><code>ts.toHTML() => "&lt;span&gt;5 years&lt;/span&gt;, &lt;span&gt;1 month&lt;/span&gt;, &lt;span&gt;19 days&lt;/span&gt;, &lt;span&gt;12 hours&lt;/span&gt;, and &lt;span&gt;17 minutes&lt;/span&gt;"
+
+ts.toHTML("em") => "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre></li>
 
 </ul>
 
-<p>Digits must be between <code>0</code> and <code>20</code>, inclusive. Negative values of <code>digits</code> are ignored.</p>
-
-<p>If <code>start</code> and <code>end</code> are exactly the same or the difference is below the requested granularity of units, then <code>toString()</code> and <code>toHTML()</code> will simply return an empty string.</p>
-
-<div id="v2.3.0-digits" class="breaking-change">
-<h4>Breaking change in v2.3.0!</h4>
-<p>Previously, the <code>max</code> number of unit labels used to be defined when formatting. Now it is specified with the units themselves (<a href="#v2.3.0-max">see above</a>).</p>
-
-<h4>Rounding</h4>
-<p>With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of <code>"1.99 years"</code> would be truncated to <code>"1 year"</code>, as of v2.3.0 it will display as <code>"2 years"</code>.</p>
-<p>Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(&hellip;)</code>, you might want to set <code>ts.years = Math.floor(ts.years)</code> before calling <code>ts.toString(0)</code>. The vain might want you to set <code>ts.years = Math.min(ts.years, 39)</code>!</p>
-</div>
+<p>If <code>start</code> and <code>end</code> are exactly the same or the difference is below the requested granularity of units, then <code>toString()</code> and <code>toHTML(&hellip;)</code> will simply return an empty string.</p>
 
 <h2>License</h2>
 

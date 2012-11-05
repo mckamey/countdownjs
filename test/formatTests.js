@@ -195,22 +195,22 @@ test('one of each; -2 max', function() {
 
 test('Almost 2 minutes, full 3 digits', function() {
 
-	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS);
+	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS, 0, 3);
 
 	var expected = "1 minute, and 59.999 seconds";
 
-	var actual = input.toString(3);
+	var actual = input.toString();
 
 	same(actual, expected, '');
 });
 
 test('Almost 2 minutes, rounded 2 digits', function() {
 
-	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS);
+	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS, 0, 2);
 
 	var expected = "2 minutes";
 
-	var actual = input.toString(2);
+	var actual = input.toString();
 
 	same(actual, expected, '');
 });
