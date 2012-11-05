@@ -124,11 +124,11 @@ module('Timespan.toString(number)');
 
 test('millennium, week; 1 max', function() {
 
-	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL, 1);
 
 	var expected = '1 millennium';
 
-	var actual = input.toString(1);
+	var actual = input.toString();
 
 	same(actual, expected, '');
 });
@@ -143,11 +143,12 @@ test('one of each; 3 max', function() {
 		(60 * 1000) + // min
 		1000 + // sec
 		1, // ms
-		countdown.ALL);
+		countdown.ALL,
+		3);
 
 	var expected = '1 millennium, 1 century, and 1 year';
 
-	var actual = input.toString(3);
+	var actual = input.toString();
 
 	same(actual, expected, '');
 });
@@ -162,11 +163,12 @@ test('one of each; zero max', function() {
 		(60 * 1000) + // min
 		1000 + // sec
 		1, // ms
-		countdown.ALL);
+		countdown.ALL,
+		0);
 
 	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
-	var actual = input.toString(0);
+	var actual = input.toString();
 
 	same(actual, expected, '');
 });
@@ -181,11 +183,34 @@ test('one of each; -2 max', function() {
 		(60 * 1000) + // min
 		1000 + // sec
 		1, // ms
-		countdown.ALL);
+		countdown.ALL,
+		-2);
 
 	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
-	var actual = input.toString(-2);
+	var actual = input.toString();
+
+	same(actual, expected, '');
+});
+
+test('Almost 2 minutes, full 3 digits', function() {
+
+	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS);
+
+	var expected = "1 minute, and 59.999 seconds";
+
+	var actual = input.toString(3);
+
+	same(actual, expected, '');
+});
+
+test('Almost 2 minutes, rounded 2 digits', function() {
+
+	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS);
+
+	var expected = "2 minutes";
+
+	var actual = input.toString(2);
 
 	same(actual, expected, '');
 });

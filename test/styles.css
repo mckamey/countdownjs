@@ -4,9 +4,9 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display
 	font-family: 'LeagueGothicRegular';
 	src: url('fonts/League_Gothic-webfont.eot');							/* IE9 Compat Modes */
 	src: url('fonts/League_Gothic-webfont.eot?iefix') format('eot'),		/* IE6-IE8 */
-	     url('fonts/League_Gothic-webfont.woff') format('woff'),			/* Modern Browsers */
-	     url('fonts/League_Gothic-webfont.ttf')  format('truetype'),		/* Safari, Android, iOS */
-	     url('fonts/League_Gothic-webfont.svg#svgFontName') format('svg');	/* Legacy iOS */
+		 url('fonts/League_Gothic-webfont.woff') format('woff'),			/* Modern Browsers */
+		 url('fonts/League_Gothic-webfont.ttf')	 format('truetype'),		/* Safari, Android, iOS */
+		 url('fonts/League_Gothic-webfont.svg#svgFontName') format('svg');	/* Legacy iOS */
 	font-weight: normal;
 	font-style: normal;
 }
@@ -78,6 +78,40 @@ footer {
 	margin: 4em auto;
 	padding-top: 1em;
 	text-align: right;
+}
+
+.breaking-change {
+	border: 1px solid #990000;
+	border-radius: 3px;
+	-mox-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	font-style: italic;
+	padding: 0 1em;
+	margin: 1em 0;
+}
+
+.breaking-change:target {
+	-webkit-animation: target-fade 5s 1;
+	-moz-animation: target-fade 5s 1;
+	-o-animation: target-fade 5s 1;
+	animation: target-fade 5s 1;
+}
+
+@-webkit-keyframes target-fade {
+	0% { background-color: #FFFF66; }
+	100% { background-color: rgba(0,0,0,0); }
+}
+@-moz-keyframes target-fade {
+	0% { background-color: #FFFF66; }
+	100% { background-color: rgba(0,0,0,0); }
+}
+@-o-keyframes target-fade {
+	0% { background-color: #FFFF66; }
+	100% { background-color: rgba(0,0,0,0); }
+}
+@keyframes target-fade {
+	0% { background-color: #FFFF66; }
+	100% { background-color: rgba(0,0,0,0); }
 }
 
 #counter {

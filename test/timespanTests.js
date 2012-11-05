@@ -462,4 +462,27 @@ test('After leap day (UTC)', function() {
 	same(actual, expected, ''+start+' => '+end);
 });
 
+test('Almost 2 minutes', function() {
+
+	var start = new Date(915220800000);
+	var end = new Date(915220919999);
+
+	var expected = countdown.clone({
+		start: new Date(915220800000),
+		end: new Date(915220919999),
+		units: countdown.DEFAULTS,
+		value: 119999,
+		years: 0,
+		months: 0,
+		days: 0,
+		hours: 0,
+		minutes: 1,
+		seconds: 59.999
+	});
+
+	var actual = countdown(start, end, countdown.DEFAULTS);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
 }catch(ex){alert(ex);}

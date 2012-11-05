@@ -18,7 +18,8 @@
 		var units = ~countdown.ALL,
 			chx = byId('countdown-units').getElementsByTagName('input'),
 			empty = byId('empty-label').value || '',
-			max = +(byId('max-units').value);
+			max = +(byId('max-units').value),
+			digits = +(byId('frac-digits').value);
 
 		for (var i=0, count=chx.length; i<count; i++) {
 			if (chx[i].checked) {
@@ -35,11 +36,11 @@
 			fff = +(byId('milliseconds').value);
 
 		var start = new Date(yyyy, MM, dd, HH, mm, ss, fff),
-			ts = countdown(start, null, units);
+			ts = countdown(start, null, units, max);
 
 		var counter = byId('counter'),
 			timespan = byId('timespan'),
-			msg = ts.toHTML('strong', max) || empty;
+			msg = ts.toHTML('strong', digits) || empty;
 
 		if (start.getTime() === 1357027199999) {
 			msg = (ts.value > 0) ?
