@@ -19,8 +19,15 @@
 		}
 	}
 
-	// adjust demo time for local timezone
-	byId('hours').value -= new Date().getTimezoneOffset()/60;
+	// Mayan Calendar: 1356088271111
+
+	// https://groups.google.com/group/alt.hypertext/msg/06dad279804cb3ba?dmode=source
+	var DEMO_MS = 681490580000,
+		DEMO_PAST = 'The World Wide Web debuted',
+		DEMO_FUTURE = 'The World Wide Web debuts';
+
+	// adjust initial demo time for local timezone
+	byId('hours').value -= new Date(DEMO_MS).getTimezoneOffset() / 60;
 
 	function update() {
 		var units = ~countdown.ALL,
@@ -50,10 +57,10 @@
 			timespan = byId('timespan'),
 			msg = ts.toHTML('strong') || empty;
 
-		if (start.getTime() === 1356088271111) {
+		if (start.getTime() === DEMO_MS) {
 			msg = (ts.value > 0) ?
-				'The world ended '+msg+' ago!?!' :
-				'The world ends in '+msg+'!';
+				DEMO_PAST+' '+msg+' ago!' :
+				DEMO_FUTURE+' in '+msg+'!';
 		}
 
 		counter.innerHTML = msg;
