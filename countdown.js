@@ -1,5 +1,5 @@
 /**
- * @license countdown.js v2.3.1 http://countdownjs.org
+ * @license countdown.js v2.3.2 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -892,7 +892,7 @@ function(module) {
 			start = null;
 
 		} else if (!(start instanceof Date)) {
-			start = (start && isFinite(start)) ? new Date(start) : null;
+			start = (start !== null && isFinite(start)) ? new Date(start) : null;
 		}
 
 		// ensure end date
@@ -901,7 +901,7 @@ function(module) {
 			end = null;
 
 		} else if (!(end instanceof Date)) {
-			end = (end && isFinite(end)) ? new Date(end) : null;
+			end = (end !== null && isFinite(end)) ? new Date(end) : null;
 		}
 
 		if (!start && !end) {
