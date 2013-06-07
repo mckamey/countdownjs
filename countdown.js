@@ -1,5 +1,5 @@
 /**
- * @license countdown.js v2.3.0 http://countdownjs.org
+ * @license countdown.js v2.3.1 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -869,8 +869,8 @@ function(module) {
 	 * API entry point
 	 * 
 	 * @public
-	 * @param {Date|number|null|function(Timespan)} start the starting date
-	 * @param {Date|number|null|function(Timespan)} end the ending date
+	 * @param {Date|number|null|function(Timespan,number)} start the starting date
+	 * @param {Date|number|null|function(Timespan,number)} end the ending date
 	 * @param {number} units the units to populate
 	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
@@ -892,7 +892,7 @@ function(module) {
 			start = null;
 
 		} else if (!(start instanceof Date)) {
-			start = (start !== null && isFinite(start)) ? new Date(start) : null;
+			start = (start && isFinite(start)) ? new Date(start) : null;
 		}
 
 		// ensure end date
@@ -901,7 +901,7 @@ function(module) {
 			end = null;
 
 		} else if (!(end instanceof Date)) {
-			end = (end !== null && isFinite(end)) ? new Date(end) : null;
+			end = (end && isFinite(end)) ? new Date(end) : null;
 		}
 
 		if (!start && !end) {
@@ -914,15 +914,17 @@ function(module) {
 		}
 
 		// base delay off units
-		var delay = getDelay(units);
-		var fn = function() {
-			callback(
-				populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max, digits)
-			);
-		};
+		var delay = getDelay(units),
+			timerId,
+			fn = function() {
+				callback(
+					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max, digits),
+					timerId
+				);
+			};
 
 		fn();
-		return setInterval(fn, delay);
+		return (timerId = setInterval(fn, delay));
 	}
 
 	/**
