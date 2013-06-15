@@ -120,6 +120,25 @@ test('one of each', function() {
 	same(actual, expected, '');
 });
 
+test('two of each', function() {
+
+	var input = countdown(0,
+		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(2 * 365 * 24 * 60 * 60 * 1000) + // year
+		(60 * 24 * 60 * 60 * 1000) + // month
+		(2* 60 * 60 * 1000) + // hour
+		(2* 60 * 1000) + // min
+		2* 1000 + // sec
+		2, // ms
+		countdown.ALL);
+
+	var expected = '2 millennia, 2 centuries, 2 years, 2 months, 2 weeks, 2 days, 2 hours, 2 minutes, 2 seconds, and 2 milliseconds';
+
+	var actual = input.toString();
+
+	same(actual, expected, '');
+});
+
 module('Timespan.toString(number)');
 
 test('millennium, week; 1 max', function() {
@@ -321,6 +340,138 @@ test('one of each', function() {
 		'<em>1 millisecond</em>';
 
 	var actual = input.toHTML('em');
+
+	same(actual, expected, '');
+});
+
+test('singular overrides', function() {
+
+	countdown.setLabels('a|b|c|d|e|f|g|h|i|j|k');
+
+	var input = countdown(0,
+		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(365 * 24 * 60 * 60 * 1000) + // year
+		(31 * 24 * 60 * 60 * 1000) + // month
+		(60 * 60 * 1000) + // hour
+		(60 * 1000) + // min
+		1000 + // sec
+		1, // ms
+		countdown.ALL);
+
+	var expected =
+		'<em>1 k</em>, ' +
+		'<em>1 j</em>, ' +
+		'<em>1 h</em>, ' +
+		'<em>1 g</em>, ' +
+		'<em>1 f</em>, ' +
+		'<em>1 e</em>, ' +
+		'<em>1 d</em>, ' +
+		'<em>1 c</em>, ' +
+		'<em>1 b</em>, and ' +
+		'<em>1 a</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
+test('plural overrides', function() {
+
+	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K');
+
+	var input = countdown(0,
+		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(2 * 365 * 24 * 60 * 60 * 1000) + // year
+		(2 * 30 * 24 * 60 * 60 * 1000) + // month
+		(2 * 60 * 60 * 1000) + // hour
+		(2 * 60 * 1000) + // min
+		2000 + // sec
+		2, // ms
+		countdown.ALL);
+
+	var expected =
+		'<em>2 K</em>, ' +
+		'<em>2 J</em>, ' +
+		'<em>2 H</em>, ' +
+		'<em>2 G</em>, ' +
+		'<em>2 F</em>, ' +
+		'<em>2 E</em>, ' +
+		'<em>2 D</em>, ' +
+		'<em>2 C</em>, ' +
+		'<em>2 B</em>, and ' +
+		'<em>2 A</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
+test('partial unit overrides', function() {
+
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
+
+	var input = countdown(0,
+		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(365 * 24 * 60 * 60 * 1000) + // year
+		(31 * 24 * 60 * 60 * 1000) + // month
+		(60 * 60 * 1000) + // hour
+		(60 * 1000) + // min
+		1000 + // sec
+		1, // ms
+		countdown.ALL);
+
+	var expected =
+		'<em>1 k</em>, ' +
+		'<em>1 century</em>, ' +
+		'<em>1 year</em>, ' +
+		'<em>1 g</em>, ' +
+		'<em>1 week</em>, ' +
+		'<em>1 e</em>, ' +
+		'<em>1 hour</em>, ' +
+		'<em>1 c</em>, ' +
+		'<em>1 second</em>, and ' +
+		'<em>1 a</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
+test('partial unit overrides', function() {
+
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
+
+	var input = countdown(0,
+		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
+		(2 * 365 * 24 * 60 * 60 * 1000) + // year
+		(2 * 30 * 24 * 60 * 60 * 1000) + // month
+		(2 * 60 * 60 * 1000) + // hour
+		(2 * 60 * 1000) + // min
+		2000 + // sec
+		2, // ms
+		countdown.ALL);
+
+	var expected =
+		'<em>2 millennia</em>, ' +
+		'<em>2 J</em>, ' +
+		'<em>2 H</em>, ' +
+		'<em>2 months</em>, ' +
+		'<em>2 F</em>, ' +
+		'<em>2 days</em>, ' +
+		'<em>2 D</em>, ' +
+		'<em>2 minutes</em>, ' +
+		'<em>2 B</em>, and ' +
+		'<em>2 milliseconds</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetLabels();
 
 	same(actual, expected, '');
 });
