@@ -1,5 +1,5 @@
 /**
- * @license countdown.js v2.3.2 http://countdownjs.org
+ * @license countdown.js v2.3.3 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -247,13 +247,103 @@ function(module) {
 
 	/**
 	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_MILLISECONDS	= 0;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_SECONDS		= 1;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_MINUTES		= 2;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_HOURS			= 3;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_DAYS			= 4;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_WEEKS			= 5;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_MONTHS		= 6;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_YEARS			= 7;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_DECADES		= 8;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_CENTURIES		= 9;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var LABEL_MILLENNIA		= 10;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {Array}
+	 */
+	var LABELS_SINGLUAR;
+
+	/**
+	 * @private
+	 * @const
+	 * @type {Array}
+	 */
+	var LABELS_PLURAL;
+
+	/**
+	 * @private
 	 * @param {number} value
-	 * @param {string} singular
-	 * @param {string} plural
+	 * @param {number} unit unit index into label list
 	 * @return {string}
 	 */
-	function plurality(value, singular, plural) {
-		return value+' '+((value === 1) ? singular : plural);
+	function plurality(value, unit) {
+		return value+' '+((value === 1) ? LABELS_SINGLUAR[unit] : LABELS_PLURAL[unit]);
 	}
 
 	/**
@@ -330,57 +420,57 @@ function(module) {
 
 		var value = ts.millennia;
 		if (value) {
-			list.push(plurality(value, 'millennium', 'millennia'));
+			list.push(plurality(value, LABEL_MILLENNIA));
 		}
 
 		value = ts.centuries;
 		if (value) {
-			list.push(plurality(value, 'century', 'centuries'));
+			list.push(plurality(value, LABEL_CENTURIES));
 		}
 
 		value = ts.decades;
 		if (value) {
-			list.push(plurality(value, 'decade', 'decades'));
+			list.push(plurality(value, LABEL_DECADES));
 		}
 
 		value = ts.years;
 		if (value) {
-			list.push(plurality(value, 'year', 'years'));
+			list.push(plurality(value, LABEL_YEARS));
 		}
 
 		value = ts.months;
 		if (value) {
-			list.push(plurality(value, 'month', 'months'));
+			list.push(plurality(value, LABEL_MONTHS));
 		}
 
 		value = ts.weeks;
 		if (value) {
-			list.push(plurality(value, 'week', 'weeks'));
+			list.push(plurality(value, LABEL_WEEKS));
 		}
 
 		value = ts.days;
 		if (value) {
-			list.push(plurality(value, 'day', 'days'));
+			list.push(plurality(value, LABEL_DAYS));
 		}
 
 		value = ts.hours;
 		if (value) {
-			list.push(plurality(value, 'hour', 'hours'));
+			list.push(plurality(value, LABEL_HOURS));
 		}
 
 		value = ts.minutes;
 		if (value) {
-			list.push(plurality(value, 'minute', 'minutes'));
+			list.push(plurality(value, LABEL_MINUTES));
 		}
 
 		value = ts.seconds;
 		if (value) {
-			list.push(plurality(value, 'second', 'seconds'));
+			list.push(plurality(value, LABEL_SECONDS));
 		}
 
 		value = ts.milliseconds;
 		if (value) {
-			list.push(plurality(value, 'millisecond', 'milliseconds'));
+			list.push(plurality(value, LABEL_MILLISECONDS));
 		}
 
 		return list;
@@ -1017,6 +1107,40 @@ function(module) {
 	 * @type {number}
 	 */
 	countdown.ALL = MILLENNIA|CENTURIES|DECADES|YEARS|MONTHS|WEEKS|DAYS|HOURS|MINUTES|SECONDS|MILLISECONDS;
+
+	/**
+	 * Override the unit labels
+	 * @public
+	 * @param {string|Array} singular a pipe ('|') delimited list of singular unit name overrides
+	 * @param {string|Array} plural a pipe ('|') delimited list of plural unit name overrides
+	 */
+	var setLabels = countdown.setLabels = function(singular, plural) {
+		singular = singular || [];
+		if (singular.split) {
+			singular = singular.split('|');
+		}
+		plural = plural || [];
+		if (plural.split) {
+			plural = plural.split('|');
+		}
+
+		for (var i=LABEL_MILLISECONDS; i<=LABEL_MILLENNIA; i++) {
+			// override any specified units
+			LABELS_SINGLUAR[i] = singular[i] || LABELS_SINGLUAR[i];
+			LABELS_PLURAL[i] = plural[i] || LABELS_PLURAL[i];
+		}
+	};
+
+	/**
+	 * Revert to the default unit labels
+	 * @public
+	 */
+	var resetLabels = countdown.resetLabels = function() {
+		LABELS_SINGLUAR = 'millisecond|second|minute|hour|day|week|month|year|decade|century|millennium'.split('|');
+		LABELS_PLURAL = 'milliseconds|seconds|minutes|hours|days|weeks|months|years|decades|centuries|millennia'.split('|');
+	};
+
+	resetLabels();
 
 	if (module && module.exports) {
 		module.exports = countdown;
