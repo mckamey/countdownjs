@@ -1,0 +1,13 @@
+\.DS_Store
+\.classpath
+\.project
+\.settings
+\.iml
+\.ipr
+\.iws
+.*\.bat
+.*\.psd
+.*\.ai
+.*\.sh
+ga.js
+robots.txt
