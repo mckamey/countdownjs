@@ -4,6 +4,7 @@
  * Licensed under The MIT License.
  */
 /*jshint bitwise:false */
+/*global window:true */
 
 /**
  * @public
@@ -1144,6 +1145,8 @@ function(module) {
 
 	if (module && module.exports) {
 		module.exports = countdown;
+	} else if (typeof window.define === 'function' && window.define.amd) {
+		window.define(countdown);
 	}
 
 	return countdown;
