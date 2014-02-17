@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.3.3 http://countdownjs.org
+ * @license countdown.js v2.3.4 http://countdownjs.org
  * Copyright (c)2006-2012 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -1147,7 +1147,9 @@ function(module) {
 		module.exports = countdown;
 
 	} else if (typeof window.define === 'function' && window.define.amd) {
-		window.define(countdown);
+		window.define('countdown', [], function() {
+			return countdown;
+		});
 	}
 
 	return countdown;
