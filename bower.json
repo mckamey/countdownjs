@@ -1,0 +1,28 @@
+{
+  "name": "countdownjs",
+  "version": "2.3.3",
+  "description": "A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.",
+  "main": "countdown.js",
+  "keywords": [
+    "countdown",
+    "timer",
+    "date",
+    "time",
+    "timespan",
+    "year",
+    "month",
+    "week",
+    "day",
+    "hour",
+    "minute",
+    "second"
+  ],
+  "authors": [
+    "Stephen M. McKamey (http://mck.me)"
+  ],
+  "license": "MIT",
+  "homepage": "http://countdownjs.org",
+  "ignore": [
+  	"./!(countdown.js)"
+  ]
+}
