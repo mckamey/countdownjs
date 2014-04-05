@@ -30,6 +30,10 @@
 
 	<target name="all" depends="compile.js">
 		<echo message="Build completed." />
+		<concat destfile="${build.dir}/countdown.demo.js">
+			<fileset file="${build.dir}/antixss.js" />
+			<fileset file="${build.dir}/countdown.min.js" />
+		</concat>
 	</target>
 
 </project>
