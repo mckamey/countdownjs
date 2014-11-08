@@ -4,14 +4,17 @@ A simple JavaScript API for producing an accurate, intuitive description of the 
 
 ----
 
-## Algorithm background
+## The Motivation
 
 While seemingly a trivial problem, the human descriptions for a span of time tend to be fuzzier than a computer naturally computes.
 More specifically, months are an inherently messed up unit of time.
 For instance, when a human says "in 1 month" how long do they mean? Banks often interpret this as *thirty days* but that is only correct one third of the time.
-People casually talk about a month being *four weeks long* but there is only one month in a year which is four weeks long and it is only that long three quarters of the time.
+People casually talk about a month being *four weeks long* but there is only one month in a year which is four weeks long and it is only that long about three quarters of the time.
 Even intuitively defining these terms can be problematic. For instance, what is the date one month after January 31st, 2001?
-JavaScript will happily call this March 3rd, 2001. Humans will typically debate either February 28th, 2001 or March 1st, 2001. There isn't a "right" answer, per se.
+JavaScript will happily call this March 3rd, 2001. Humans will typically debate either February 28th, 2001 or March 1st, 2001.
+It seems there isn't a "right" answer, per se.
+
+## The Algorithm
 
 *Countdown.js* emphasizes producing intuitively correct description of timespans which are consistent as time goes on.
 To do this, *Countdown.js* uses the concept of "today's date next month" to mean "a month from now".
@@ -20,8 +23,31 @@ The range of accuracy is only limited by the underlying system clock.
 
 *Countdown.js* approaches finding the difference between two times like an elementary school subtraction problem.
 Each unit acts like a base-10 place where any overflow is carried to the next highest unit, and any underflow is borrowed from the next highest unit.
-In base-10 subtraction, every column is worth 10 times the previous column. It is a little more complex since the conversions between the units of time are not the same and months are an inconsistent number of days.
-In the final step of the algorithm, *Countdown.js* prunes the set of time units down to only those requested, forcing larger units down to smaller.
+In base-10 subtraction, every column is worth 10 times the previous column.
+With time, it is a little more complex since the conversions between the units of time are not the same and months are an inconsistent number of days.
+Internally, *Countdown.js* maintains the concept of a "reference month" which determines how many days a given month or year represents.
+In the final step of the algorithm, *Countdown.js* then prunes the set of time units down to only those requested, forcing larger units down to smaller.
+
+### Time Zones & Daylight Savings Time
+
+As of v2.4, *Countdown.js* performs all calculations with respect to the **viewer's local time zone**.
+Earlier versions performed difference calculations in UTC, which is generally the correct way to do math on time.
+In this situation, however, an issue with using UTC happens when either of the two dates being worked with is within one time zone offset of a month boundary.
+If the UTC interpretation of that instant in time is in a different month than that of the local time zone, then the viewer's perception is that the calculated time span is incorrect.
+This is the heart of the problem that *Countdown.js* attempts to solve: talking about spans of time can be ambiguous.
+Nearly all bugs reported for *Countdown.js* have been because the viewer expects something different due to their particular time zone.
+
+JavaScript ([ECMA-262](http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.7)) only works with dates as UTC or the local time zone, not arbitrary time zones.
+By design, all JS Date objects represent an instant in time (milliseconds since midnight Jan 1, 1970 **in UTC**) interpreted as the user's local time.
+Since most humans think about local time not UTC, it the most makes sense to perform this time span algorithm in reference to local time.
+
+Daylight Savings Time further complicates things, creating hours which get repeated and hours which cannot exist.
+*Countdown.js* effectively ignores these edge cases and talks about time preferring human intuition about time over surprise exactness.
+Example: A viewer asks for the description from noon the day before a daylight savings begins to noon the day after.
+A computer would answer "23 hours" whereas a human would confidently answer "1 day" even after being reminded to "Spring Forward".
+The computer is technically more accurate but this is not the value that humans actually expect or desire.
+Humans pretend that time is simple and makes sense. Unfortunately, humans made time far more complex than it needed to be with time zones and daylight savings.
+UTC simplifies time but at the cost of being inconsistent with human experience.
 
 ----
 
@@ -68,8 +94,11 @@ The parameters `start` and `end` can be one of several values:
 
 1. `null` which indicates "now".
 2. a JavaScript `Date` object.
-3. a number specifying the number of milliseconds since midnight Jan 1, 1970 UTC (i.e., the "UNIX epoch").
-4. a callback function accepting one timespan argument.
+3. a `number` specifying the number of milliseconds since midnight Jan 1, 1970 UTC (i.e., the "UNIX epoch").
+4. a callback `function` accepting one timespan argument.
+
+To reference a specific instant in time, either use a `number` offset from the epoch, or a JavaScript `Date` object instantiated with the specific offset from the epoch.
+In JavaScript, if a `Date` object is instantiated using year/month/date/etc values, then those values are interpreted interpreted in reference to the browser's local time zone and daylight savings settings.
 
 If `start` and `end` are both specified, then repeated calls to `countdown(...)` will always return the same result.
 If one date argument is left `null` while the other is provided, then repeated calls will count up if the provided date is in the past, and it will count down if the provided date is in the future.
@@ -117,7 +146,7 @@ Specifying `max` as `2` ensures that only the two most significant units are dis
 Negative or zero values of `max` are ignored.
 
 ----
-#### Breaking change for v2.3.0!
+#### Breaking change in v2.3.0!
 Previously, the `max` number of unit labels argument used to be specified when formatting in `timespan.toString(...)` and `timespan.toHTML(...)`. v2.3.0 moves it to `countdown(...)`, which improves efficiency as well as enabling fractional units (see below).
 
 ----
@@ -136,7 +165,9 @@ Specifying `digits` as `2` allows up to 2 digits beyond the decimal point to be 
 
 ----
 #### Rounding
+
 With the calculations of fractional units in v2.3.0, the smallest displayed unit now properly rounds. Previously, the equivalent of `"1.99 years"` would be truncated to `"1 year"`, as of v2.3.0 it will display as `"2 years"`.
+
 Typically, this is the intended interpretation but there are a few circumstances where people expect the truncated behavior. For example, people often talk about their age as the lowest possible interpretation. e.g., they claim "39-years-old" right up until the morning of their 40th birthday (some people do even for years after!). In these cases, after calling <code>countdown(start,end,units,max,20)</code> with the largest possible number of `digits`, you might want to set `ts.years = Math.floor(ts.years)` before calling `ts.toString()`. The vain might want you to set `ts.years = Math.min(ts.years, 39)`!
 
 ----
@@ -148,7 +179,7 @@ The return value is a Timespan object which always contains the following fields
 - `Date start`: the starting date object used for the calculation
 - `Date end`: the ending date object used for the calculation
 - `Number units`: the units specified
-- `Number value`: total milliseconds difference (i.e., `end` - `start`). If `end` < `start` then `value` will be negative.
+- `Number value`: total milliseconds difference (i.e., `end` - `start`). If `end < start` then `value` will be negative.
 
 Typically the `end` occurs after `start`, but if the arguments were reversed, the only difference is `Timespan.value` will be negative. The sign of `value` can be used to determine if the event occurs in the future or in the past. 
 
@@ -167,7 +198,7 @@ The following time unit fields are only present if their corresponding units wer
 
 Finally, Timespan has two formatting methods each with some optional parameters:
 
-`String toString()`: formats the Timespan object as an English sentence. e.g., using the same input
+`String toString()`: formats the Timespan object as an English sentence. e.g., using the same input:
 
 	ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
 
@@ -185,7 +216,8 @@ Distributed under the terms of [The MIT license][2].
 
 ----
 
-Copyright (c) 2006-2011 Stephen M. McKamey
+Copyright (c) 2006-2014 [Stephen M. McKamey][3]
 
   [1]: http://countdownjs.org
   [2]: https://bitbucket.org/mckamey/countdown.js/raw/tip/LICENSE.txt
+  [3]: http://mck.me
