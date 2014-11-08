@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.4.0 http://countdownjs.org
+ * @license countdown.js v2.4.1 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -325,17 +325,27 @@ function(module) {
 
 	/**
 	 * @private
-	 * @const
 	 * @type {Array}
 	 */
 	var LABELS_SINGLUAR;
 
 	/**
 	 * @private
-	 * @const
 	 * @type {Array}
 	 */
 	var LABELS_PLURAL;
+
+	/**
+	 * @private
+	 * @type {string}
+	 */
+	var LABEL_LAST;
+
+	/**
+	 * @private
+	 * @type {string}
+	 */
+	var LABEL_DELIM;
 
 	/**
 	 * @private
@@ -379,9 +389,9 @@ function(module) {
 			return '';
 		}
 		if (count > 1) {
-			label[count-1] = 'and '+label[count-1];
+			label[count-1] = LABEL_LAST+label[count-1];
 		}
-		return label.join(', ');
+		return label.join(LABEL_DELIM);
 	};
 
 	/**
@@ -404,9 +414,9 @@ function(module) {
 			label[i] = '<'+tag+'>'+label[i]+'</'+tag+'>';
 		}
 		if (--count) {
-			label[count] = 'and '+label[count];
+			label[count] = LABEL_LAST+label[count];
 		}
-		return label.join(', ');
+		return label.join(LABEL_DELIM);
 	};
 
 	/**
@@ -1116,8 +1126,10 @@ function(module) {
 	 * @public
 	 * @param {string|Array} singular a pipe ('|') delimited list of singular unit name overrides
 	 * @param {string|Array} plural a pipe ('|') delimited list of plural unit name overrides
+	 * @param {string} last a prefix for the last unit if more than one (default: 'and ')
+	 * @param {string} delim a delimiter to use between units (default: ', ')
 	 */
-	var setLabels = countdown.setLabels = function(singular, plural) {
+	var setLabels = countdown.setLabels = function(singular, plural, last, delim) {
 		singular = singular || [];
 		if (singular.split) {
 			singular = singular.split('|');
@@ -1132,6 +1144,9 @@ function(module) {
 			LABELS_SINGLUAR[i] = singular[i] || LABELS_SINGLUAR[i];
 			LABELS_PLURAL[i] = plural[i] || LABELS_PLURAL[i];
 		}
+
+		LABEL_LAST = ('string' === typeof last) ? last : LABEL_LAST;
+		LABEL_DELIM = ('string' === typeof delim) ? delim : LABEL_DELIM;
 	};
 
 	/**
@@ -1141,6 +1156,8 @@ function(module) {
 	var resetLabels = countdown.resetLabels = function() {
 		LABELS_SINGLUAR = 'millisecond|second|minute|hour|day|week|month|year|decade|century|millennium'.split('|');
 		LABELS_PLURAL = 'milliseconds|seconds|minutes|hours|days|weeks|months|years|decades|centuries|millennia'.split('|');
+		LABEL_LAST = 'and ';
+		LABEL_DELIM = ', ';
 	};
 
 	resetLabels();

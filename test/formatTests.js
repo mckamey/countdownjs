@@ -517,18 +517,18 @@ test('Plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K');
+	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K', '', ' &amp; ');
 
 	var expected =
-		'<em>2 K</em>, ' +
-		'<em>2 J</em>, ' +
-		'<em>2 H</em>, ' +
-		'<em>2 G</em>, ' +
-		'<em>2 F</em>, ' +
-		'<em>2 E</em>, ' +
-		'<em>2 D</em>, ' +
-		'<em>2 C</em>, ' +
-		'<em>2 B</em>, and ' +
+		'<em>2 K</em> &amp; ' +
+		'<em>2 J</em> &amp; ' +
+		'<em>2 H</em> &amp; ' +
+		'<em>2 G</em> &amp; ' +
+		'<em>2 F</em> &amp; ' +
+		'<em>2 E</em> &amp; ' +
+		'<em>2 D</em> &amp; ' +
+		'<em>2 C</em> &amp; ' +
+		'<em>2 B</em> &amp; ' +
 		'<em>2 A</em>';
 
 	var actual = input.toHTML('em');
@@ -556,18 +556,18 @@ test('Partial singular overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|', 'finally ', ' + ');
 
 	var expected =
-		'<em>1 k</em>, ' +
-		'<em>1 century</em>, ' +
-		'<em>1 year</em>, ' +
-		'<em>1 g</em>, ' +
-		'<em>1 week</em>, ' +
-		'<em>1 e</em>, ' +
-		'<em>1 hour</em>, ' +
-		'<em>1 c</em>, ' +
-		'<em>1 second</em>, and ' +
+		'<em>1 k</em> + ' +
+		'<em>1 century</em> + ' +
+		'<em>1 year</em> + ' +
+		'<em>1 g</em> + ' +
+		'<em>1 week</em> + ' +
+		'<em>1 e</em> + ' +
+		'<em>1 hour</em> + ' +
+		'<em>1 c</em> + ' +
+		'<em>1 second</em> + finally ' +
 		'<em>1 a</em>';
 
 	var actual = input.toHTML('em');
@@ -595,7 +595,7 @@ test('Partial plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|', '');
 
 	var expected =
 		'<em>2 millennia</em>, ' +
@@ -606,7 +606,7 @@ test('Partial plural overrides', function() {
 		'<em>2 days</em>, ' +
 		'<em>2 D</em>, ' +
 		'<em>2 minutes</em>, ' +
-		'<em>2 B</em>, and ' +
+		'<em>2 B</em>, ' +
 		'<em>2 milliseconds</em>';
 
 	var actual = input.toHTML('em');
