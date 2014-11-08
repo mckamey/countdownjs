@@ -59,7 +59,10 @@ test('2 sec, 1 ms', function() {
 
 test('1 day, reversed', function() {
 
-	var input = countdown(24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var start = new Date(1970, 0, 1, 0, 0, 0, 0);
+	var end = new Date(1970, 0, 1, 0, 0, 0, 0);
+	end.setDate( end.getDate()+1 );
+	var input = countdown(end, start, countdown.ALL);
 
 	var expected = '1 day';
 
@@ -70,7 +73,11 @@ test('1 day, reversed', function() {
 
 test('15 days', function() {
 
-	var input = countdown(15 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var start = new Date(1970, 0, 1, 0, 0, 0, 0);
+	var end = new Date(1970, 0, 1, 0, 0, 0, 0);
+	end.setDate( end.getDate()+15 );
+
+	var input = countdown(end, start, countdown.ALL);
 
 	var expected = '2 weeks, and 1 day';
 
@@ -81,7 +88,11 @@ test('15 days', function() {
 
 test('32 days', function() {
 
-	var input = countdown(32 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var start = new Date(1970, 0, 1, 0, 0, 0, 0);
+	var end = new Date(1970, 0, 1, 0, 0, 0, 0);
+	end.setDate( end.getDate()+32 );
+
+	var input = countdown(end, start, countdown.ALL);
 
 	var expected = '1 month, and 1 day';
 
@@ -90,9 +101,16 @@ test('32 days', function() {
 	same(actual, expected, '');
 });
 
-test('millennium, week', function() {
+test('Millennium, week', function() {
 
-	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var start = new Date(0);
+	var end = new Date(10 * 100 * 365.25 * 24 * 60 * 60 * 1000);// millennium, week
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '1 millennium, and 1 week';
 
@@ -101,17 +119,23 @@ test('millennium, week', function() {
 	same(actual, expected, '');
 });
 
-test('one of each', function() {
+test('One of each', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
@@ -120,17 +144,23 @@ test('one of each', function() {
 	same(actual, expected, '');
 });
 
-test('two of each', function() {
+test('Two of each', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(2 * 365 * 24 * 60 * 60 * 1000) + // year
-		(60 * 24 * 60 * 60 * 1000) + // month
-		(2* 60 * 60 * 1000) + // hour
-		(2* 60 * 1000) + // min
-		2* 1000 + // sec
-		2, // ms
-		countdown.ALL);
+		(31 + 29) * (24 * 60 * 60 * 1000) + // month
+		(2 * 60 * 60 * 1000) + // hour
+		(2 * 60 * 1000) + // min
+		(2 * 1000) + // sec
+		2); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '2 millennia, 2 centuries, 2 years, 2 months, 2 weeks, 2 days, 2 hours, 2 minutes, 2 seconds, and 2 milliseconds';
 
@@ -141,9 +171,16 @@ test('two of each', function() {
 
 module('Timespan.toString(number)');
 
-test('millennium, week; 1 max', function() {
+test('Millennium, week; 1 max', function() {
 
-	var input = countdown(0, 10 * 100 * 365.25 * 24 * 60 * 60 * 1000, countdown.ALL, 1);
+	var start = new Date(0);
+	var end = new Date(10 * 100 * 365.25 * 24 * 60 * 60 * 1000);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL, 1);
 
 	var expected = '1 millennium';
 
@@ -152,18 +189,41 @@ test('millennium, week; 1 max', function() {
 	same(actual, expected, '');
 });
 
-test('one of each; 3 max', function() {
+test('Millennium, week; 2 max', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(10 * 100 * 365.25 * 24 * 60 * 60 * 1000);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL, 2);
+
+	var expected = '1 millennium, and 1 week';
+
+	var actual = input.toString();
+
+	same(actual, expected, '');
+});
+
+test('One of each; 3 max', function() {
+
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL,
-		3);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL, 3);
 
 	var expected = '1 millennium, 1 century, and 1 year';
 
@@ -172,18 +232,23 @@ test('one of each; 3 max', function() {
 	same(actual, expected, '');
 });
 
-test('one of each; zero max', function() {
+test('One of each; zero max', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL,
-		0);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL, 0);
 
 	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
@@ -192,18 +257,23 @@ test('one of each; zero max', function() {
 	same(actual, expected, '');
 });
 
-test('one of each; -2 max', function() {
+test('One of each; -2 max', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL,
-		-2);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL, -2);
 
 	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
 
@@ -249,7 +319,14 @@ test('Zero', function() {
 
 test('1 ms', function() {
 
-	var input = countdown(0, 1, countdown.ALL);
+	var start = new Date(0);
+	var end = new Date(1);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>1 millisecond</span>';
 
@@ -260,7 +337,14 @@ test('1 ms', function() {
 
 test('2 days, reversed', function() {
 
-	var input = countdown(2 * 24 * 60 * 60 * 1000, 0, countdown.ALL);
+	var start = new Date(2 * 24 * 60 * 60 * 1000);
+	var end = new Date(0);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>2 days</span>';
 
@@ -271,7 +355,14 @@ test('2 days, reversed', function() {
 
 test('8 days', function() {
 
-	var input = countdown(0, 8 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var start = new Date(0);
+	var end = new Date(8 * 24 * 60 * 60 * 1000);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>1 week</span>, and <span>1 day</span>';
 
@@ -282,7 +373,14 @@ test('8 days', function() {
 
 test('70 days', function() {
 
-	var input = countdown(0, 70 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var start = new Date(0);
+	var end = new Date(70 * 24 * 60 * 60 * 1000);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>2 months</span>, <span>1 week</span>, and <span>4 days</span>';
 
@@ -293,7 +391,14 @@ test('70 days', function() {
 
 test('366 days, non-leap year', function() {
 
-	var input = countdown(0, 366 * 24 * 60 * 60 * 1000, countdown.ALL);
+	var start = new Date(0);
+	var end = new Date(366 * 24 * 60 * 60 * 1000);
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>1 year</span>, and <span>1 day</span>';
 
@@ -305,8 +410,13 @@ test('366 days, non-leap year', function() {
 test('366 days, leap year', function() {
 
 	var start = new Date(2000, 0, 1);
+	var end = new Date(start.getTime() + 366 * 24 * 60 * 60 * 1000);
 
-	var input = countdown(start, start.getTime() + 366 * 24 * 60 * 60 * 1000, countdown.ALL);
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected = '<span>1 year</span>';
 
@@ -315,17 +425,23 @@ test('366 days, leap year', function() {
 	same(actual, expected, '');
 });
 
-test('one of each', function() {
+test('One of each', function() {
 
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
 
 	var expected =
 		'<em>1 millennium</em>, ' +
@@ -344,19 +460,25 @@ test('one of each', function() {
 	same(actual, expected, '');
 });
 
-test('singular overrides', function() {
+test('Singular overrides', function() {
 
-	countdown.setLabels('a|b|c|d|e|f|g|h|i|j|k');
-
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setLabels('a|b|c|d|e|f|g|h|i|j|k');
 
 	var expected =
 		'<em>1 k</em>, ' +
@@ -377,19 +499,25 @@ test('singular overrides', function() {
 	same(actual, expected, '');
 });
 
-test('plural overrides', function() {
+test('Plural overrides', function() {
 
-	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K');
-
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(2 * 365 * 24 * 60 * 60 * 1000) + // year
-		(2 * 30 * 24 * 60 * 60 * 1000) + // month
+		(31 + 29) * (24 * 60 * 60 * 1000) + // month
 		(2 * 60 * 60 * 1000) + // hour
 		(2 * 60 * 1000) + // min
-		2000 + // sec
-		2, // ms
-		countdown.ALL);
+		(2 * 1000) + // sec
+		2); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K');
 
 	var expected =
 		'<em>2 K</em>, ' +
@@ -410,19 +538,25 @@ test('plural overrides', function() {
 	same(actual, expected, '');
 });
 
-test('partial unit overrides', function() {
+test('Partial singular overrides', function() {
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
-
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(11 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(365 * 24 * 60 * 60 * 1000) + // year
 		(31 * 24 * 60 * 60 * 1000) + // month
 		(60 * 60 * 1000) + // hour
 		(60 * 1000) + // min
 		1000 + // sec
-		1, // ms
-		countdown.ALL);
+		1); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
 
 	var expected =
 		'<em>1 k</em>, ' +
@@ -443,19 +577,25 @@ test('partial unit overrides', function() {
 	same(actual, expected, '');
 });
 
-test('partial unit overrides', function() {
+test('Partial plural overrides', function() {
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
-
-	var input = countdown(0,
+	var start = new Date(0);
+	var end = new Date(
 		(22 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennium, century, week, day
 		(2 * 365 * 24 * 60 * 60 * 1000) + // year
-		(2 * 30 * 24 * 60 * 60 * 1000) + // month
+		(31 + 29) * (24 * 60 * 60 * 1000) + // month
 		(2 * 60 * 60 * 1000) + // hour
 		(2 * 60 * 1000) + // min
-		2000 + // sec
-		2, // ms
-		countdown.ALL);
+		(2 * 1000) + // sec
+		2); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|');
 
 	var expected =
 		'<em>2 millennia</em>, ' +

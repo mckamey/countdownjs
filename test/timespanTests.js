@@ -17,6 +17,24 @@ countdown.clone = function(map) {
 	return ts;
 };
 
+var formatTZ = function(date) {
+	var tz = -(date instanceof Date ? date : new Date()).getTimezoneOffset();
+	if (!tz) {
+		return 'UTC';
+	}
+
+	var tzStr = ''+Math.abs(tz % 60);
+	if (tzStr.length < 2) {
+		tzStr = '0'+tzStr;
+	}
+	tzStr = Math.abs(tz / 60) + tzStr;
+	if (tzStr.length < 4) {
+		tzStr = '0'+tzStr;
+	}
+
+	return 'UTC'+((tz < 0) ? '-' : '+') +tzStr;
+};
+
 module('countdown(...)');
 
 test('Zero', function() {
@@ -131,9 +149,8 @@ test('5 min, reversed', function() {
 	same(actual, expected, '');
 });
 
-test('constant 1 month span, daily over 5 years', function() {
+test('Constant 1 month span, daily over 5 years', function() {
 
-	var daySpan = 24 * 60 * 60 * 1000;
 	var start = new Date(1999, 10, 1, 12, 0, 0);
 
 	var expected = countdown.clone({
@@ -157,10 +174,10 @@ test('constant 1 month span, daily over 5 years', function() {
 	for (var t=0, range=5*365.2425; t<range; t++) {
 		// end should always be one month away
 		var end = new Date(start.getTime());
-		end.setUTCMonth( end.getUTCMonth()+1 );
+		end.setMonth( end.getMonth()+1 );
 
 		// skip situations like 'Jan 31st + month'
-		if (end.getUTCMonth() === start.getUTCMonth()+1) {
+		if (end.getMonth() === start.getMonth()+1) {
 			expected.start = start;
 			expected.end = end;
 			expected.value = end.getTime() - start.getTime();
@@ -171,22 +188,21 @@ test('constant 1 month span, daily over 5 years', function() {
 		}
 
 		// add a day
-		start = new Date( start.getTime()+daySpan );
+		start.setDate( start.getDate()+1 );
 	}
 });
 
-test('contiguous daily countdown over 83 weeks', function() {
+test('Contiguous daily countdown over 83 weeks', function() {
 
-	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.WEEKS | countdown.DAYS | countdown.HOURS;
+	var UNITS = countdown.WEEKS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(2007, 10, 10, 5, 30, 0);
 	var end = new Date(2009, 5, 14, 16, 0, 0);
 
-	var expected = { weeks: 83, days: 1, hours: 9.5 };
+	var expected = { weeks: 83, days: 1, hours: 10.5 };
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units, 0, 20);
+		var actual = countdown(start, end, UNITS, 0, 20);
 		actual = {
 			weeks: actual.weeks,
 			days: actual.days,
@@ -196,7 +212,7 @@ test('contiguous daily countdown over 83 weeks', function() {
 		same(actual, expected, '');
 
 		// add a day
-		start = new Date( start.getTime()+daySpan );
+		start.setDate( start.getDate()+1 );
 
 		// store
 		if (actual.days) {
@@ -215,18 +231,18 @@ test('contiguous daily countdown over 83 weeks', function() {
 	}
 });
 
-test('contiguous daily countdown over 1 year 7 months', function() {
+test('Contiguous daily countdown over 1 year 7 months', function() {
 
-	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.DAYS | countdown.HOURS;
+	var DAY_IN_MS = 24 * 60 * 60 * 1000;
+	var UNITS = countdown.MONTHS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(2006, 10, 10, 5, 30, 0);
 	var end = new Date(2008, 5, 14, 16, 0, 0);
 
-	var expected = { months: 19, days: 4, hours: 9.5 };
+	var expected = { months: 19, days: 4, hours: 10.5 };
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units, 0, 1);
+		var actual = countdown(start, end, UNITS, 0, 1);
 		actual = {
 			months: actual.months,
 			days: actual.days,
@@ -236,7 +252,7 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 		same(actual, expected, '');
 
 		// add a day
-		start = new Date( start.getTime()+daySpan );
+		start.setDate( start.getDate()+1 );
 
 		// set up next iteration
 		if (actual.days) {
@@ -246,7 +262,7 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 				hours: actual.hours
 			};
 		} else {
-			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
+			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / DAY_IN_MS);
 			expected = {
 				months: actual.months-1,
 				// the number of days in start month minus one
@@ -257,19 +273,19 @@ test('contiguous daily countdown over 1 year 7 months', function() {
 	}
 });
 
-test('contiguous weekly countdown over 7 months, out of bounds max & digits', function() {
+test('Contiguous weekly countdown over 7 months, out of bounds max & digits', function() {
 
-	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS;
+	var DAY_IN_MS = 24 * 60 * 60 * 1000;
+	var UNITS = countdown.MONTHS | countdown.WEEKS | countdown.DAYS | countdown.HOURS;
 	var start = new Date(1999, 10, 10, 5, 30, 0);
 	var end = new Date(2001, 5, 14, 16, 0, 0);
 
 	// calc by days since easier
-	var prev = { months: 19, days: 4, hours: 9.5 };
+	var prev = { months: 19, days: 4, hours: 10.5 };
 
 	while (start.getTime() < end.getTime()) {
 
-		var actual = countdown(start, end, units, -1, 100);
+		var actual = countdown(start, end, UNITS, -1, 100);
 		actual = {
 			months: actual.months,
 			weeks: actual.weeks,
@@ -288,7 +304,7 @@ test('contiguous weekly countdown over 7 months, out of bounds max & digits', fu
 		same(actual, expected, '');
 
 		// add a day
-		start = new Date( start.getTime()+daySpan );
+		start.setDate( start.getDate()+1 );
 
 		// set up next iteration
 		if (prev.days) {
@@ -298,7 +314,7 @@ test('contiguous weekly countdown over 7 months, out of bounds max & digits', fu
 				hours: prev.hours
 			};
 		} else {
-			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
+			var daysInStart = Math.round((new Date(start.getFullYear(), start.getMonth()+1, 15).getTime() - new Date(start.getFullYear(), start.getMonth(), 15).getTime()) / DAY_IN_MS);
 			prev = {
 				months: prev.months-1,
 				// the number of days in start month minus one
@@ -309,10 +325,10 @@ test('contiguous weekly countdown over 7 months, out of bounds max & digits', fu
 	}
 });
 
-test('contiguous daily count up over 10 years', function() {
+test('Contiguous daily count up over 10 years', function() {
 
-	var daySpan = 24 * 60 * 60 * 1000;
-	var units = countdown.MONTHS | countdown.DAYS;
+	var DAY_IN_MS = 24 * 60 * 60 * 1000;
+	var UNITS = countdown.MONTHS | countdown.DAYS;
 	var start = new Date(1995, 0, 1, 12, 0, 0);
 	var end = new Date(start.getTime());
 	var goalTime = new Date(2005, 0, 1, 12, 0, 0).getTime();
@@ -321,7 +337,7 @@ test('contiguous daily count up over 10 years', function() {
 
 	while (end.getTime() < goalTime) {
 
-		var actual = countdown(start, end, units);
+		var actual = countdown(start, end, UNITS);
 		actual = {
 			months: actual.months,
 			days: actual.days
@@ -329,10 +345,10 @@ test('contiguous daily count up over 10 years', function() {
 
 		same(actual, expected, '');
 
-		var daysInEnd = Math.round((new Date(end.getFullYear(), end.getMonth()+1, 15).getTime() - new Date(end.getFullYear(), end.getMonth(), 15).getTime()) / (24 * 60 * 60 * 1000));
+		var daysInEnd = Math.round((new Date(end.getFullYear(), end.getMonth()+1, 15).getTime() - new Date(end.getFullYear(), end.getMonth(), 15).getTime()) / DAY_IN_MS);
 
 		// add a day
-		end = new Date( end.getTime()+daySpan );
+		end.setDate( end.getDate + 1 );
 
 		// set up next iteration
 		// compare to the number of days in before month end
@@ -350,14 +366,14 @@ test('contiguous daily count up over 10 years', function() {
 	}
 });
 
-test('Underflow bug', function() {
+test('Underflow bug ('+formatTZ(2011, 11, 1)+')', function() {
 
-	var start = new Date(2011, 11, 1);
+	var start = new Date(2011, 11, 1, 0, 0, 0, 0);
 	var end = new Date(2011, 11, 31, 23, 59, 59, 999);
 
 	var expected = countdown.clone({
-		start: new Date(2011, 11, 1),
-		end: new Date(2011, 11, 31, 23, 59, 59, 999),
+		start: new Date(start.getTime()),
+		end: new Date(end.getTime()),
 		units: countdown.ALL,
 		value: end.getTime() - start.getTime(),
 		millennia: 0,
@@ -378,10 +394,94 @@ test('Underflow bug', function() {
 	same(actual, expected, ''+start+' => '+end);
 });
 
+test('Extra day bug ('+formatTZ(2014, 6, 3)+')', function() {
+
+	var start = new Date(2014, 6, 1, 0, 0, 0, 0);
+	var end = new Date(2014, 6, 3, 17, 52, 49, 209);
+
+	var expected = countdown.clone({
+		start: new Date(start.getTime()),
+		end: new Date(end.getTime()),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 2,
+		hours: 17,
+		minutes: 52,
+		seconds: 49,
+		milliseconds: 209
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Daylight Savings Time ('+formatTZ(1318451880000)+')', function() {
+
+	var start = new Date(2011, 9, 12, 13, 38, 0);
+	var end = new Date(2013, 11, 2, 14, 0, 0);
+
+	var expected = countdown.clone({
+		start: new Date(start.getTime()),
+		end: new Date(end.getTime()),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 2,
+		months: 1,
+		weeks: 3,
+		days: 0,
+		hours: 0,
+		minutes: 22,
+		seconds: 0,
+		milliseconds: 0
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Reference month ordering', function() {
+
+	var start = new Date(2015, 1, 1, 0, 0, 0);
+	var end = new Date(2014, 9, 27, 12, 00, 0);
+
+	var expected = countdown.clone({
+		start: new Date(start.getTime()),
+		end: new Date(end.getTime()),
+		units: countdown.ALL,
+		value: end.getTime() - start.getTime(),
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 3,
+		weeks: 0,
+		days: 4,
+		hours: 12,
+		minutes: 0,
+		seconds: 0,
+		milliseconds: 0
+	});
+
+	var actual = countdown(start, end, countdown.ALL);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
 test('Before leap day', function() {
 
 	var start = new Date(2012, 1, 28, 13, 14, 30, 109);
-	var end = new Date(2012, 1, 29, 17, 46, 22, 111);// Leap day 2012
+	var end = new Date(2012, 1, 29, 17, 46, 22, 111); // Leap day 2012
 
 	var expected = countdown.clone({
 		start: new Date(2012, 1, 28, 13, 14, 30, 109),
@@ -408,7 +508,7 @@ test('Before leap day', function() {
 
 test('After leap day (local)', function() {
 
-	var start = new Date(2012, 1, 29, 17, 46, 22, 111);// Leap day 2012
+	var start = new Date(2012, 1, 29, 17, 46, 22, 111); // Leap day 2012
 	var end = new Date(2012, 2, 1, 13, 14, 30, 109);
 
 	var expected = countdown.clone({
@@ -436,8 +536,8 @@ test('After leap day (local)', function() {
 
 test('After leap day (UTC)', function() {
 
-	var start = new Date(1330537582111);// Leap day 2012
-	var end = new Date(1330607670109);
+	var start = new Date(1330537582111); // 2012-02-29T17:46:22.111Z, Leap day 2012
+	var end = new Date(1330607670109);   // 2012-03-01T13:14:30.109Z
 
 	var expected = countdown.clone({
 		start: new Date(1330537582111),
@@ -464,8 +564,8 @@ test('After leap day (UTC)', function() {
 
 test('Almost 2 minutes, rounded', function() {
 
-	var start = new Date(915220800000);
-	var end = new Date(915220919999);
+	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
+	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
 	var expected = countdown.clone({
 		start: new Date(915220800000),
@@ -487,8 +587,8 @@ test('Almost 2 minutes, rounded', function() {
 
 test('Almost 2 minutes, rounded 2 digits', function() {
 
-	var start = new Date(915220800000);
-	var end = new Date(915220919999);
+	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
+	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
 	var expected = countdown.clone({
 		start: new Date(915220800000),
@@ -510,8 +610,8 @@ test('Almost 2 minutes, rounded 2 digits', function() {
 
 test('Almost 2 minutes, full 3 digits', function() {
 
-	var start = new Date(915220800000);
-	var end = new Date(915220919999);
+	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
+	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
 	var expected = countdown.clone({
 		start: new Date(915220800000),

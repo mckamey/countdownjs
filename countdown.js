@@ -1,7 +1,7 @@
 /*global window */
 /**
- * @license countdown.js v2.3.4 http://countdownjs.org
- * Copyright (c)2006-2012 Stephen M. McKamey.
+ * @license countdown.js v2.4.0 http://countdownjs.org
+ * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
 /*jshint bitwise:false */
@@ -208,7 +208,7 @@ function(module) {
 		var prevTime = ref.getTime();
 
 		// increment month by shift
-		ref.setUTCMonth( ref.getUTCMonth() + shift );
+		ref.setMonth( ref.getMonth() + shift );
 
 		// this is the trickiest since months vary in length
 		return Math.round( (ref.getTime() - prevTime) / MILLISECONDS_PER_DAY );
@@ -224,7 +224,7 @@ function(module) {
 
 		// increment month by 1
 		var b = new Date(a);
-		b.setUTCMonth( ref.getUTCMonth() + 1 );
+		b.setMonth( ref.getMonth() + 1 );
 
 		// this is the trickiest since months vary in length
 		return Math.round( (b.getTime() - a) / MILLISECONDS_PER_DAY );
@@ -240,7 +240,7 @@ function(module) {
 
 		// increment year by 1
 		var b = new Date(a);
-		b.setUTCFullYear( ref.getUTCFullYear() + 1 );
+		b.setFullYear( ref.getFullYear() + 1 );
 
 		// this is the trickiest since years (periodically) vary in length
 		return Math.round( (b.getTime() - a) / MILLISECONDS_PER_DAY );
@@ -874,40 +874,42 @@ function(module) {
 	 * 
 	 * @private
 	 * @param {Timespan} ts
-	 * @param {Date} start the starting date
-	 * @param {Date} end the ending date
+	 * @param {?Date} start the starting date
+	 * @param {?Date} end the ending date
 	 * @param {number} units the units to populate
 	 * @param {number} max number of labels to output
 	 * @param {number} digits max number of decimal digits to output
 	 */
 	function populate(ts, start, end, units, max, digits) {
-		ts.start = start;
-		ts.end = end;
+		var now = new Date();
+
+		ts.start = start = start || now;
+		ts.end = end = end || now;
 		ts.units = units;
 
 		ts.value = end.getTime() - start.getTime();
 		if (ts.value < 0) {
 			// swap if reversed
-			var temp = end;
+			var tmp = end;
 			end = start;
-			start = temp;
+			start = tmp;
 		}
 
 		// reference month for determining days in month
-		ts.refMonth = new Date(start.getFullYear(), start.getMonth(), 15);
+		ts.refMonth = new Date(start.getFullYear(), start.getMonth(), 15, 12, 0, 0);
 		try {
 			// reset to initial deltas
 			ts.millennia = 0;
 			ts.centuries = 0;
 			ts.decades = 0;
-			ts.years = end.getUTCFullYear() - start.getUTCFullYear();
-			ts.months = end.getUTCMonth() - start.getUTCMonth();
+			ts.years = end.getFullYear() - start.getFullYear();
+			ts.months = end.getMonth() - start.getMonth();
 			ts.weeks = 0;
-			ts.days = end.getUTCDate() - start.getUTCDate();
-			ts.hours = end.getUTCHours() - start.getUTCHours();
-			ts.minutes = end.getUTCMinutes() - start.getUTCMinutes();
-			ts.seconds = end.getUTCSeconds() - start.getUTCSeconds();
-			ts.milliseconds = end.getUTCMilliseconds() - start.getUTCMilliseconds();
+			ts.days = end.getDate() - start.getDate();
+			ts.hours = end.getHours() - start.getHours();
+			ts.minutes = end.getMinutes() - start.getMinutes();
+			ts.seconds = end.getSeconds() - start.getSeconds();
+			ts.milliseconds = end.getMilliseconds() - start.getMilliseconds();
 
 			ripple(ts);
 			pruneUnits(ts, units, max, digits);
@@ -1001,7 +1003,7 @@ function(module) {
 		}
 
 		if (!callback) {
-			return populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max, digits);
+			return populate(new Timespan(), /** @type{?Date} */(start), /** @type{?Date} */(end), units, max, digits);
 		}
 
 		// base delay off units
@@ -1009,7 +1011,7 @@ function(module) {
 			timerId,
 			fn = function() {
 				callback(
-					populate(new Timespan(), /** @type{Date} */(start||new Date()), /** @type{Date} */(end||new Date()), units, max, digits),
+					populate(new Timespan(), /** @type{?Date} */(start), /** @type{?Date} */(end), units, max, digits),
 					timerId
 				);
 			};
@@ -1146,7 +1148,7 @@ function(module) {
 	if (module && module.exports) {
 		module.exports = countdown;
 
-	} else if (typeof window.define === 'function' && window.define.amd) {
+	} else if (typeof window.define === 'function' && typeof window.define.amd !== 'undefined') {
 		window.define('countdown', [], function() {
 			return countdown;
 		});
