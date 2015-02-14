@@ -32,7 +32,7 @@
 	function update() {
 		var units = ~countdown.ALL,
 			chx = byId('countdown-units').getElementsByTagName('input'),
-			empty = byId('empty-label').value || '',
+			empty = byId('empty-label').value || null,
 			max = +(byId('max-units').value),
 			digits = +(byId('frac-digits').value);
 
@@ -55,7 +55,7 @@
 
 		var counter = byId('counter'),
 			timespan = byId('timespan'),
-			msg = ts.toHTML('strong') || empty;
+			msg = ts.toHTML('strong', empty);
 
 		if (start.getTime() === DEMO_MS) {
 			msg = (ts.value > 0) ?
