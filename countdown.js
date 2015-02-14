@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.4.2 http://countdownjs.org
+ * @license countdown.js v2.5.0 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -247,6 +247,85 @@ function(module) {
 	}
 
 	/**
+	 * Applies the Timespan to the given date.
+	 * 
+	 * @private
+	 * @param {Timespan} ts
+	 * @param {Date=} date
+	 * @return {Date}
+	 */
+	function addToDate(ts, date) {
+		date = (date instanceof Date) || ((date !== null) && isFinite(date)) ? new Date(+date) : new Date();
+		if (!ts) {
+			return date;
+		}
+
+		// if there is a value field, use it directly
+		var value = +ts.value || 0;
+		if (value) {
+			date.setTime(date.getTime() + value);
+			return date;
+		}
+
+		value = +ts.millennia || 0;
+		if (value) {
+			value *= CENTURIES_PER_MILLENNIUM;
+		}
+
+		value += +ts.centuries || 0;
+		if (value) {
+			value *= DECADES_PER_CENTURY;
+		}
+
+		value += +ts.decades || 0;
+		if (value) {
+			value *= YEARS_PER_DECADE;
+		}
+
+		value += +ts.years || 0;
+		if (value) {
+			date.setFullYear(date.getFullYear() + value);
+		}
+
+		value = +ts.months || 0;
+		if (value) {
+			date.setMonth(date.getMonth() + value);
+		}
+
+		value = +ts.weeks || 0;
+		if (value) {
+			value *= DAYS_PER_WEEK;
+		}
+
+		value += +ts.days || 0;
+		if (value) {
+			date.setDate(date.getDate() + value);
+		}
+
+		value = +ts.hours || 0;
+		if (value) {
+			date.setHours(date.getHours() + value);
+		}
+
+		value = +ts.minutes || 0;
+		if (value) {
+			date.setMinutes(date.getMinutes() + value);
+		}
+
+		value = +ts.seconds || 0;
+		if (value) {
+			date.setSeconds(date.getSeconds() + value);
+		}
+
+		value = +ts.milliseconds || 0;
+		if (value) {
+			date.setMilliseconds(date.getMilliseconds() + value);
+		}
+
+		return date;
+	}
+
+	/**
 	 * @private
 	 * @const
 	 * @type {number}
@@ -384,7 +463,6 @@ function(module) {
 	/**
 	 * Formats the Timespan as a sentence
 	 * 
-	 * @private
 	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
 	 */
@@ -406,7 +484,6 @@ function(module) {
 	/**
 	 * Formats the Timespan as a sentence in HTML
 	 * 
-	 * @private
 	 * @param {string=} tag HTML tag name to wrap each value
 	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
@@ -430,6 +507,16 @@ function(module) {
 
 		var last = LABEL_LAST+label.pop();
 		return label.join(LABEL_DELIM)+last;
+	};
+
+	/**
+	 * Applies the Timespan to the given date
+	 * 
+	 * @param {Date=} date the date to which the timespan is added.
+	 * @return {Date}
+	 */
+	Timespan.prototype.addTo = function(date) {
+		return addToDate(this, date);
 	};
 
 	/**
@@ -1003,21 +1090,45 @@ function(module) {
 		digits = (digits > 0) ? (digits < 20) ? Math.round(digits) : 20 : 0;
 
 		// ensure start date
+		var startTS = null;
 		if ('function' === typeof start) {
 			callback = start;
 			start = null;
 
 		} else if (!(start instanceof Date)) {
-			start = (start !== null && isFinite(start)) ? new Date(start) : null;
+			if ((start !== null) && isFinite(start)) {
+				start = new Date(+start);
+			} else {
+				if ('object' === typeof startTS) {
+					startTS = start;
+				}
+				start = null;
+			}
 		}
 
 		// ensure end date
+		var endTS = null;
 		if ('function' === typeof end) {
 			callback = end;
 			end = null;
 
 		} else if (!(end instanceof Date)) {
-			end = (end !== null && isFinite(end)) ? new Date(end) : null;
+			if ((end !== null) && isFinite(end)) {
+				end = new Date(+end);
+			} else {
+				if ('object' === typeof end) {
+					endTS = end;
+				}
+				end = null;
+			}
+		}
+
+		// must wait to interpret timespans until after resolving dates
+		if (startTS) {
+			start = addToDate(startTS, end);
+		}
+		if (endTS) {
+			end = addToDate(endTS, start);
 		}
 
 		if (!start && !end) {
@@ -1143,7 +1254,7 @@ function(module) {
 	 * @param {string} delim a delimiter to use between all other units (default: ', ')
 	 * @param {string} empty a label to use when all units are zero (default: '')
 	 */
-	var setLabels = countdown.setLabels = function(singular, plural, last, delim, empty) {
+	countdown.setLabels = function(singular, plural, last, delim, empty) {
 		singular = singular || [];
 		if (singular.split) {
 			singular = singular.split('|');
