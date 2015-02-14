@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.4.1 http://countdownjs.org
+ * @license countdown.js v2.4.2 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -349,12 +349,18 @@ function(module) {
 
 	/**
 	 * @private
+	 * @type {string}
+	 */
+	var LABEL_NOW;
+
+	/**
+	 * @private
 	 * @param {number} value
 	 * @param {number} unit unit index into label list
 	 * @return {string}
 	 */
 	function plurality(value, unit) {
-		return value+' '+((value === 1) ? LABELS_SINGLUAR[unit] : LABELS_PLURAL[unit]);
+		return value+((value === 1) ? LABELS_SINGLUAR[unit] : LABELS_PLURAL[unit]);
 	}
 
 	/**
@@ -376,47 +382,54 @@ function(module) {
 	function Timespan() {}
 
 	/**
-	 * Formats the Timespan as a sentance
+	 * Formats the Timespan as a sentence
 	 * 
 	 * @private
+	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
 	 */
-	Timespan.prototype.toString = function() {
+	Timespan.prototype.toString = function(emptyLabel) {
 		var label = formatList(this);
 
 		var count = label.length;
 		if (!count) {
-			return '';
+			return emptyLabel ? ''+emptyLabel : LABEL_NOW;
 		}
-		if (count > 1) {
-			label[count-1] = LABEL_LAST+label[count-1];
+		if (count === 1) {
+			return label[0];
 		}
-		return label.join(LABEL_DELIM);
+
+		var last = LABEL_LAST+label.pop();
+		return label.join(LABEL_DELIM)+last;
 	};
 
 	/**
-	 * Formats the Timespan as HTML
+	 * Formats the Timespan as a sentence in HTML
 	 * 
 	 * @private
-	 * @param {string} tag HTML tag name to wrap each value
+	 * @param {string=} tag HTML tag name to wrap each value
+	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
 	 */
-	Timespan.prototype.toHTML = function(tag) {
+	Timespan.prototype.toHTML = function(tag, emptyLabel) {
 		tag = tag || 'span';
 		var label = formatList(this);
 
 		var count = label.length;
 		if (!count) {
-			return '';
+			emptyLabel = emptyLabel || LABEL_NOW;
+			return emptyLabel ? '<'+tag+'>'+emptyLabel+'</'+tag+'>' : emptyLabel;
 		}
 		for (var i=0; i<count; i++) {
 			// wrap each unit in tag
 			label[i] = '<'+tag+'>'+label[i]+'</'+tag+'>';
 		}
-		if (--count) {
-			label[count] = LABEL_LAST+label[count];
+		if (count === 1) {
+			return label[0];
 		}
-		return label.join(LABEL_DELIM);
+
+		var last = LABEL_LAST+label.pop();
+		return label.join(LABEL_DELIM)+last;
 	};
 
 	/**
@@ -1126,10 +1139,11 @@ function(module) {
 	 * @public
 	 * @param {string|Array} singular a pipe ('|') delimited list of singular unit name overrides
 	 * @param {string|Array} plural a pipe ('|') delimited list of plural unit name overrides
-	 * @param {string} last a prefix for the last unit if more than one (default: 'and ')
-	 * @param {string} delim a delimiter to use between units (default: ', ')
+	 * @param {string} last a delimiter before the last unit (default: ' and ')
+	 * @param {string} delim a delimiter to use between all other units (default: ', ')
+	 * @param {string} empty a label to use when all units are zero (default: '')
 	 */
-	var setLabels = countdown.setLabels = function(singular, plural, last, delim) {
+	var setLabels = countdown.setLabels = function(singular, plural, last, delim, empty) {
 		singular = singular || [];
 		if (singular.split) {
 			singular = singular.split('|');
@@ -1147,6 +1161,7 @@ function(module) {
 
 		LABEL_LAST = ('string' === typeof last) ? last : LABEL_LAST;
 		LABEL_DELIM = ('string' === typeof delim) ? delim : LABEL_DELIM;
+		LABEL_NOW = ('string' === typeof empty) ? empty : LABEL_NOW;
 	};
 
 	/**
@@ -1154,10 +1169,11 @@ function(module) {
 	 * @public
 	 */
 	var resetLabels = countdown.resetLabels = function() {
-		LABELS_SINGLUAR = 'millisecond|second|minute|hour|day|week|month|year|decade|century|millennium'.split('|');
-		LABELS_PLURAL = 'milliseconds|seconds|minutes|hours|days|weeks|months|years|decades|centuries|millennia'.split('|');
-		LABEL_LAST = 'and ';
+		LABELS_SINGLUAR = ' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium'.split('|');
+		LABELS_PLURAL = ' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia'.split('|');
+		LABEL_LAST = ' and ';
 		LABEL_DELIM = ', ';
+		LABEL_NOW = '';
 	};
 
 	resetLabels();

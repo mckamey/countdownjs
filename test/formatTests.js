@@ -2,6 +2,47 @@ try{
 
 module('Timespan.toString()');
 
+test('Default empty label override', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	countdown.setLabels(null, null, null, null, 'Now.');
+
+	var expected = 'Now.';
+
+	var actual = input.toString();
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
+test('Empty label override', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	var expected = 'Now!';
+
+	var actual = input.toString('Now!');
+
+	same(actual, expected, '');
+});
+
+test('Default empty label override, overridden', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	countdown.setLabels(null, null, null, null, 'Now.');
+
+	var expected = 'Right now!';
+
+	var actual = input.toString('Right now!');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
 test('Zero', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
@@ -39,7 +80,7 @@ test('1 sec, 2 ms', function() {
 
 	var input = countdown(1000, 2002, countdown.ALL);
 
-	var expected = '1 second, and 2 milliseconds';
+	var expected = '1 second and 2 milliseconds';
 
 	var actual = input.toString();
 
@@ -50,7 +91,7 @@ test('2 sec, 1 ms', function() {
 
 	var input = countdown(10000, 12001, countdown.ALL);
 
-	var expected = '2 seconds, and 1 millisecond';
+	var expected = '2 seconds and 1 millisecond';
 
 	var actual = input.toString();
 
@@ -79,7 +120,7 @@ test('15 days', function() {
 
 	var input = countdown(end, start, countdown.ALL);
 
-	var expected = '2 weeks, and 1 day';
+	var expected = '2 weeks and 1 day';
 
 	var actual = input.toString();
 
@@ -94,7 +135,7 @@ test('32 days', function() {
 
 	var input = countdown(end, start, countdown.ALL);
 
-	var expected = '1 month, and 1 day';
+	var expected = '1 month and 1 day';
 
 	var actual = input.toString();
 
@@ -112,7 +153,7 @@ test('Millennium, week', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '1 millennium, and 1 week';
+	var expected = '1 millennium and 1 week';
 
 	var actual = input.toString();
 
@@ -137,7 +178,7 @@ test('One of each', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
+	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second and 1 millisecond';
 
 	var actual = input.toString();
 
@@ -162,7 +203,7 @@ test('Two of each', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '2 millennia, 2 centuries, 2 years, 2 months, 2 weeks, 2 days, 2 hours, 2 minutes, 2 seconds, and 2 milliseconds';
+	var expected = '2 millennia, 2 centuries, 2 years, 2 months, 2 weeks, 2 days, 2 hours, 2 minutes, 2 seconds and 2 milliseconds';
 
 	var actual = input.toString();
 
@@ -200,7 +241,7 @@ test('Millennium, week; 2 max', function() {
 
 	var input = countdown(start, end, countdown.ALL, 2);
 
-	var expected = '1 millennium, and 1 week';
+	var expected = '1 millennium and 1 week';
 
 	var actual = input.toString();
 
@@ -225,7 +266,7 @@ test('One of each; 3 max', function() {
 
 	var input = countdown(start, end, countdown.ALL, 3);
 
-	var expected = '1 millennium, 1 century, and 1 year';
+	var expected = '1 millennium, 1 century and 1 year';
 
 	var actual = input.toString();
 
@@ -250,7 +291,7 @@ test('One of each; zero max', function() {
 
 	var input = countdown(start, end, countdown.ALL, 0);
 
-	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
+	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second and 1 millisecond';
 
 	var actual = input.toString();
 
@@ -275,7 +316,7 @@ test('One of each; -2 max', function() {
 
 	var input = countdown(start, end, countdown.ALL, -2);
 
-	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second, and 1 millisecond';
+	var expected = '1 millennium, 1 century, 1 year, 1 month, 1 week, 1 day, 1 hour, 1 minute, 1 second and 1 millisecond';
 
 	var actual = input.toString();
 
@@ -286,7 +327,7 @@ test('Almost 2 minutes, full 3 digits', function() {
 
 	var input = countdown(new Date(915220800000), new Date(915220919999), countdown.DEFAULTS, 0, 3);
 
-	var expected = "1 minute, and 59.999 seconds";
+	var expected = "1 minute and 59.999 seconds";
 
 	var actual = input.toString();
 
@@ -306,6 +347,47 @@ test('Almost 2 minutes, rounded 2 digits', function() {
 
 module('Timespan.toHTML(tag)');
 
+test('Default empty label override', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	countdown.setLabels(null, null, null, null, 'Now.');
+
+	var expected = '<span>Now.</span>';
+
+	var actual = input.toHTML();
+
+	countdown.resetLabels();
+
+	same(actual, expected, '<span>Now.</span>');
+});
+
+test('Empty label override', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	var expected = '<span>Now!</span>';
+
+	var actual = input.toHTML(null, 'Now!');
+
+	same(actual, expected, '');
+});
+
+test('Default empty label override, overridden', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	countdown.setLabels(null, null, null, null, 'Now.');
+
+	var expected = '<span>Right now!</span>';
+
+	var actual = input.toHTML(null, 'Right now!');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+});
+
 test('Zero', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
@@ -313,6 +395,17 @@ test('Zero', function() {
 	var expected = '';
 
 	var actual = input.toHTML();
+
+	same(actual, expected, '');
+});
+
+test('Empty label and tag override', function() {
+
+	var input = countdown(0, 0, countdown.ALL);
+
+	var expected = '<em>Now!</em>';
+
+	var actual = input.toHTML('em', 'Now!');
 
 	same(actual, expected, '');
 });
@@ -364,7 +457,7 @@ test('8 days', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '<span>1 week</span>, and <span>1 day</span>';
+	var expected = '<span>1 week</span> and <span>1 day</span>';
 
 	var actual = input.toHTML();
 
@@ -382,7 +475,7 @@ test('70 days', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '<span>2 months</span>, <span>1 week</span>, and <span>4 days</span>';
+	var expected = '<span>2 months</span>, <span>1 week</span> and <span>4 days</span>';
 
 	var actual = input.toHTML();
 
@@ -400,7 +493,7 @@ test('366 days, non-leap year', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	var expected = '<span>1 year</span>, and <span>1 day</span>';
+	var expected = '<span>1 year</span> and <span>1 day</span>';
 
 	var actual = input.toHTML();
 
@@ -452,7 +545,7 @@ test('One of each', function() {
 		'<em>1 day</em>, ' +
 		'<em>1 hour</em>, ' +
 		'<em>1 minute</em>, ' +
-		'<em>1 second</em>, and ' +
+		'<em>1 second</em> and ' +
 		'<em>1 millisecond</em>';
 
 	var actual = input.toHTML('em');
@@ -478,7 +571,7 @@ test('Singular overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels('a|b|c|d|e|f|g|h|i|j|k');
+	countdown.setLabels(' a| b| c| d| e| f| g| h| i| j| k');
 
 	var expected =
 		'<em>1 k</em>, ' +
@@ -489,7 +582,7 @@ test('Singular overrides', function() {
 		'<em>1 e</em>, ' +
 		'<em>1 d</em>, ' +
 		'<em>1 c</em>, ' +
-		'<em>1 b</em>, and ' +
+		'<em>1 b</em> and ' +
 		'<em>1 a</em>';
 
 	var actual = input.toHTML('em');
@@ -517,7 +610,7 @@ test('Plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(null, 'A|B|C|D|E|F|G|H|I|J|K', '', ' &amp; ');
+	countdown.setLabels(null, ' A| B| C| D| E| F| G| H| I| J| K', ' &amp; ', ' &amp; ');
 
 	var expected =
 		'<em>2 K</em> &amp; ' +
@@ -556,7 +649,7 @@ test('Partial singular overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|', 'finally ', ' + ');
+	countdown.setLabels(' a|| c|| e|| g|| i|| k', '| B|| D|| F|| H|| J|', ' + finally ', ' + ');
 
 	var expected =
 		'<em>1 k</em> + ' +
@@ -595,7 +688,7 @@ test('Partial plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels('a||c||e||g||i||k', '|B||D||F||H||J|', '');
+	countdown.setLabels(' a|| c|| e|| g|| i|| k', '| B|| D|| F|| H|| J|', ', ');
 
 	var expected =
 		'<em>2 millennia</em>, ' +

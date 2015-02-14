@@ -86,7 +86,7 @@ This allows a very minimal call to accept the defaults and get the time since/un
 
 This will produce a human readable description like:
 
-	11 years, 8 months, 4 days, 10 hours, 12 minutes, and 43 seconds
+	11 years, 8 months, 4 days, 10 hours, 12 minutes and 43 seconds
 
 ### The `start` / `end` arguments
 
@@ -137,11 +137,11 @@ To explicitly exclude units like "not weeks and not milliseconds" combine bitwis
 
 The next optional argument `max` specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the `max` most significant units.
 
-	countdown(start, end, units).toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
+	countdown(start, end, units).toString() => "5 years, 1 month, 19 days, 12 hours and 17 minutes"
 
 Specifying `max` as `2` ensures that only the two most significant units are displayed **(note the rounding of the least significant unit)**:
 
-	countdown(start, end, units, 2).toString() => "5 years, and 2 months"
+	countdown(start, end, units, 2).toString() => "5 years and 2 months"
 
 Negative or zero values of `max` are ignored.
 
@@ -155,11 +155,11 @@ Previously, the `max` number of unit labels argument used to be specified when f
 
 The final optional argument `digits` allows fractional values on the smallest unit.
 
-	countdown(start, end, units, max).toString() => "5 years, and 2 months"
+	countdown(start, end, units, max).toString() => "5 years and 2 months"
 
 Specifying `digits` as `2` allows up to 2 digits beyond the decimal point to be displayed **(note the rounding of the least significant unit)**:
 
-	countdown(start, end, units, max, 2).toString() => "5 years, and 1.65 months"
+	countdown(start, end, units, max, 2).toString() => "5 years and 1.65 months"
 
 `digits` must be between `0` and `20`, inclusive.
 
@@ -198,17 +198,76 @@ The following time unit fields are only present if their corresponding units wer
 
 Finally, Timespan has two formatting methods each with some optional parameters:
 
-`String toString()`: formats the Timespan object as an English sentence. e.g., using the same input:
+`String toString(emptyLabel)`: formats the Timespan object as an English sentence. e.g., using the same input:
 
-	ts.toString() => "5 years, 1 month, 19 days, 12 hours, and 17 minutes"
+	ts.toString() => "5 years, 1 month, 19 days, 12 hours and 17 minutes"
 
-`String toHTML(tagName)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g., using the same input:
+`String toHTML(tagName, emptyLabel)`: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "`span`" is used. e.g., using the same input:
 
-	ts.toHTML() => "<span>5 years</span>, <span>1 month</span>, <span>19 days</span>, <span>12 hours</span>, and <span>17 minutes</span>"
+	ts.toHTML() => "<span>5 years</span>, <span>1 month</span>, <span>19 days</span>, <span>12 hours</span> and <span>17 minutes</span>"
 
-	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em>, and <em>17 minutes</em>"
+	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em> and <em>17 minutes</em>"
 
-If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML(...)` will simply return an empty string.
+If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML(...)` will return the empty label or an simply an empty string if no alternate label is supplied.
+
+----
+
+### Localization
+
+Very basic localization is supported via the static `setLabels` and `resetLabels` methods. These change the functionality for all timespans on the page.
+
+	countdown.resetLabels();
+
+	countdown.setLabels(singular, plural, last, delim, empty);
+
+Where `singular` is a pipe (`'|'`) delimited ascending list of singular unit name overrides, `plural` is a pipe (`'|'`) delimited ascending list of plural unit name overrides, `last` is a delimiter before the last unit (default: `' and '`), `delim` is a delimiter to use between all other units (default: `', '`), and `empty` is a label to use when all units are zero (default: `''`).. Notice that the spacing is part of the label.
+
+The following examples would translate the output into Brazilian Portuguese and French, respectively:
+
+	countdown.setLabels(
+		' milissegundo| segundo| minuto| hora| dia| semana| mês| ano| década| século| milênio',
+		' milissegundos| segundos| minutos| horas| dias| semanas| meses| anos| décadas| séculos| milênios',
+		' e ',
+		' + ',
+		'agora');
+
+	countdown.setLabels(
+		' milliseconde| seconde| minute| heure| jour| semaine| mois| année| décennie| siècle| millénaire',
+		' millisecondes| secondes| minutes| heures| jours| semaines| mois| années| décennies| siècles| millénaires',
+		' et ',
+		', ',
+		'maintenant');
+
+If you only wanted to override some of the labels just leave the other pipe-delimited places empty. Similarly, leave off any of the delimiter arguments which do not need overriding.
+
+	countdown.setLabels(
+		'||| hr| d',
+		'ms| sec|||| wks|| yrs',
+		', and finally ');
+
+	ts.toString() => "1 millennium, 2 centuries, 5 yrs, 1 month, 7 wks, 19 days, 1 hr, 2 minutes, 17 sec, and finally 1 millisecond"
+
+If you only wanted to override the empty label:
+
+	countdown.setLabels(
+		null,
+		null,
+		null,
+		null,
+		'Now.');
+
+	ts.toString() => "Now."
+
+The following would be effectively the same as calling `countdown.resetLabels()`:
+
+	countdown.setLabels(
+		' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium',
+		' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
+		' and ',
+		', ',
+		'');
+
+----
 
 ## License
 

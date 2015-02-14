@@ -99,7 +99,7 @@ countdown.DEFAULTS =
 
 <p>This will produce a human readable description like:</p>
 
-<pre><code>11 years, 8 months, 4 days, 10 hours, 12 minutes, and 43 seconds</code></pre>
+<pre><code>11 years, 8 months, 4 days, 10 hours, 12 minutes and 43 seconds</code></pre>
 
 <h3>The <code>start</code> / <code>end</code> arguments</h3>
 
@@ -154,11 +154,11 @@ window.clearInterval(timerId);</code></pre>
 
 <p>The next optional argument <code>max</code> specifies a maximum number of unit labels to display. This allows specifying which units are interesting but only displaying the <code>max</code> most significant units.</p>
 
-<pre><code>countdown(start, end, units).toString() =&gt; "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre>
+<pre><code>countdown(start, end, units).toString() =&gt; "5 years, 1 month, 19 days, 12 hours and 17 minutes"</code></pre>
 
 <p>Specifying <code>max</code> as <code>2</code> ensures that only the two most significant units are displayed <strong>(note the rounding of the least significant unit)</strong>:</p>
 
-<pre><code>countdown(start, end, units, 2).toString() =&gt; "5 years, and 2 months"</code></pre>
+<pre><code>countdown(start, end, units, 2).toString() =&gt; "5 years and 2 months"</code></pre>
 
 <p>Negative or zero values of <code>max</code> are ignored.</p>
 
@@ -174,11 +174,11 @@ window.clearInterval(timerId);</code></pre>
 
 <p>The final optional argument <code>digits</code> allows fractional values on the smallest unit.</p>
 
-<pre><code>countdown(start, end, units, max).toString() =&gt; "5 years, and 2 months"</code></pre>
+<pre><code>countdown(start, end, units, max).toString() =&gt; "5 years and 2 months"</code></pre>
 
 <p>Specifying <code>digits</code> as <code>2</code> allows up to 2 digits beyond the decimal point to be displayed <strong>(note the rounding of the least significant unit)</strong>:</p>
 
-<pre><code>countdown(start, end, units, max, 2).toString() =&gt; "5 years, and 1.65 months"</code></pre>
+<pre><code>countdown(start, end, units, max, 2).toString() =&gt; "5 years and 1.65 months"</code></pre>
 
 <p><code>digits</code> must be between <code>0</code> and <code>20</code>, inclusive.</p>
 
@@ -223,19 +223,78 @@ window.clearInterval(timerId);</code></pre>
 
 <ul>
 
-<li><code>String toString()</code>: formats the Timespan object as an English sentence. e.g., using the same input:
+<li><code>String toString(emptyLabel)</code>: formats the Timespan object as an English sentence. e.g., using the same input:
 
-<pre><code>ts.toString() =&gt; "5 years, 1 month, 19 days, 12 hours, and 17 minutes"</code></pre></li>
+<pre><code>ts.toString() =&gt; "5 years, 1 month, 19 days, 12 hours and 17 minutes"</code></pre></li>
 
-<li><code>String toHTML(tagName)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used. e.g., using the same input:
+<li><code>String toHTML(tagName, emptyLabel)</code>: formats the Timespan object as an English sentence, with the specified HTML tag wrapped around each unit. If no tag name is provided, "<code>span</code>" is used. e.g., using the same input:
 
-<pre><code>ts.toHTML() =&gt; "&lt;span&gt;5 years&lt;/span&gt;, &lt;span&gt;1 month&lt;/span&gt;, &lt;span&gt;19 days&lt;/span&gt;, &lt;span&gt;12 hours&lt;/span&gt;, and &lt;span&gt;17 minutes&lt;/span&gt;"
+<pre><code>ts.toHTML() =&gt; "&lt;span&gt;5 years&lt;/span&gt;, &lt;span&gt;1 month&lt;/span&gt;, &lt;span&gt;19 days&lt;/span&gt;, &lt;span&gt;12 hours&lt;/span&gt; and &lt;span&gt;17 minutes&lt;/span&gt;"
 
-ts.toHTML("em") =&gt; "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt;, and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre></li>
+ts.toHTML("em") =&gt; "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt; and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre></li>
 
 </ul>
 
-<p>If <code>start</code> and <code>end</code> are exactly the same or the difference is below the requested granularity of units, then <code>toString()</code> and <code>toHTML(&hellip;)</code> will simply return an empty string.</p>
+<p>If <code>start</code> and <code>end</code> are exactly the same or the difference is below the requested granularity of units, then <code>toString()</code> and <code>toHTML(&hellip;)</code> will return the empty label or an simply an empty string if no alternate label is supplied.</p>
+
+<h3>Localization</h3>
+
+<p>Very basic localization is supported via the static <code>setLabels</code> and <code>resetLabels</code> methods. These change the functionality for all timespans on the page.</p>
+
+<pre><code>countdown.resetLabels();
+
+countdown.setLabels(singular, plural, last, delim, empty);
+</code></pre>
+
+<p>Where <code>singular</code> is a pipe (<code>'|'</code>) delimited ascending list of singular unit name overrides, <code>plural</code> is a pipe (<code>'|'</code>) delimited ascending list of plural unit name overrides, <code>last</code> is a delimiter before the last unit (default: <code>' and '</code>), <code>delim</code> is a delimiter to use between all other units (default: <code>', '</code>), and <code>empty</code> is a label to use when all units are zero (default: <code>''</code>). Notice that the spacing is part of the label.</p>
+
+<p>The following examples would translate the output into Brazilian Portuguese and French, respectively:</p>
+
+<pre><code>countdown.setLabels(
+	' milissegundo| segundo| minuto| hora| dia| semana| mês| ano| década| século| milênio',
+	' milissegundos| segundos| minutos| horas| dias| semanas| meses| anos| décadas| séculos| milênios',
+	' e ',
+	' + ',
+	'agora');
+
+countdown.setLabels(
+	' milliseconde| seconde| minute| heure| jour| semaine| mois| année| décennie| siècle| millénaire',
+	' millisecondes| secondes| minutes| heures| jours| semaines| mois| années| décennies| siècles| millénaires',
+	' et ',
+	', ',
+	'maintenant');
+</code></pre>
+
+<p>If you only wanted to override some of the labels just leave the other pipe-delimited places empty. Similarly, leave off any of the delimiter arguments which do not need overriding.</p>
+
+<pre><code>countdown.setLabels(
+	'||| hr| d',
+	'ms| sec|||| wks|| yrs',
+	', and finally ');
+
+ts.toString() =&gt; "1 millennium, 2 centuries, 5 yrs, 1 month, 7 wks, 19 days, 1 hr, 2 minutes, 17 sec, and finally 1 millisecond"
+</code></pre>
+
+<p>If you only wanted to override the empty label:</p>
+
+<pre><code>countdown.setLabels(
+		null,
+		null,
+		null,
+		null,
+		'Now.');
+
+ts.toString() =&gt; "Now."
+</code></pre>
+
+<p>The following would be effectively the same as calling <code>countdown.resetLabels()</code>:</p>
+
+<pre><code>countdown.setLabels(
+	' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium',
+	' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
+	' and ',
+	', ');
+</code></pre>
 
 <h2>License</h2>
 
