@@ -219,7 +219,7 @@ window.clearInterval(timerId);</code></pre>
 	<li><code>Number milliseconds</code></li>
 </ul>
 
-<p>Finally, Timespan has two formatting methods each with some optional parameters:</p>
+<p>Finally, Timespan has two formatting methods each with some optional parameters. If the difference between <code>start</code> and <code>end</code> is less than the requested granularity of units, then <code>toString(&hellip;)</code> and <code>toHTML(&hellip;)</code> will return the empty label (defaults to an empty string).</p>
 
 <ul>
 
@@ -234,8 +234,6 @@ window.clearInterval(timerId);</code></pre>
 ts.toHTML("em") =&gt; "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt;, &lt;em&gt;19 days&lt;/em&gt;, &lt;em&gt;12 hours&lt;/em&gt; and &lt;em&gt;17 minutes&lt;/em&gt;"</code></pre></li>
 
 </ul>
-
-<p>If <code>start</code> and <code>end</code> are exactly the same or the difference is below the requested granularity of units, then <code>toString()</code> and <code>toHTML(&hellip;)</code> will return the empty label or an simply an empty string if no alternate label is supplied.</p>
 
 <h3>Localization</h3>
 
@@ -293,7 +291,8 @@ ts.toString() =&gt; "Now."
 	' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium',
 	' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
 	' and ',
-	', ');
+	', ',
+	'');
 </code></pre>
 
 <h2>License</h2>

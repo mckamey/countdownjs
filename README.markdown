@@ -196,7 +196,7 @@ The following time unit fields are only present if their corresponding units wer
 - `Number seconds`
 - `Number milliseconds`
 
-Finally, Timespan has two formatting methods each with some optional parameters:
+Finally, Timespan has two formatting methods each with some optional parameters. If the difference between `start` and `end` is less than the requested granularity of units, then `toString(...)` and `toHTML(...)` will return the empty label (defaults to an empty string).
 
 `String toString(emptyLabel)`: formats the Timespan object as an English sentence. e.g., using the same input:
 
@@ -207,8 +207,6 @@ Finally, Timespan has two formatting methods each with some optional parameters:
 	ts.toHTML() => "<span>5 years</span>, <span>1 month</span>, <span>19 days</span>, <span>12 hours</span> and <span>17 minutes</span>"
 
 	ts.toHTML("em") => "<em>5 years</em>, <em>1 month</em>, <em>19 days</em>, <em>12 hours</em> and <em>17 minutes</em>"
-
-If `start` and `end` are exactly the same or the difference is below the requested granularity of units, then `toString()` and `toHTML(...)` will return the empty label or an simply an empty string if no alternate label is supplied.
 
 ----
 
