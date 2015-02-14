@@ -7,7 +7,7 @@ try{
  * @param {Timespan|Object} map properties to convert to a Timespan
  * @return {Timespan}
  */
-countdown.clone = function(map) {
+countdown.mock = function(map) {
 	var ts = countdown();
 	for (var key in map) {
 		if (map.hasOwnProperty(key)) {
@@ -42,7 +42,7 @@ test('Zero', function() {
 	var start = 0;
 	var end = 0;
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(0),
 		end: new Date(0),
 		units: countdown.ALL,
@@ -70,7 +70,7 @@ test('1 ms', function() {
 	var start = 0;
 	var end = 1;
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(0),
 		end: new Date(1),
 		units: countdown.ALL,
@@ -98,7 +98,7 @@ test('1 sec', function() {
 	var start = 10000;
 	var end = 11000;
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(10000),
 		end: new Date(11000),
 		units: countdown.ALL,
@@ -126,7 +126,7 @@ test('5 min, reversed', function() {
 	var start = (5 * 60 * 1000);
 	var end = 0;
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(5 * 60 * 1000),
 		end: new Date(0),
 		units: countdown.ALL,
@@ -153,7 +153,7 @@ test('Constant 1 month span, daily over 5 years', function() {
 
 	var start = new Date(1999, 10, 1, 12, 0, 0);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: start,
 		end: start,
 		value: 0,
@@ -371,7 +371,7 @@ test('Underflow bug ('+formatTZ(2011, 11, 1)+')', function() {
 	var start = new Date(2011, 11, 1, 0, 0, 0, 0);
 	var end = new Date(2011, 11, 31, 23, 59, 59, 999);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(start.getTime()),
 		end: new Date(end.getTime()),
 		units: countdown.ALL,
@@ -399,7 +399,7 @@ test('Extra day bug ('+formatTZ(2014, 6, 3)+')', function() {
 	var start = new Date(2014, 6, 1, 0, 0, 0, 0);
 	var end = new Date(2014, 6, 3, 17, 52, 49, 209);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(start.getTime()),
 		end: new Date(end.getTime()),
 		units: countdown.ALL,
@@ -427,7 +427,7 @@ test('Daylight Savings Time ('+formatTZ(1318451880000)+')', function() {
 	var start = new Date(2011, 9, 12, 13, 38, 0);
 	var end = new Date(2013, 11, 2, 14, 0, 0);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(start.getTime()),
 		end: new Date(end.getTime()),
 		units: countdown.ALL,
@@ -455,7 +455,7 @@ test('Reference month ordering', function() {
 	var start = new Date(2015, 1, 1, 0, 0, 0);
 	var end = new Date(2014, 9, 27, 12, 00, 0);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(start.getTime()),
 		end: new Date(end.getTime()),
 		units: countdown.ALL,
@@ -483,7 +483,7 @@ test('Before leap day', function() {
 	var start = new Date(2012, 1, 28, 13, 14, 30, 109);
 	var end = new Date(2012, 1, 29, 17, 46, 22, 111); // Leap day 2012
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(2012, 1, 28, 13, 14, 30, 109),
 		end: new Date(2012, 1, 29, 17, 46, 22, 111),
 		units: countdown.ALL,
@@ -511,7 +511,7 @@ test('After leap day (local)', function() {
 	var start = new Date(2012, 1, 29, 17, 46, 22, 111); // Leap day 2012
 	var end = new Date(2012, 2, 1, 13, 14, 30, 109);
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(2012, 1, 29, 17, 46, 22, 111),
 		end: new Date(2012, 2, 1, 13, 14, 30, 109),
 		units: countdown.ALL,
@@ -539,7 +539,7 @@ test('After leap day (UTC)', function() {
 	var start = new Date(1330537582111); // 2012-02-29T17:46:22.111Z, Leap day 2012
 	var end = new Date(1330607670109);   // 2012-03-01T13:14:30.109Z
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(1330537582111),
 		end: new Date(1330607670109),
 		units: countdown.ALL,
@@ -567,7 +567,7 @@ test('Almost 2 minutes, rounded', function() {
 	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
 	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(915220800000),
 		end: new Date(915220919999),
 		units: countdown.DEFAULTS,
@@ -590,7 +590,7 @@ test('Almost 2 minutes, rounded 2 digits', function() {
 	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
 	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(915220800000),
 		end: new Date(915220919999),
 		units: countdown.DEFAULTS,
@@ -613,7 +613,7 @@ test('Almost 2 minutes, full 3 digits', function() {
 	var start = new Date(915220800000); // 1999-01-01T20:00:00.000Z
 	var end = new Date(915220919999);   // 1999-01-01T20:01:59.999Z
 
-	var expected = countdown.clone({
+	var expected = countdown.mock({
 		start: new Date(915220800000),
 		end: new Date(915220919999),
 		units: countdown.DEFAULTS,
@@ -627,6 +627,160 @@ test('Almost 2 minutes, full 3 digits', function() {
 	});
 
 	var actual = countdown(start, end, countdown.DEFAULTS, 0, 3);
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+module('Timespan.addTo(date)');
+
+test('Zero', function() {
+
+	var timespan = countdown.mock({
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		milliseconds: 0
+	});
+
+	var expected = 0;
+	var actual = timespan.addTo(0).getTime();
+
+	same(actual, expected, '');
+});
+
+test('1 ms', function() {
+
+	var timespan = countdown.mock({
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		milliseconds: 1
+	});
+
+	var expected = 1;
+	var actual = timespan.addTo(0).getTime();
+
+	same(actual, expected, '');
+});
+
+test('1 sec', function() {
+
+	var timespan = countdown.mock({
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 0,
+		minutes: 0,
+		seconds: 1,
+		milliseconds: 0
+	});
+
+	var expected = 11000;
+	var actual = timespan.addTo(10000).getTime();
+
+	same(actual, expected, '');
+});
+
+test('1 sec, value', function() {
+
+	var timespan = countdown.mock({
+		value: 1000
+	});
+
+	var expected = 11000;
+	var actual = timespan.addTo(10000).getTime();
+
+	same(actual, expected, '');
+});
+
+test('5 min, reversed', function() {
+
+	var timespan = countdown.mock({
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 0,
+		months: 0,
+		weeks: 0,
+		days: 0,
+		hours: 0,
+		minutes: -5,
+		seconds: 0,
+		milliseconds: 0
+	});
+
+	var expected = 0;
+	var actual = timespan.addTo((5 * 60 * 1000)).getTime();
+
+	same(actual, expected, '');
+});
+
+test('5 min, reversed, value', function() {
+
+	var timespan = countdown.mock({
+		value: -(5 * 60 * 1000)
+	});
+
+	var expected = 0;
+	var actual = timespan.addTo((5 * 60 * 1000)).getTime();
+
+	same(actual, expected, '');
+});
+
+test('Daylight Savings Time ('+formatTZ(1318451880000)+')', function() {
+
+	var start = new Date(2011, 9, 12, 13, 38, 0);
+	var end = new Date(2013, 11, 2, 14, 0, 0);
+
+	var timespan = countdown.mock({
+		millennia: 0,
+		centuries: 0,
+		decades: 0,
+		years: 2,
+		months: 1,
+		weeks: 3,
+		days: 0,
+		hours: 0,
+		minutes: 22,
+		seconds: 0,
+		milliseconds: 0
+	});
+
+	var expected = end.getTime();
+	var actual = timespan.addTo(start).getTime();
+
+	same(actual, expected, ''+start+' => '+end);
+});
+
+test('Daylight Savings Time ('+formatTZ(1318451880000)+'), value', function() {
+
+	var start = new Date(2011, 9, 12, 13, 38, 0);
+	var end = new Date(2013, 11, 2, 14, 0, 0);
+
+	var timespan = countdown.mock({
+		value: end.getTime() - start.getTime()
+	});
+
+	var expected = end.getTime();
+	var actual = timespan.addTo(start).getTime();
 
 	same(actual, expected, ''+start+' => '+end);
 });

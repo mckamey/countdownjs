@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.5.0 http://countdownjs.org
+ * @license countdown.js v2.5.1 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -267,6 +267,41 @@ function(module) {
 			return date;
 		}
 
+		value = +ts.milliseconds || 0;
+		if (value) {
+			date.setMilliseconds(date.getMilliseconds() + value);
+		}
+
+		value = +ts.seconds || 0;
+		if (value) {
+			date.setSeconds(date.getSeconds() + value);
+		}
+
+		value = +ts.minutes || 0;
+		if (value) {
+			date.setMinutes(date.getMinutes() + value);
+		}
+
+		value = +ts.hours || 0;
+		if (value) {
+			date.setHours(date.getHours() + value);
+		}
+
+		value = +ts.weeks || 0;
+		if (value) {
+			value *= DAYS_PER_WEEK;
+		}
+
+		value += +ts.days || 0;
+		if (value) {
+			date.setDate(date.getDate() + value);
+		}
+
+		value = +ts.months || 0;
+		if (value) {
+			date.setMonth(date.getMonth() + value);
+		}
+
 		value = +ts.millennia || 0;
 		if (value) {
 			value *= CENTURIES_PER_MILLENNIUM;
@@ -285,41 +320,6 @@ function(module) {
 		value += +ts.years || 0;
 		if (value) {
 			date.setFullYear(date.getFullYear() + value);
-		}
-
-		value = +ts.months || 0;
-		if (value) {
-			date.setMonth(date.getMonth() + value);
-		}
-
-		value = +ts.weeks || 0;
-		if (value) {
-			value *= DAYS_PER_WEEK;
-		}
-
-		value += +ts.days || 0;
-		if (value) {
-			date.setDate(date.getDate() + value);
-		}
-
-		value = +ts.hours || 0;
-		if (value) {
-			date.setHours(date.getHours() + value);
-		}
-
-		value = +ts.minutes || 0;
-		if (value) {
-			date.setMinutes(date.getMinutes() + value);
-		}
-
-		value = +ts.seconds || 0;
-		if (value) {
-			date.setSeconds(date.getSeconds() + value);
-		}
-
-		value = +ts.milliseconds || 0;
-		if (value) {
-			date.setMilliseconds(date.getMilliseconds() + value);
 		}
 
 		return date;
