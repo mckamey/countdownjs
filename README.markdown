@@ -274,7 +274,7 @@ The following would be effectively the same as calling `countdown.resetLabels()`
 		' and ',
 		', ',
 		'',
-		function(n){ return n.String(); });
+		function(n){ return n.toString(); });
 
 ----
 
