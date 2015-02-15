@@ -590,6 +590,22 @@ test('Singular overrides', function() {
 	countdown.resetLabels();
 
 	same(actual, expected, '');
+
+	expected =
+		'<em>1 millennium</em>, ' +
+		'<em>1 century</em>, ' +
+		'<em>1 year</em>, ' +
+		'<em>1 month</em>, ' +
+		'<em>1 week</em>, ' +
+		'<em>1 day</em>, ' +
+		'<em>1 hour</em>, ' +
+		'<em>1 minute</em>, ' +
+		'<em>1 second</em> and ' +
+		'<em>1 millisecond</em>';
+
+	actual = input.toHTML('em');
+
+	same(actual, expected, '');
 });
 
 test('Plural overrides', function() {
@@ -627,6 +643,22 @@ test('Plural overrides', function() {
 	var actual = input.toHTML('em');
 
 	countdown.resetLabels();
+
+	same(actual, expected, '');
+
+	expected =
+		'<em>2 millennia</em>, ' +
+		'<em>2 centuries</em>, ' +
+		'<em>2 years</em>, ' +
+		'<em>2 months</em>, ' +
+		'<em>2 weeks</em>, ' +
+		'<em>2 days</em>, ' +
+		'<em>2 hours</em>, ' +
+		'<em>2 minutes</em>, ' +
+		'<em>2 seconds</em> and ' +
+		'<em>2 milliseconds</em>';
+
+	actual = input.toHTML('em');
 
 	same(actual, expected, '');
 });
@@ -668,6 +700,22 @@ test('Partial singular overrides', function() {
 	countdown.resetLabels();
 
 	same(actual, expected, '');
+
+	expected =
+		'<em>1 millennium</em>, ' +
+		'<em>1 century</em>, ' +
+		'<em>1 year</em>, ' +
+		'<em>1 month</em>, ' +
+		'<em>1 week</em>, ' +
+		'<em>1 day</em>, ' +
+		'<em>1 hour</em>, ' +
+		'<em>1 minute</em>, ' +
+		'<em>1 second</em> and ' +
+		'<em>1 millisecond</em>';
+
+	actual = input.toHTML('em');
+
+	same(actual, expected, '');
 });
 
 test('Partial plural overrides', function() {
@@ -706,6 +754,97 @@ test('Partial plural overrides', function() {
 
 	countdown.resetLabels();
 
+	same(actual, expected, '');
+
+	expected =
+		'<em>2 millennia</em>, ' +
+		'<em>2 centuries</em>, ' +
+		'<em>2 years</em>, ' +
+		'<em>2 months</em>, ' +
+		'<em>2 weeks</em>, ' +
+		'<em>2 days</em>, ' +
+		'<em>2 hours</em>, ' +
+		'<em>2 minutes</em>, ' +
+		'<em>2 seconds</em> and ' +
+		'<em>2 milliseconds</em>';
+
+	actual = input.toHTML('em');
+
+	same(actual, expected, '');
+});
+
+test('Custom number formatter', function() {
+
+	var sillyFormatter = function(num) {
+		num = ''+num;
+		var str = '';
+		for (var i=0, len=num.length; i<len; i++) {
+			switch (num.charAt(i)) {
+				case '0': str += 'zero'; break;
+				case '1': str += 'one'; break;
+				case '2': str += 'two'; break;
+				case '3': str += 'three'; break;
+				case '4': str += 'four'; break;
+				case '5': str += 'five'; break;
+				case '6': str += 'six'; break;
+				case '7': str += 'seven'; break;
+				case '8': str += 'eight'; break;
+				case '9': str += 'nine'; break;
+				case '.': str += 'dot'; break;
+				case '-': str += 'dash'; break;
+				default: str += '?!?'; break;
+			}
+		}
+		return str;
+	};
+
+	var start = new Date(0);
+	var end = new Date(
+		(87 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennia, centuries, weeks, days
+		(2 * 365 * 24 * 60 * 60 * 1000) + // years
+		(4 * 31 * 24 * 60 * 60 * 1000) + // months
+		(4 * 60 * 60 * 1000) + // hours
+		(31 * 60 * 1000) + // mins
+		(55 * 1000) + // secs
+		900); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setLabels(null, null, null, null, null, sillyFormatter);
+
+	var expected =
+		'<em>eight millennia</em>, ' +
+		'<em>seven centuries</em>, ' +
+		'<em>two years</em>, ' +
+		'<em>six months</em>, ' +
+		'<em>one week</em>, ' +
+		'<em>four hours</em>, ' +
+		'<em>threeone minutes</em>, ' +
+		'<em>fivefive seconds</em> and ' +
+		'<em>ninezerozero milliseconds</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetLabels();
+
+	same(actual, expected, '');
+
+	expected =
+		'<em>8 millennia</em>, ' +
+		'<em>7 centuries</em>, ' +
+		'<em>2 years</em>, ' +
+		'<em>6 months</em>, ' +
+		'<em>1 week</em>, ' +
+		'<em>4 hours</em>, ' +
+		'<em>31 minutes</em>, ' +
+		'<em>55 seconds</em> and ' +
+		'<em>900 milliseconds</em>';
+
+	actual = input.toHTML('em');
 	same(actual, expected, '');
 });
 

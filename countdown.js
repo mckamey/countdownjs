@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.5.1 http://countdownjs.org
+ * @license countdown.js v2.5.2 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -433,17 +433,26 @@ function(module) {
 	var LABEL_NOW;
 
 	/**
+	 * Formats a number as a string
+	 * 
+	 * @private
+	 * @param {number} value
+	 * @return {string}
+	 */
+	var formatNumber;
+
+	/**
 	 * @private
 	 * @param {number} value
 	 * @param {number} unit unit index into label list
 	 * @return {string}
 	 */
 	function plurality(value, unit) {
-		return value+((value === 1) ? LABELS_SINGLUAR[unit] : LABELS_PLURAL[unit]);
+		return formatNumber(value)+((value === 1) ? LABELS_SINGLUAR[unit] : LABELS_PLURAL[unit]);
 	}
 
 	/**
-	 * Formats the entries as English labels
+	 * Formats the entries with singular or plural labels
 	 * 
 	 * @private
 	 * @param {Timespan} ts
@@ -1072,11 +1081,11 @@ function(module) {
 	 * API entry point
 	 * 
 	 * @public
-	 * @param {Date|number|null|function(Timespan,number)} start the starting date
-	 * @param {Date|number|null|function(Timespan,number)} end the ending date
-	 * @param {number} units the units to populate
-	 * @param {number} max number of labels to output
-	 * @param {number} digits max number of decimal digits to output
+	 * @param {Date|number|Timespan|null|function(Timespan,number)} start the starting date
+	 * @param {Date|number|Timespan|null|function(Timespan,number)} end the ending date
+	 * @param {number=} units the units to populate
+	 * @param {number=} max number of labels to output
+	 * @param {number=} digits max number of decimal digits to output
 	 * @return {Timespan|number}
 	 */
 	function countdown(start, end, units, max, digits) {
@@ -1100,7 +1109,7 @@ function(module) {
 				start = new Date(+start);
 			} else {
 				if ('object' === typeof startTS) {
-					startTS = start;
+					startTS = /** @type{Timespan} */(start);
 				}
 				start = null;
 			}
@@ -1117,7 +1126,7 @@ function(module) {
 				end = new Date(+end);
 			} else {
 				if ('object' === typeof end) {
-					endTS = end;
+					endTS = /** @type{Timespan} */(end);
 				}
 				end = null;
 			}
@@ -1137,7 +1146,7 @@ function(module) {
 		}
 
 		if (!callback) {
-			return populate(new Timespan(), /** @type{?Date} */(start), /** @type{?Date} */(end), units, max, digits);
+			return populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), /** @type{number} */(units), /** @type{number} */(max), /** @type{number} */(digits));
 		}
 
 		// base delay off units
@@ -1145,7 +1154,7 @@ function(module) {
 			timerId,
 			fn = function() {
 				callback(
-					populate(new Timespan(), /** @type{?Date} */(start), /** @type{?Date} */(end), units, max, digits),
+					populate(new Timespan(), /** @type{Date} */(start), /** @type{Date} */(end), /** @type{number} */(units), /** @type{number} */(max), /** @type{number} */(digits)),
 					timerId
 				);
 			};
@@ -1248,13 +1257,14 @@ function(module) {
 	/**
 	 * Override the unit labels
 	 * @public
-	 * @param {string|Array} singular a pipe ('|') delimited list of singular unit name overrides
-	 * @param {string|Array} plural a pipe ('|') delimited list of plural unit name overrides
-	 * @param {string} last a delimiter before the last unit (default: ' and ')
-	 * @param {string} delim a delimiter to use between all other units (default: ', ')
-	 * @param {string} empty a label to use when all units are zero (default: '')
+	 * @param {string|Array=} singular a pipe ('|') delimited list of singular unit name overrides
+	 * @param {string|Array=} plural a pipe ('|') delimited list of plural unit name overrides
+	 * @param {string=} last a delimiter before the last unit (default: ' and ')
+	 * @param {string=} delim a delimiter to use between all other units (default: ', ')
+	 * @param {string=} empty a label to use when all units are zero (default: '')
+	 * @param {function(number):string=} formatter a function which formats numbers as a string
 	 */
-	countdown.setLabels = function(singular, plural, last, delim, empty) {
+	countdown.setLabels = function(singular, plural, last, delim, empty, formatter) {
 		singular = singular || [];
 		if (singular.split) {
 			singular = singular.split('|');
@@ -1273,6 +1283,7 @@ function(module) {
 		LABEL_LAST = ('string' === typeof last) ? last : LABEL_LAST;
 		LABEL_DELIM = ('string' === typeof delim) ? delim : LABEL_DELIM;
 		LABEL_NOW = ('string' === typeof empty) ? empty : LABEL_NOW;
+		formatNumber = ('function' === typeof formatter) ? formatter : formatNumber;
 	};
 
 	/**
@@ -1285,6 +1296,7 @@ function(module) {
 		LABEL_LAST = ' and ';
 		LABEL_DELIM = ', ';
 		LABEL_NOW = '';
+		formatNumber = function(value) { return value; };
 	};
 
 	resetLabels();
