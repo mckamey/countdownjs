@@ -241,10 +241,20 @@ ts.toHTML("em") =&gt; "&lt;em&gt;5 years&lt;/em&gt;, &lt;em&gt;1 month&lt;/em&gt
 
 <pre><code>countdown.resetLabels();
 
-countdown.setLabels(singular, plural, last, delim, empty);
+countdown.setLabels(singular, plural, last, delim, empty, formatter);
 </code></pre>
 
-<p>Where <code>singular</code> is a pipe (<code>'|'</code>) delimited ascending list of singular unit name overrides, <code>plural</code> is a pipe (<code>'|'</code>) delimited ascending list of plural unit name overrides, <code>last</code> is a delimiter before the last unit (default: <code>' and '</code>), <code>delim</code> is a delimiter to use between all other units (default: <code>', '</code>), and <code>empty</code> is a label to use when all units are zero (default: <code>''</code>). Notice that the spacing is part of the label.</p>
+<p>The arguments:<br>
+<ul>
+	<li><code>singular</code> is a pipe (<code>'|'</code>) delimited ascending list of singular unit name overrides
+	<li><code>plural</code> is a pipe (<code>'|'</code>) delimited ascending list of plural unit name overrides
+	<li><code>last</code> is a delimiter before the last unit (default: <code>' and '</code>)
+	<li><code>delim</code> is a delimiter to use between all other units (default: <code>', '</code>)
+	<li><code>empty</code> is a label to use when all units are zero (default: <code>''</code>)
+	<li><code>formatter</code> is a function which takes a <code>number</code> and returns a <code>string</code> (default uses <code>Number.toString()</code>),<br>
+	allowing customization of the way numbers are formatted, e.g., commas every 3 digits or some unique style that is specific to your locale.
+</ul>
+Note that the spacing is part of the labels.</p>
 
 <p>The following examples would translate the output into Brazilian Portuguese and French, respectively:</p>
 
@@ -292,7 +302,8 @@ ts.toString() =&gt; "Now."
 	' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
 	' and ',
 	', ',
-	'');
+	'',
+	function(n){ return n.String(); });
 </code></pre>
 
 <h2>License</h2>

@@ -181,7 +181,7 @@ The return value is a Timespan object which always contains the following fields
 - `Number units`: the units specified
 - `Number value`: total milliseconds difference (i.e., `end` - `start`). If `end < start` then `value` will be negative.
 
-Typically the `end` occurs after `start`, but if the arguments were reversed, the only difference is `Timespan.value` will be negative. The sign of `value` can be used to determine if the event occurs in the future or in the past. 
+Typically the `end` occurs after `start`, but if the arguments were reversed, the only difference is `Timespan.value` will be negative. The sign of `value` can be used to determine if the event occurs in the future or in the past.
 
 The following time unit fields are only present if their corresponding units were requested:
 
@@ -216,9 +216,19 @@ Very basic localization is supported via the static `setLabels` and `resetLabels
 
 	countdown.resetLabels();
 
-	countdown.setLabels(singular, plural, last, delim, empty);
+	countdown.setLabels(singular, plural, last, delim, empty, formatter);
 
-Where `singular` is a pipe (`'|'`) delimited ascending list of singular unit name overrides, `plural` is a pipe (`'|'`) delimited ascending list of plural unit name overrides, `last` is a delimiter before the last unit (default: `' and '`), `delim` is a delimiter to use between all other units (default: `', '`), and `empty` is a label to use when all units are zero (default: `''`).. Notice that the spacing is part of the label.
+The arugments:
+
+- `singular` is a pipe (`'|'`) delimited ascending list of singular unit name overrides
+- `plural` is a pipe (`'|'`) delimited ascending list of plural unit name overrides
+- `last` is a delimiter before the last unit (default: `' and '`)
+- `delim` is a delimiter to use between all other units (default: `', '`),
+- `empty` is a label to use when all units are zero (default: `''`)
+- `formatter` is a function which takes a `number` and returns a `string` (default uses `Number.toString()`),  
+  allowing customization of the way numbers are formatted, e.g., commas every 3 digits or some unique style that is specific to your locale.
+
+Notice that the spacing is part of the labels.
 
 The following examples would translate the output into Brazilian Portuguese and French, respectively:
 
@@ -263,7 +273,8 @@ The following would be effectively the same as calling `countdown.resetLabels()`
 		' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia',
 		' and ',
 		', ',
-		'');
+		'',
+		function(n){ return n.String(); });
 
 ----
 
