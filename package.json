@@ -1,12 +1,12 @@
 {
 	"name": "countdown",
 	"description": "A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.",
-	"version": "2.5.0",
+	"version": "2.5.3",
 	"homepage": "http://countdownjs.org",
 	"author": "Stephen McKamey <stephen@mckamey.com>",
 	"repository": {
-		"type": "hg",
-		"url": "https://bitbucket.org/mckamey/countdown.js"
+		"type": "git",
+		"url": "https://github.com/mckamey/countdownjs"
 	},
 	"tags": ["countdown", "timespan", "date", "time", "clock"],
 	"main": "./countdown.js"

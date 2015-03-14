@@ -287,5 +287,5 @@ Distributed under the terms of [The MIT license][2].
 Copyright (c) 2006-2014 [Stephen M. McKamey][3]
 
   [1]: http://countdownjs.org
-  [2]: https://bitbucket.org/mckamey/countdown.js/raw/tip/LICENSE.txt
+  [2]: https://raw.githubusercontent.com/mckamey/countdownjs/master/LICENSE.txt
   [3]: http://mck.me
