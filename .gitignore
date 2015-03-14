@@ -5,10 +5,10 @@
 \.iml
 \.ipr
 \.iws
-.*\.bat
-.*\.psd
-.*\.ai
-.*\.sh
+*\.bat
+*\.psd
+*\.ai
+*\.sh
 ga.js
 robots.txt
 antixss\.js
