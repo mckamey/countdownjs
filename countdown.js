@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.5.2 http://countdownjs.org
+ * @license countdown.js v2.5.3 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */

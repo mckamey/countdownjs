@@ -1,11 +1,12 @@
 {
   "name": "countdownjs",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.",
   "main": "countdown.js",
   "keywords": [
     "countdown",
     "timer",
+    "clock",
     "date",
     "time",
     "timespan",
@@ -18,7 +19,7 @@
     "second"
   ],
   "authors": [
-    "Stephen M. McKamey (http://mck.me)"
+    "Stephen McKamey (http://mck.me)"
   ],
   "license": "MIT",
   "homepage": "http://countdownjs.org",
