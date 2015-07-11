@@ -6,13 +6,13 @@ test('Default empty label override', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
 
-	countdown.setLabels(null, null, null, null, 'Now.');
+	countdown.setFormat({ empty: 'Now.' });
 
 	var expected = 'Now.';
 
 	var actual = input.toString();
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 });
@@ -32,13 +32,13 @@ test('Default empty label override, overridden', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
 
-	countdown.setLabels(null, null, null, null, 'Now.');
+	countdown.setFormat({ empty: 'Now.' });
 
 	var expected = 'Right now!';
 
 	var actual = input.toString('Right now!');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 });
@@ -351,13 +351,13 @@ test('Default empty label override', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
 
-	countdown.setLabels(null, null, null, null, 'Now.');
+	countdown.setFormat({ empty: 'Now.' });
 
 	var expected = '<span>Now.</span>';
 
 	var actual = input.toHTML();
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '<span>Now.</span>');
 });
@@ -377,13 +377,13 @@ test('Default empty label override, overridden', function() {
 
 	var input = countdown(0, 0, countdown.ALL);
 
-	countdown.setLabels(null, null, null, null, 'Now.');
+	countdown.setFormat({ empty: 'Now.' });
 
 	var expected = '<span>Right now!</span>';
 
 	var actual = input.toHTML(null, 'Right now!');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 });
@@ -571,7 +571,7 @@ test('Singular overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(' a| b| c| d| e| f| g| h| i| j| k');
+	countdown.setFormat({ singular: ' a| b| c| d| e| f| g| h| i| j| k' });
 
 	var expected =
 		'<em>1 k</em>, ' +
@@ -587,7 +587,7 @@ test('Singular overrides', function() {
 
 	var actual = input.toHTML('em');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 
@@ -626,7 +626,7 @@ test('Plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(null, ' A| B| C| D| E| F| G| H| I| J| K', ' &amp; ', ' &amp; ');
+	countdown.setFormat({ plural: ' A| B| C| D| E| F| G| H| I| J| K', last: ' &amp; ', delim: ' &amp; ' });
 
 	var expected =
 		'<em>2 K</em> &amp; ' +
@@ -642,7 +642,7 @@ test('Plural overrides', function() {
 
 	var actual = input.toHTML('em');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 
@@ -681,7 +681,12 @@ test('Partial singular overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(' a|| c|| e|| g|| i|| k', '| B|| D|| F|| H|| J|', ' + finally ', ' + ');
+	countdown.setFormat({
+		singular: ' a|| c|| e|| g|| i|| k',
+		plural: '| B|| D|| F|| H|| J|',
+		last: ' + finally ',
+		delim: ' + '
+	});
 
 	var expected =
 		'<em>1 k</em> + ' +
@@ -697,7 +702,7 @@ test('Partial singular overrides', function() {
 
 	var actual = input.toHTML('em');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 
@@ -736,7 +741,11 @@ test('Partial plural overrides', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(' a|| c|| e|| g|| i|| k', '| B|| D|| F|| H|| J|', ', ');
+	countdown.setFormat({
+		singular: ' a|| c|| e|| g|| i|| k',
+		plural: '| B|| D|| F|| H|| J|',
+		last: ', '
+	});
 
 	var expected =
 		'<em>2 millennia</em>, ' +
@@ -752,7 +761,7 @@ test('Partial plural overrides', function() {
 
 	var actual = input.toHTML('em');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 
@@ -814,7 +823,7 @@ test('Custom number formatter', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setLabels(null, null, null, null, null, sillyFormatter);
+	countdown.setFormat({ formatNumber: sillyFormatter });
 
 	var expected =
 		'<em>eight millennia</em>, ' +
@@ -829,7 +838,7 @@ test('Custom number formatter', function() {
 
 	var actual = input.toHTML('em');
 
-	countdown.resetLabels();
+	countdown.resetFormat();
 
 	same(actual, expected, '');
 
@@ -841,6 +850,77 @@ test('Custom number formatter', function() {
 		'<em>1 week</em>, ' +
 		'<em>4 hours</em>, ' +
 		'<em>31 minutes</em>, ' +
+		'<em>55 seconds</em> and ' +
+		'<em>900 milliseconds</em>';
+
+	actual = input.toHTML('em');
+	same(actual, expected, '');
+});
+
+test('Custom unit formatter', function() {
+
+	var ONE = ' миллисекунда| секунда| минута| час| день| неделя| месяц| год| декада| столетие| тысячелетие'.split('|');
+	var TWO = ' миллисекунды| секунды| минуты| часа| дня| недели| месяца| года| декады| столетия| тысячелетия'.split('|');
+	var MANY = ' миллисекунд| секунд| минут| часов| дней| недель| месяцев| лет| декад| столетий| тысячелетий'.split('|');
+
+	var russianUnits = function(value, unit) {
+		// Tried to generalize the rules but don't know if this is really correct...
+		var plural = value % 10;
+		if (plural === 1) {
+			// singular
+			return value+ONE[unit];
+		}
+		if ((plural > 1 && plural < 5) && (value < 5 || value > 22)) {
+			// plurals 2-4 but not 12-14
+			return value+TWO[unit];
+		}
+		// general plural
+		return value+MANY[unit];
+	};
+
+	var start = new Date(0);
+	var end = new Date(
+		(87 * 100) * (365.25 * 24 * 60 * 60 * 1000) + // millennia, centuries, weeks, days
+		(2 * 365 * 24 * 60 * 60 * 1000) + // years
+		(4 * 31 * 24 * 60 * 60 * 1000) + // months
+		(4 * 60 * 60 * 1000) + // hours
+		(13 * 60 * 1000) + // mins
+		(55 * 1000) + // secs
+		900); // ms
+
+	// account for local timezone
+	start.setMinutes(start.getMinutes() + start.getTimezoneOffset());
+	end.setMinutes(end.getMinutes() + end.getTimezoneOffset());
+
+	var input = countdown(start, end, countdown.ALL);
+
+	countdown.setFormat({ formatter: russianUnits });
+
+	var expected =
+		'<em>8 тысячелетий</em>, ' +
+		'<em>7 столетий</em>, ' +
+		'<em>2 года</em>, ' +
+		'<em>6 месяцев</em>, ' +
+		'<em>1 неделя</em>, ' +
+		'<em>4 часа</em>, ' +
+		'<em>13 минут</em>, ' +
+		'<em>55 секунд</em> and ' +
+		'<em>900 миллисекунд</em>';
+
+	var actual = input.toHTML('em');
+
+	countdown.resetFormat();
+
+	same(actual, expected, '');
+
+	expected =
+		'<em>8 millennia</em>, ' +
+		'<em>7 centuries</em>, ' +
+		'<em>2 years</em>, ' +
+		'<em>6 months</em>, ' +
+		'<em>1 week</em>, ' +
+		'<em>4 hours</em>, ' +
+		'<em>13 minutes</em>, ' +
 		'<em>55 seconds</em> and ' +
 		'<em>900 milliseconds</em>';
 

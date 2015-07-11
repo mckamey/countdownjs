@@ -1,6 +1,6 @@
 /*global window */
 /**
- * @license countdown.js v2.5.3 http://countdownjs.org
+ * @license countdown.js v2.6.0 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -433,6 +433,15 @@ function(module) {
 	var LABEL_NOW;
 
 	/**
+	 * Formats a number & unit as a string
+	 * 
+	 * @param {number} value
+	 * @param {number} unit
+	 * @return {string}
+	 */
+	var formatter;
+
+	/**
 	 * Formats a number as a string
 	 * 
 	 * @private
@@ -540,57 +549,57 @@ function(module) {
 
 		var value = ts.millennia;
 		if (value) {
-			list.push(plurality(value, LABEL_MILLENNIA));
+			list.push(formatter(value, LABEL_MILLENNIA));
 		}
 
 		value = ts.centuries;
 		if (value) {
-			list.push(plurality(value, LABEL_CENTURIES));
+			list.push(formatter(value, LABEL_CENTURIES));
 		}
 
 		value = ts.decades;
 		if (value) {
-			list.push(plurality(value, LABEL_DECADES));
+			list.push(formatter(value, LABEL_DECADES));
 		}
 
 		value = ts.years;
 		if (value) {
-			list.push(plurality(value, LABEL_YEARS));
+			list.push(formatter(value, LABEL_YEARS));
 		}
 
 		value = ts.months;
 		if (value) {
-			list.push(plurality(value, LABEL_MONTHS));
+			list.push(formatter(value, LABEL_MONTHS));
 		}
 
 		value = ts.weeks;
 		if (value) {
-			list.push(plurality(value, LABEL_WEEKS));
+			list.push(formatter(value, LABEL_WEEKS));
 		}
 
 		value = ts.days;
 		if (value) {
-			list.push(plurality(value, LABEL_DAYS));
+			list.push(formatter(value, LABEL_DAYS));
 		}
 
 		value = ts.hours;
 		if (value) {
-			list.push(plurality(value, LABEL_HOURS));
+			list.push(formatter(value, LABEL_HOURS));
 		}
 
 		value = ts.minutes;
 		if (value) {
-			list.push(plurality(value, LABEL_MINUTES));
+			list.push(formatter(value, LABEL_MINUTES));
 		}
 
 		value = ts.seconds;
 		if (value) {
-			list.push(plurality(value, LABEL_SECONDS));
+			list.push(formatter(value, LABEL_SECONDS));
 		}
 
 		value = ts.milliseconds;
 		if (value) {
-			list.push(plurality(value, LABEL_MILLISECONDS));
+			list.push(formatter(value, LABEL_MILLISECONDS));
 		}
 
 		return list;
@@ -1255,51 +1264,93 @@ function(module) {
 	countdown.ALL = MILLENNIA|CENTURIES|DECADES|YEARS|MONTHS|WEEKS|DAYS|HOURS|MINUTES|SECONDS|MILLISECONDS;
 
 	/**
-	 * Override the unit labels
+	 * Customize the format settings.
 	 * @public
-	 * @param {string|Array=} singular a pipe ('|') delimited list of singular unit name overrides
-	 * @param {string|Array=} plural a pipe ('|') delimited list of plural unit name overrides
-	 * @param {string=} last a delimiter before the last unit (default: ' and ')
-	 * @param {string=} delim a delimiter to use between all other units (default: ', ')
-	 * @param {string=} empty a label to use when all units are zero (default: '')
-	 * @param {function(number):string=} formatter a function which formats numbers as a string
+	 * @param {Object} format settings object
 	 */
-	countdown.setLabels = function(singular, plural, last, delim, empty, formatter) {
-		singular = singular || [];
-		if (singular.split) {
-			singular = singular.split('|');
-		}
-		plural = plural || [];
-		if (plural.split) {
-			plural = plural.split('|');
+	var setFormat = countdown.setFormat = function(format) {
+		if (!format) { return; }
+
+		if ('singular' in format || 'plural' in format) {
+			var singular = format.singular || [];
+			if (singular.split) {
+				singular = singular.split('|');
+			}
+			var plural = format.plural || [];
+			if (plural.split) {
+				plural = plural.split('|');
+			}
+
+			for (var i=LABEL_MILLISECONDS; i<=LABEL_MILLENNIA; i++) {
+				// override any specified units
+				LABELS_SINGLUAR[i] = singular[i] || LABELS_SINGLUAR[i];
+				LABELS_PLURAL[i] = plural[i] || LABELS_PLURAL[i];
+			}
 		}
 
-		for (var i=LABEL_MILLISECONDS; i<=LABEL_MILLENNIA; i++) {
-			// override any specified units
-			LABELS_SINGLUAR[i] = singular[i] || LABELS_SINGLUAR[i];
-			LABELS_PLURAL[i] = plural[i] || LABELS_PLURAL[i];
+		if ('string' === typeof format.last) {
+			LABEL_LAST = format.last;
 		}
-
-		LABEL_LAST = ('string' === typeof last) ? last : LABEL_LAST;
-		LABEL_DELIM = ('string' === typeof delim) ? delim : LABEL_DELIM;
-		LABEL_NOW = ('string' === typeof empty) ? empty : LABEL_NOW;
-		formatNumber = ('function' === typeof formatter) ? formatter : formatNumber;
+		if ('string' === typeof format.delim) {
+			LABEL_DELIM = format.delim;
+		}
+		if ('string' === typeof format.empty) {
+			LABEL_NOW = format.empty;
+		}
+		if ('function' === typeof format.formatNumber) {
+			formatNumber = format.formatNumber;
+		}
+		if ('function' === typeof format.formatter) {
+			formatter = format.formatter;
+		}
 	};
 
 	/**
-	 * Revert to the default unit labels
+	 * Revert to the default formatting.
 	 * @public
 	 */
-	var resetLabels = countdown.resetLabels = function() {
+	var resetFormat = countdown.resetFormat = function() {
 		LABELS_SINGLUAR = ' millisecond| second| minute| hour| day| week| month| year| decade| century| millennium'.split('|');
 		LABELS_PLURAL = ' milliseconds| seconds| minutes| hours| days| weeks| months| years| decades| centuries| millennia'.split('|');
 		LABEL_LAST = ' and ';
 		LABEL_DELIM = ', ';
 		LABEL_NOW = '';
 		formatNumber = function(value) { return value; };
+		formatter = plurality;
 	};
 
-	resetLabels();
+	/**
+	 * Override the unit labels.
+	 * @public
+	 * @param {string|Array=} singular a pipe ('|') delimited list of singular unit name overrides
+	 * @param {string|Array=} plural a pipe ('|') delimited list of plural unit name overrides
+	 * @param {string=} last a delimiter before the last unit (default: ' and ')
+	 * @param {string=} delim a delimiter to use between all other units (default: ', ')
+	 * @param {string=} empty a label to use when all units are zero (default: '')
+	 * @param {function(number):string=} formatNumber a function which formats numbers as a string
+	 * @param {function(number,number):string=} formatter a function which formats a number/unit pair as a string
+	 * @deprecated since version 2.6.0
+	 */
+	countdown.setLabels = function(singular, plural, last, delim, empty, formatNumber, formatter) {
+		setFormat({
+			singular: singular,
+			plural: plural,
+			last: last,
+			delim: delim,
+			empty: empty,
+			formatNumber: formatNumber,
+			formatter: formatter
+		});
+	};
+
+	/**
+	 * Revert to the default unit labels.
+	 * @public
+	 * @deprecated since version 2.6.0
+	 */
+	countdown.resetLabels = resetFormat;
+
+	resetFormat();
 
 	if (module && module.exports) {
 		module.exports = countdown;
