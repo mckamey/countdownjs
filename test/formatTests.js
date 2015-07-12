@@ -864,17 +864,18 @@ test('Custom unit formatter', function() {
 	var MANY = ' миллисекунд| секунд| минут| часов| дней| недель| месяцев| лет| декад| столетий| тысячелетий'.split('|');
 
 	var russianUnits = function(value, unit) {
-		// Tried to generalize the rules but don't know if this is really correct...
-		var plural = value % 10;
-		if (plural === 1) {
-			// singular
-			return value+ONE[unit];
+		if (Math.floor((value % 100) / 10) !== 1) {
+			var mod = value % 10;
+			if (mod === 1) {
+				// singular or plurals ending in 1 except 11
+				return value+ONE[unit];
+			}
+			if (mod >= 2 && mod <= 4) {
+				// plurals ending in 2-4 except 12-14
+				return value+TWO[unit];
+			}
 		}
-		if ((plural > 1 && plural < 5) && (value < 5 || value > 22)) {
-			// plurals 2-4 but not 12-14
-			return value+TWO[unit];
-		}
-		// general plural
+		// general plurals
 		return value+MANY[unit];
 	};
 
@@ -894,7 +895,11 @@ test('Custom unit formatter', function() {
 
 	var input = countdown(start, end, countdown.ALL);
 
-	countdown.setFormat({ formatter: russianUnits });
+	countdown.setFormat({
+		last: ' и ',
+		delim: ', ',
+		formatter: russianUnits
+	});
 
 	var expected =
 		'<em>8 тысячелетий</em>, ' +
@@ -904,7 +909,7 @@ test('Custom unit formatter', function() {
 		'<em>1 неделя</em>, ' +
 		'<em>4 часа</em>, ' +
 		'<em>13 минут</em>, ' +
-		'<em>55 секунд</em> and ' +
+		'<em>55 секунд</em> и ' +
 		'<em>900 миллисекунд</em>';
 
 	var actual = input.toHTML('em');
