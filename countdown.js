@@ -25,7 +25,7 @@ var countdown = (
 /**
  * @param {Object} module CommonJS Module
  */
-function(module) {
+function countdown (module) {
 	/*jshint smarttabs:true */
 
 	'use strict';
@@ -1364,3 +1364,5 @@ function(module) {
 	return countdown;
 
 })(module);
+
+module.exports = countdown;
