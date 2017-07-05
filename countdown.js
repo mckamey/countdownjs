@@ -248,7 +248,7 @@ function(module) {
 
 	/**
 	 * Applies the Timespan to the given date.
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {Date=} date
@@ -434,7 +434,7 @@ function(module) {
 
 	/**
 	 * Formats a number & unit as a string
-	 * 
+	 *
 	 * @param {number} value
 	 * @param {number} unit
 	 * @return {string}
@@ -443,7 +443,7 @@ function(module) {
 
 	/**
 	 * Formats a number as a string
-	 * 
+	 *
 	 * @private
 	 * @param {number} value
 	 * @return {string}
@@ -462,7 +462,7 @@ function(module) {
 
 	/**
 	 * Formats the entries with singular or plural labels
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @return {Array}
@@ -471,7 +471,7 @@ function(module) {
 
 	/**
 	 * Timespan representation of a duration of time
-	 * 
+	 *
 	 * @private
 	 * @this {Timespan}
 	 * @constructor
@@ -480,7 +480,7 @@ function(module) {
 
 	/**
 	 * Formats the Timespan as a sentence
-	 * 
+	 *
 	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
 	 */
@@ -501,7 +501,7 @@ function(module) {
 
 	/**
 	 * Formats the Timespan as a sentence in HTML
-	 * 
+	 *
 	 * @param {string=} tag HTML tag name to wrap each value
 	 * @param {string=} emptyLabel the string to use when no values returned
 	 * @return {string}
@@ -529,7 +529,7 @@ function(module) {
 
 	/**
 	 * Applies the Timespan to the given date
-	 * 
+	 *
 	 * @param {Date=} date the date to which the timespan is added.
 	 * @return {Date}
 	 */
@@ -539,7 +539,7 @@ function(module) {
 
 	/**
 	 * Formats the entries as English labels
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @return {Array}
@@ -548,57 +548,57 @@ function(module) {
 		var list = [];
 
 		var value = ts.millennia;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_MILLENNIA));
 		}
 
 		value = ts.centuries;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_CENTURIES));
 		}
 
 		value = ts.decades;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_DECADES));
 		}
 
 		value = ts.years;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_YEARS));
 		}
 
 		value = ts.months;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_MONTHS));
 		}
 
 		value = ts.weeks;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_WEEKS));
 		}
 
 		value = ts.days;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_DAYS));
 		}
 
 		value = ts.hours;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_HOURS));
 		}
 
 		value = ts.minutes;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_MINUTES));
 		}
 
 		value = ts.seconds;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_SECONDS));
 		}
 
 		value = ts.milliseconds;
-		if (value) {
+		if (value >= 0) {
 			list.push(formatter(value, LABEL_MILLISECONDS));
 		}
 
@@ -607,7 +607,7 @@ function(module) {
 
 	/**
 	 * Borrow any underflow units, carry any overflow units
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {string} toUnit
@@ -699,7 +699,7 @@ function(module) {
 
 	/**
 	 * Ripple up partial units one place
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts timespan
 	 * @param {number} frac accumulated fractional value
@@ -733,7 +733,7 @@ function(module) {
 
 	/**
 	 * Ripple up partial units to next existing
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {number} digits max number of decimal digits to output
@@ -774,7 +774,7 @@ function(module) {
 
 	/**
 	 * Borrow any underflow units, carry any overflow units
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 */
@@ -881,7 +881,7 @@ function(module) {
 
 	/**
 	 * Remove any units not requested
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {number} units the units to populate
@@ -999,7 +999,7 @@ function(module) {
 
 	/**
 	 * Populates the Timespan object
-	 * 
+	 *
 	 * @private
 	 * @param {Timespan} ts
 	 * @param {?Date} start the starting date
@@ -1051,7 +1051,7 @@ function(module) {
 
 	/**
 	 * Determine an appropriate refresh rate based upon units
-	 * 
+	 *
 	 * @private
 	 * @param {number} units the units to populate
 	 * @return {number} milliseconds to delay
@@ -1076,7 +1076,7 @@ function(module) {
 			// refresh hourly
 			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 		}
-		
+
 		if (units & DAYS) {
 			// refresh daily
 			return MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
@@ -1088,7 +1088,7 @@ function(module) {
 
 	/**
 	 * API entry point
-	 * 
+	 *
 	 * @public
 	 * @param {Date|number|Timespan|null|function(Timespan,number)} start the starting date
 	 * @param {Date|number|Timespan|null|function(Timespan,number)} end the ending date
