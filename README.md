@@ -2,6 +2,16 @@
 
 A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.
 
+```js
+var timerElement = document.getElementById('pageTimer');
+var myInterval = countdown(
+    new Date(2018, 12, 11),
+    function(timeSpan) {
+      timerElement.innerHTML = timeSpan.toHTML();
+    }
+);
+```
+
 ----
 
 ## The Motivation
