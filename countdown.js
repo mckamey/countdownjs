@@ -7,12 +7,6 @@
 /*jshint bitwise:false */
 
 /**
- * @public
- * @type {Object|null}
- */
-var module;
-
-/**
  * API entry
  * @public
  * @param {function(Object)|Date|number} start the starting date
