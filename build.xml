@@ -22,6 +22,7 @@
 		<echo message="Compiling script..." />
 		<closure compilationLevel="simple" warning="verbose" debug="false" output="${build.dir}/countdown.min.js">
 			<sources dir="${build.dir}">
+				<file name="externs.js"/>
 				<file name="countdown.js"/>
 			</sources>
 		</closure>

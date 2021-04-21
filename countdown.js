@@ -1,6 +1,6 @@
-/*global window */
+/*global window module */
 /**
- * @license countdown.js v2.6.0 http://countdownjs.org
+ * @license countdown.js v2.6.1 http://countdownjs.org
  * Copyright (c)2006-2014 Stephen M. McKamey.
  * Licensed under The MIT License.
  */
@@ -16,10 +16,7 @@
  */
 var countdown = (
 
-/**
- * @param {Object} module CommonJS Module
- */
-function(module) {
+function() {
 	/*jshint smarttabs:true */
 
 	'use strict';
@@ -1346,10 +1343,10 @@ function(module) {
 
 	resetFormat();
 
-	if (module && module.exports) {
+	if (typeof module !== 'undefined' && module.exports) {
 		module.exports = countdown;
 
-	} else if (typeof window.define === 'function' && typeof window.define.amd !== 'undefined') {
+	} else if (typeof window !== 'undefined' && typeof window.define === 'function' && typeof window.define.amd !== 'undefined') {
 		window.define('countdown', [], function() {
 			return countdown;
 		});
@@ -1357,4 +1354,4 @@ function(module) {
 
 	return countdown;
 
-})(module);
+})();

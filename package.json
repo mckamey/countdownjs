@@ -1,6 +1,6 @@
 {
   "name": "countdown",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "A simple JavaScript API for producing an accurate, intuitive description of the timespan between two Date instances.",
   "homepage": "http://countdownjs.org",
   "author": "Stephen McKamey (http://mck.me)",
