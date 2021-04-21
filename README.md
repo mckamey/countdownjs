@@ -218,7 +218,7 @@ Very basic localization is supported via the static `setLabels` and `resetLabels
 
 	countdown.setLabels(singular, plural, last, delim, empty, formatter);
 
-The arugments:
+The arguments:
 
 - `singular` is a pipe (`'|'`) delimited ascending list of singular unit name overrides
 - `plural` is a pipe (`'|'`) delimited ascending list of plural unit name overrides
